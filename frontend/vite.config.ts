@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate' ,
 
       manifest:{
-        name: "Baatchit",
-        short_name: "Baatchit",
+        name: "Mern Chat",
+        short_name: "Mern Chat",
         theme_color: "#000000",
         background_color: "#000000",
         display: "standalone",
