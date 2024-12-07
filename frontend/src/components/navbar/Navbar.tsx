@@ -55,7 +55,7 @@ export const Navbar = () => {
       </button>
 
 
-      <h4 className="text-3xl font-Shantell-Sans font-medium">Baatchit</h4>
+      <h4 className="text-3xl font-Shantell-Sans font-medium max-sm:text-xl ">Mern Chat</h4>
 
       <div className="flex item-center gap-x-10">
               {

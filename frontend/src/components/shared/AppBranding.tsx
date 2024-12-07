@@ -11,7 +11,7 @@ export const AppBranding = () => {
 
             <div className="flex flex-col gap-y-1">
                 <div className="flex items-center gap-x-4">
-                    <h1 className="text-7xl font-bold">Baatchit</h1>
+                    <h1 className="text-7xl font-bold">Mern Chat</h1>
                     <div className="w-20 h-20">
                         <Lottie loop={false} animationData={chatAnimation}/>
                     </div>
