@@ -12,20 +12,20 @@
   <!-- Authentication Pages -->
   <url>
     <loc>https://mernchat.in/auth/signup</loc>
-    <lastmod>2024-12-7</lastmod>
+    <lastmod>2024-12-07</lastmod>
   </url>
 
   <url>
     <loc>https://mernchat.in/auth/login</loc>
-    <lastmod>2024-12-7</lastmod>
+    <lastmod>2024-12-07</lastmod>
   </url>
   <url>
     <loc>https://mernchat.in/auth/forgot-password</loc>
-    <lastmod>2024-12-7</lastmod>
+    <lastmod>2024-12-07</lastmod>
   </url>
   <url>
     <loc>https://mernchat.in/auth/verification</loc>
-    <lastmod>2024-12-7</lastmod>
+    <lastmod>2024-12-07</lastmod>
   </url>
 
 </urlset>
