@@ -9,8 +9,8 @@ export const SignupPage = () => {
       <>
 
       <Helmet>
-        <title>Signup - Baatchit</title>
-        <meta name="description" content="Signup to Baatchit, your real-time chat application with seamless communication features." />
+        <title>Signup - Mern Chat</title>
+        <meta name="description" content="Signup to Mern Chat, your real-time chat application with seamless communication features." />
         <link rel="canonical" href={`${window.location.origin}/auth/signup`} />
       </Helmet>
 

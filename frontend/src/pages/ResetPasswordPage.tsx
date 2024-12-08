@@ -20,8 +20,8 @@ export const ResetPasswordPage = () => {
   return (
     <>
      <Helmet>
-        <title>Reset Password - Baatchit</title>
-        <meta name="description" content="Reset your password to regain access to your Baatchit account. Enter your new password to continue enjoying seamless communication." />
+        <title>Reset Password - Mern Chat</title>
+        <meta name="description" content="Reset your password to regain access to your Mern Chat account. Enter your new password to continue enjoying seamless communication." />
         <link rel="canonical" href={`${window.location.origin}/auth/reset-password?token=${token}&user=${user}`} />
     </Helmet>
 

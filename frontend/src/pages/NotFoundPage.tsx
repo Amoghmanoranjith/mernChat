@@ -5,8 +5,8 @@ export const NotFoundPage = () => {
   return (
     <>
     <Helmet>
-        <title>Page Not Found - Baatchit</title>
-        <meta name="description" content="Oops! The page you're looking for doesn't exist. Return to Baatchit for real-time messaging and seamless communication." />
+        <title>Page Not Found - Mern Chat</title>
+        <meta name="description" content="Oops! The page you're looking for doesn't exist. Return to Mern Chat for real-time messaging and seamless communication." />
         <link rel="canonical" href={`${window.location.origin}${location.pathname}`} />
     </Helmet>
     <div className="bg-background w-screen h-screen p-4 flex justify-center">

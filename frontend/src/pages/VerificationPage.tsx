@@ -16,8 +16,8 @@ export const VerificationPage = () => {
   return (
     <>
     <Helmet>
-        <title>Email Verification - Baatchit</title>
-        <meta name="description" content="Verify your email address for Baatchit. Enter the OTP sent to your email to confirm your identity and continue using Baatchit." />
+        <title>Email Verification - Mern Chat</title>
+        <meta name="description" content="Verify your email address for Mern Chat. Enter the OTP sent to your email to confirm your identity and continue using Mern Chat." />
         <link rel="canonical" href={`${window.location.origin}/auth/verification`} />
     </Helmet>
 

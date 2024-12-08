@@ -173,7 +173,7 @@ export const ChatPage = () => {
   return (
     <>
         <Helmet>
-            <title>Chat - Baatchit</title>
+            <title>Chat - Mern Chat</title>
             <meta name="description" content="Real-time messaging, group chats, file sharing, GIFs, and typing indicators. Stay connected with friends, see who's online, and enjoy seamless communication!" />
             <link rel="canonical" href={`${window.location.origin}`} />
         </Helmet>

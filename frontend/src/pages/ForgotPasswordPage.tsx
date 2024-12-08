@@ -6,8 +6,8 @@ export const ForgotPasswordPage = () => {
   return (
     <>
     <Helmet>
-        <title>Forgot Password - Baatchit</title>
-        <meta name="description" content="Reset your Baatchit password quickly and easily. Receive a reset link if your email is registered with us." />
+        <title>Forgot Password - Mern Chat</title>
+        <meta name="description" content="Reset your Mern Chat password quickly and easily. Receive a reset link if your email is registered with us." />
         <link rel="canonical" href={`${window.location.origin}/auth/forgot-password`} />
     </Helmet>
 
