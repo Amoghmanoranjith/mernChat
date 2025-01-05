@@ -1,4 +1,4 @@
-import { useForgotPasswordMutation } from "../../services/api/authApi"
+import { useForgotPasswordMutation } from "@/services/api/auth.api"
 import { useToast } from "../useUI/useToast"
 
 export const useForgotPassword = () => {
