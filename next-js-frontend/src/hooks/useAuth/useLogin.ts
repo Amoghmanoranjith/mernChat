@@ -1,5 +1,5 @@
 import { useLoginMutation } from "@/services/api/auth.api"
-import { useToast } from "../useUi/useToast"
+import { useToast } from "../useUI/useToast"
 
 export const useLogin = () => {
 
