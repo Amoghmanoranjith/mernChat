@@ -1,12 +1,14 @@
+'use client';
 import { useEffect } from "react"
-import { useResetPasswordMutation } from "../../services/api/authApi"
 import { useToast } from "../useUI/useToast"
 import toast from "react-hot-toast"
-import { useNavigate } from "react-router-dom"
+import { useResetPasswordMutation } from "@/services/api/auth.api"
+import { useRouter } from "next/navigation"
 
 export const useResetPassword = () => {
 
-    const navigate = useNavigate()
+    
+    const router = useRouter();
 
     const [resetPassword,{error,isError,isLoading,isSuccess,isUninitialized}] = useResetPasswordMutation()
     useToast({error,isError,isLoading,isSuccess,isUninitialized,loaderToast:true,successMessage:"Your password has been reset",successToast:true})
@@ -20,13 +22,13 @@ export const useResetPassword = () => {
             }, 1000);
     
             setTimeout(() => {
-                navigate("/auth/login")
+                router.push("/auth/login")
             }, 3000);
 
         }
 
         if(isError){
-            navigate("/auth/login")
+            router.push("/auth/login")
         }
 
     },[isSuccess,isError])
