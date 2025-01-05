@@ -1,16 +1,21 @@
-import { useVerifyOtpMutation } from "../../services/api/authApi"
+'use client';
+import { useVerifyOtpMutation } from "@/services/api/auth.api"
 import { useToast } from "../useUI/useToast"
-import { useHandleNavigate } from "../useUtils/useHandleNavigate"
 import { useUpdateLogin } from "./useUpdateLogin"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export const useVerifyOtp = () => {
 
+    const router = useRouter();
     const [verifyOtp,{error,isError,isLoading,isSuccess,isUninitialized,data}] = useVerifyOtpMutation()
     useToast({error,isError,isLoading,isSuccess,isUninitialized,loaderToast:true,successMessage:"Awesome!🎉 thankyou for verifying the otp",successToast:true})
 
     useUpdateLogin(isSuccess,data)
 
-    useHandleNavigate("/",isSuccess)
+    useEffect(()=>{
+        if(isSuccess) router.replace('/');
+    },[isSuccess])
 
     return {
         verifyOtp,
