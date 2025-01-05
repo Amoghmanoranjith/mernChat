@@ -1,4 +1,28 @@
+'use client';
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useUpdateLogin } from "../../hooks/useAuth/useUpdateLogin";
+import type { loginSchemaType } from "@/schemas/auth.schema";
+import { useLogin } from "../../hooks/useAuth/useLogin";
+import { FormInput } from "../ui/FormInput";
+import { SubmitButton } from "../ui/SubmitButton";
+import { loginSchema } from "@/schemas/auth.schema";
+import { AuthRedirectLink } from "./AuthRedirectLink";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 export const LoginForm = () => {
+  const { login, data, isLoading, isSuccess } = useLogin();
+  useUpdateLogin(isSuccess, data);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<loginSchemaType>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit: SubmitHandler<loginSchemaType> = (data) => login(data);
+
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-4">
@@ -31,12 +55,12 @@ export const LoginForm = () => {
           <AuthRedirectLink
             pageName="Signup"
             text="Already a member?"
-            to="auth/signup"
+            to="/auth/signup"
           />
           <AuthRedirectLink
             pageName="forgot password"
             text="Need Help?"
-            to="auth/forgot-password"
+            to="/auth/forgot-password"
           />
         </div>
       </div>
