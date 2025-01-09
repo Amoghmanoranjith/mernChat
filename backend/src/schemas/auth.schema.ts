@@ -47,7 +47,7 @@ export const fcmTokenSchema = z.object({
 })
 
 export const setAuthCookieSchema = z.object({
-    tempToken:z.string({required_error:"tempToken is required"})
+    token:z.string({required_error:"token is required"})
 })
 
 export type signupSchemaType = z.infer<typeof signupSchema>

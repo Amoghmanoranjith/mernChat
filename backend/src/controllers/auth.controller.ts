@@ -246,8 +246,8 @@ const sendPrivateKeyRecoveryEmail = asyncErrorHandler(async(req:AuthenticatedReq
 
 const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
-    const {tempToken}:setAuthCookieSchemaType = req.body
-    const decoded = jwt.verify(tempToken,env.JWT_SECRET) as {user:string,oAuthNewUser:boolean}
+    const {token}:setAuthCookieSchemaType = req.body
+    const decoded = jwt.verify(token,env.JWT_SECRET) as {user:string,oAuthNewUser:boolean}
     
     const user = await User.findById(decoded.user)
 
@@ -272,7 +272,7 @@ const redirectHandler = asyncErrorHandler(async(req:OAuthAuthenticatedRequest,re
 
     if(req.user){
         const tempToken =  jwt.sign({user:req.user._id.toString(),oAuthNewUser:req.user.newUser},env.JWT_SECRET,{expiresIn:"5m"})
-        return res.redirect(307,`${config.clientUrl}/auth/temp-token/${tempToken}`)
+        return res.redirect(307,`${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`)
     }
     else{
         return res.redirect(`${config.clientUrl}/auth/login`)

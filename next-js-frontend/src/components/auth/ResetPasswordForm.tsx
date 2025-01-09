@@ -1,10 +1,8 @@
-'use client';
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { resetPasswordSchemaType } from "@/schemas/auth.schema"
+import { resetPasswordSchema, resetPasswordSchemaType } from "../../schemas/auth"
 import { FormInput } from "../ui/FormInput"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useResetPassword } from "../../hooks/useAuth/useResetPassword"
-import { resetPasswordSchema } from "@/schemas/auth.schema"
 
 type PropTypes = {
     token:string,

@@ -9,6 +9,6 @@ export const useUpdateUserKeys = () => {
     return {
         updateUserKeys,
         updateUserKeysSuccess:isSuccess,
-        addedPublicKey:data?.publicKey
+        publicKeyReturnedFromServerAfterBeingAdded:data?.publicKey
     }
 }

@@ -5,7 +5,7 @@ type PropTypes = {
     animationData:unknown
 }
 
-export const Animation = ({animationData}:PropTypes) => {
+export const LottieAnimation = ({animationData}:PropTypes) => {
   return (
     <Lottie loop={false} animationData={animationData}/>
   )

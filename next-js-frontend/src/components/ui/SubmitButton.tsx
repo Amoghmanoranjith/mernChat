@@ -1,3 +1,4 @@
+
 type PropTypes = {
     btnText:string
     disabled?:boolean

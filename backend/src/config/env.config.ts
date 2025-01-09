@@ -2,7 +2,7 @@ import type { IConfig } from "../interfaces/config/config.interface.js"
 import { env } from "../schemas/env.schema.js"
 
 const developmentConfig:IConfig = {
-    clientUrl:"http://localhost:5173",
+    clientUrl:"http://localhost:3000",
     callbackUrl:`http://localhost:${env.PORT}/api/v1/auth/google/callback`,
 }
 

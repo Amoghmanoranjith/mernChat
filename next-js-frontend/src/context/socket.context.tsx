@@ -19,30 +19,32 @@ export const SocketProvider = ({ children }: PropTypes) => {
     const loggedInUser = useAppSelector(selectLoggedInUser);
 
     useEffect(() => {
-        if (loggedInUser && !socket) {
-            socket = io(process.env.ABSOLUTE_BASE_URL, {
-                withCredentials: true,
-                reconnection: true,
-                reconnectionAttempts: 10,
-                reconnectionDelay: 1000,
-            });
-
-            socket.on("connect", () => {
-                setIsConnected(true);
-            });
-
-            socket.on("disconnect", () => {
-                setIsConnected(false);
-            });
-
-            socket.on("connect_error", (error) => {
-                console.error("Socket connection error:", error);
-            });
-
-            return () => {
-                socket?.disconnect();
-                socket = null; // Clean up the socket instance on unmount
-            };
+        if(typeof window!="undefined"){
+            if (loggedInUser && !socket) {
+                socket = io(process.env.ABSOLUTE_BASE_URL, {
+                    withCredentials: true,
+                    reconnection: true,
+                    reconnectionAttempts: 10,
+                    reconnectionDelay: 1000,
+                });
+    
+                socket.on("connect", () => {
+                    setIsConnected(true);
+                });
+    
+                socket.on("disconnect", () => {
+                    setIsConnected(false);
+                });
+    
+                socket.on("connect_error", (error) => {
+                    console.error("Socket connection error:", error);
+                });
+    
+                return () => {
+                    socket?.disconnect();
+                    socket = null; // Clean up the socket instance on unmount
+                };
+            }
         }
     }, [loggedInUser?.email]);
 

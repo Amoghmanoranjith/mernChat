@@ -1,7 +1,7 @@
 import { chatAnimation } from "@/assets";
 import { AVATARS } from "@/constants";
-import { Animation } from "../ui/Animation";
-import { AvatarList } from "../ui/AvatarList";
+import { LottieAnimation } from "../ui/LottieAnimation";
+import { AvatarList } from "./AvatarList";
 
 export const AppBranding = () => {
   return (
@@ -10,7 +10,7 @@ export const AppBranding = () => {
         <div className="flex items-center gap-x-4">
           <h1 className="text-7xl font-bold">Mern Chat</h1>
           <div className="w-20 h-20">
-            <Animation animationData={chatAnimation}/>
+            <LottieAnimation animationData={chatAnimation} />
           </div>
         </div>
         <h2 className="text-2xl font-semibold">
@@ -22,6 +22,7 @@ export const AppBranding = () => {
         Join our vibrant community of more than 1lakh+ people and build
         connections that last forever
       </p>
+
       <AvatarList avatars={AVATARS} />
     </div>
   );

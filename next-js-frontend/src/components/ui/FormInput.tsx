@@ -1,3 +1,4 @@
+'use client';
 type PropTypes = {
     name?:string
     register?:any

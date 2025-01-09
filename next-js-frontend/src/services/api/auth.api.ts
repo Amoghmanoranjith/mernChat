@@ -4,7 +4,7 @@ import type { Otp, ResetPassword, User } from '../../interfaces/auth.interface'
 export const authApi = createApi({
     reducerPath:"authApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:`${process.env.BASE_URL}/auth`,
+        baseUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/auth`,
         credentials:"include"
     }),
     endpoints:(builder)=>({
@@ -77,11 +77,11 @@ export const authApi = createApi({
         sendOtp:builder.query<void,void>({
             query:()=>"/send-otp"
         }),
-        verifyOAuthTempToken:builder.mutation<{combinedSecret?:string,user:User},{tempToken:string}>({
-            query:({tempToken})=>({
-                url:"/verify-oauth-temp-token",
+        verifyOAuthToken:builder.mutation<{combinedSecret?:string,user:User},{token:string}>({
+            query:({token})=>({
+                url:"/verify-oauth-token",
                 method:"POST",
-                body:{tempToken}
+                body:{token}
             })
         }),
         logout:builder.query<void,void>({
@@ -107,5 +107,5 @@ export const {
     useVerifyPrivateKeyTokenMutation,
     useUpdateFcmTokenMutation,
     useLazySendPrivateKeyRecoveryEmailQuery,
-    useVerifyOAuthTempTokenMutation,
+    useVerifyOAuthTokenMutation,
 } = authApi

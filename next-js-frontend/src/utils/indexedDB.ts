@@ -47,6 +47,7 @@ const storePrivateKey = async (userId:string,key:JsonWebKey) => {
         const putRequest = store.put({_id:userId,privateKey:key});
 
         putRequest.onsuccess = function () {
+            console.log('private key store successfully');
         };
 
         putRequest.onerror = function () {

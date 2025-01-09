@@ -1,15 +1,12 @@
-'use client';
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
+import { useSignup } from "../../hooks/useAuth/useSignup"
 import { useUpdateLogin } from "../../hooks/useAuth/useUpdateLogin"
-import type { signupSchemaType } from "@/schemas/auth.schema";
+import { signupSchema, signupSchemaType } from "../../schemas"
 import { FormInput } from "../ui/FormInput"
 import { SubmitButton } from "../ui/SubmitButton"
 import { AuthRedirectLink } from "./AuthRedirectLink"
 import { useGenerateKeyPair } from "../../hooks/useAuth/useGenerateKeyPair"
-import { useSignup } from "@/hooks/useAuth/useSignup";
-import { signupSchema } from "@/schemas/auth.schema";
 
 export const SignupForm = () => {
 
@@ -62,7 +59,7 @@ export const SignupForm = () => {
                 <p className="text-gray-400 font-light">By creating this account, you agree that you have read and accepted our Terms of Use and Privacy Policy.</p>
             </div>
             
-            <AuthRedirectLink pageName="Login" text="Already a member?" to="/auth/login"/>
+            <AuthRedirectLink pageName="Login" text="Already a member?" to="auth/login"/>
         
         </div>
     </form>

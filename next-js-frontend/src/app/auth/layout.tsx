@@ -1,4 +1,4 @@
-import { AppBranding } from "@/components/auth/AppBranding";
+import { AppBranding } from "@/components/shared/AppBranding";
 
 export default function RootLayout({
   children,

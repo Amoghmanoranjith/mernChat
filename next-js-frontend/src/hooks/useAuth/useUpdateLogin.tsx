@@ -1,3 +1,4 @@
+'use client';
 import { useEffect } from "react"
 import type { User } from "@/interfaces/auth.interface"
 import { updateLoggedInUser } from "../../services/redux/slices/authSlice"

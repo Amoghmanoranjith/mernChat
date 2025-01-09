@@ -10,8 +10,8 @@ declare namespace NodeJS {
         FIREBASE_APP_ID: string;
         FIREBASE_MEASUREMENT_ID: string;
         FIREBASE_VAPID_KEY: string;
-        BASE_URL: string;
-        ABSOLUTE_BASE_URL: string;
+        NEXT_PUBLIC_BASE_URL: string;
+        NEXT_PUBLIC_ABSOLUTE_BASE_URL: string;
         CLIENT_URL: string;
     }
 }
