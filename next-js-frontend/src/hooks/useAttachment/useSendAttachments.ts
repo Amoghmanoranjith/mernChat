@@ -1,4 +1,4 @@
-import { useSendAttachmentsMutation } from "../../services/api/attachmentApi"
+import { useSendAttachmentsMutation } from "@/services/api/attachment.api"
 import { useToast } from "../useUI/useToast"
 
 export const useSendAttachments = () => {

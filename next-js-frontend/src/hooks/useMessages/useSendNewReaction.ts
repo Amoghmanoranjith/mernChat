@@ -1,13 +1,14 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
-import { INewReactionEventPayloadData } from "../../interfaces/messages"
+import { getSocket } from "@/context/socket.context"
+import { Event } from "@/interfaces/events.interface"
+import { NewReactionEventPayloadData } from "@/interfaces/message.interface"
+
 
 export const useSendNewReaction = () => {
 
     const socket = getSocket()
 
-    const sendNewReaction = ({chatId,messageId,reaction}:INewReactionEventPayloadData)=>{
-        socket?.emit(Events.NEW_REACTION,{chatId,messageId,reaction})
+    const sendNewReaction = ({chatId,messageId,reaction}:NewReactionEventPayloadData)=>{
+        socket?.emit(Event.NEW_REACTION,{chatId,messageId,reaction})
     }
 
     return {

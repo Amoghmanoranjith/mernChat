@@ -4,7 +4,8 @@ import { RootState } from "../store/store";
 
 const initialState:ChatIntitalState =  {
     selectedChatId:null,
-    selectedChatDetails:null
+    selectedChatDetails:null,
+    filteredChats:[]
 }
 const chatSlice = createSlice({
     name:"chatSlice",
@@ -37,6 +38,9 @@ const chatSlice = createSlice({
                 if(name) state.selectedChatDetails.name = name
                 if(avatar) state.selectedChatDetails.avatar = avatar
             }
+        },
+        updateFilteredChats:(state,action:PayloadAction<ChatWithUnreadMessages[]>)=>{
+            state.filteredChats = action.payload;
         }
 
     },
@@ -45,6 +49,7 @@ const chatSlice = createSlice({
 // exporting selector
 export const selectSelectedChatId = (state:RootState)=>state.chatSlice.selectedChatId
 export const selectSelectedChatDetails = (state:RootState)=>state.chatSlice.selectedChatDetails
+export const selectFilteredChats = (state:RootState)=>state.chatSlice.filteredChats
 
 // exporting actions
 export const {
@@ -55,6 +60,7 @@ export const {
     updateSelectedChatMembers,
     removeSelectedChatMembers,
     updateChatNameOrAvatar,
+    updateFilteredChats,
 } = chatSlice.actions
 
 export default chatSlice

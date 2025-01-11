@@ -1,12 +1,12 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
+import { getSocket } from "@/context/socket.context"
+import { Event } from "@/interfaces/events.interface"
 
 export const useDeleteReaction = () => {
 
     const socket = getSocket()
 
     const deleteReaction = ({chatId,messageId}:{chatId:string,messageId:string})=>{
-        socket?.emit(Events.DELETE_REACTION,{chatId,messageId})
+        socket?.emit(Event.DELETE_REACTION,{chatId,messageId})
     }
 
     return {

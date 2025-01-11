@@ -1,9 +1,9 @@
+import { getSocket } from "@/context/socket.context"
 import { useEffect } from "react"
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
-import { IUserTypingEventPayloadData } from "../../interfaces/messages"
-import { useAppSelector } from "../../services/redux/store/hooks"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
+import { useAppSelector } from "../../services/redux/store/hooks"
+import { UserTypingEventPayloadData } from "@/interfaces/message.interface"
+import { Event } from "@/interfaces/events.interface"
 
 export const useEmitTypingEvent = (isTyping:string) => {
     
@@ -14,12 +14,12 @@ export const useEmitTypingEvent = (isTyping:string) => {
 
         if(selectedChatDetails && isTyping){
 
-            const data:IUserTypingEventPayloadData = 
+            const data:UserTypingEventPayloadData  = 
             {
                 chatId:selectedChatDetails._id
             }
 
-            socket?.emit(Events.USER_TYPING,data)
+            socket?.emit(Event.USER_TYPING,data)
         }
 
     },[isTyping])

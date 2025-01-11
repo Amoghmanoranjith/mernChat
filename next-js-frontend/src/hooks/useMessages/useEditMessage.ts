@@ -1,11 +1,11 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
-import { IEditMessageEventPayloadData } from "../../interfaces/messages"
+import { getSocket } from "@/context/socket.context"
+import type { EditMessageEventPayloadData } from "@/interfaces/message.interface"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { encryptMessage } from "../../utils/encryption"
 import { useGetSharedKey } from "../useAuth/useGetSharedKey"
+import { Event } from "@/interfaces/events.interface"
 
 export const useEditMessage = () => {
 
@@ -31,13 +31,13 @@ export const useEditMessage = () => {
                 }
             }
 
-            const payload:IEditMessageEventPayloadData = {
+            const payload:EditMessageEventPayloadData = {
                 chatId:selectedChatDetails._id,
                 messageId:messageId,
                 updatedContent:encryptedMessage?encryptedMessage:updatedContent,
             }
         
-            socket?.emit(Events.MESSAGE_EDIT,payload)
+            socket?.emit(Event.MESSAGE_EDIT,payload)
         }
     
       }

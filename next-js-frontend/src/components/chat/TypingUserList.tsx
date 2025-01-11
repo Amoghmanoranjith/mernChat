@@ -1,8 +1,8 @@
-import { IChatWithUnreadMessages } from "../../interfaces/chat"
+import { ChatWithUnreadMessages } from "@/interfaces/chat.interface"
 import { TypingCard } from "../ui/TypingCard"
 
 type PropTypes = {
-    users:IChatWithUnreadMessages['userTyping']
+    users:ChatWithUnreadMessages['userTyping']
 }
 
 export const TypingUserList = ({users}:PropTypes) => {

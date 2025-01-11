@@ -8,7 +8,7 @@ import { useToggleChatBar } from "../../hooks/useUI/useToggleChatBar"
 import { useToggleGroupChatForm } from '../../hooks/useUI/useToggleGroupChatForm'
 import { useToggleNavMenu } from "../../hooks/useUI/useToggleNavMenu"
 import { useToggleSettingsForm } from '../../hooks/useUI/useToggleSettingsForm'
-import { useClickOutside } from '../../hooks/useUtils/useClickOutside'
+import { useClickOutside } from '../../hooks/useUtils/useHandleOutsideClick'
 import { useUpdateTheme } from "../../hooks/useUtils/useUpdateTheme"
 import { useGetUserFriendRequestsQuery } from "../../services/api/requestApi"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"

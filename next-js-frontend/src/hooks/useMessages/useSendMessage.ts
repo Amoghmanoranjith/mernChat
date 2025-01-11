@@ -1,11 +1,11 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
-import { IMessageEventPayloadData } from "../../interfaces/messages"
+import { getSocket } from "@/context/socket.context"
+import type { MessageEventPayloadData } from "@/interfaces/message.interface"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { encryptMessage } from "../../utils/encryption"
 import { useGetSharedKey } from "../useAuth/useGetSharedKey"
+import { Event } from "@/interfaces/events.interface"
 
 
 export const useSendMessage = () => {
@@ -32,7 +32,7 @@ export const useSendMessage = () => {
 
         if(selectedChatDetails && (messageVal || url || pollOptions || pollQuestion || isMultipleAnswers)){
             
-            const newMessage:IMessageEventPayloadData =  
+            const newMessage:MessageEventPayloadData =  
             {
                 chat:selectedChatDetails._id,
                 content:encryptedMessage?encryptedMessage:messageVal?messageVal:undefined,
@@ -44,7 +44,7 @@ export const useSendMessage = () => {
                 pollQuestion,
                 isMultipleAnswers
             }
-            socket?.emit(Events.MESSAGE,newMessage)
+            socket?.emit(Event.MESSAGE,newMessage)
         }
     }
 

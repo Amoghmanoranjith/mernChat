@@ -1,17 +1,17 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
+import { getSocket } from "@/context/socket.context"
 import { useSetVotesData } from "../../hooks/useMessages/useSetVotesData"
 import { useToggleViewVotes } from "../../hooks/useUI/useToggleViewVotes"
-import { IMessage, IVoteInEventPayloadData, IVoteOutEventPayloadData } from "../../interfaces/messages"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { PollOptionList } from "./PollOptionList"
+import { Event } from "@/interfaces/events.interface"
+import { Message, VoteInEventPayloadData, VoteOutEventPayloadData } from "@/interfaces/message.interface"
 
 type PropTypes = {
     messageId:string
     question:string
-    options:IMessage['pollOptions']
+    options:Message['pollOptions']
     isMutipleAnswers:boolean
 }
 
@@ -24,29 +24,29 @@ export const PollCardForm = ({question,options,isMutipleAnswers,messageId}:PropT
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
   const loggedInUser = useAppSelector(selectLoggedInUser)
 
-  const handleVoteIn = ({messageId,optionIndex}:Pick<IVoteInEventPayloadData , 'messageId' | "optionIndex">)=>{
+  const handleVoteIn = ({messageId,optionIndex}:Pick<VoteInEventPayloadData , 'messageId' | "optionIndex">)=>{
 
     if(selectedChatDetails){
 
-      const payload:IVoteInEventPayloadData = {
+      const payload:VoteInEventPayloadData = {
         chatId:selectedChatDetails._id,
         messageId,
         optionIndex
       } 
-      socket?.emit(Events.VOTE_IN,payload)
+      socket?.emit(Event.VOTE_IN,payload)
     }
   }
 
-  const handleVoteOut = ({messageId,optionIndex}:Pick<IVoteInEventPayloadData , 'messageId' | "optionIndex">)=>{
+  const handleVoteOut = ({messageId,optionIndex}:Pick<VoteInEventPayloadData , 'messageId' | "optionIndex">)=>{
 
     if(selectedChatDetails){
       
-      const payload:IVoteOutEventPayloadData = {
+      const payload:VoteOutEventPayloadData = {
         chatId:selectedChatDetails._id,
         messageId,
         optionIndex
       } 
-      socket?.emit(Events.VOTE_OUT,payload)
+      socket?.emit(Event.VOTE_OUT,payload)
 
     }
 

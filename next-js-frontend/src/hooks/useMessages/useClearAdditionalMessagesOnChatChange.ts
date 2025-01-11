@@ -1,4 +1,4 @@
-import { messageApi } from "../../services/api/messageApi"
+import { messageApi } from "@/services/api/message.api"
 import { useAppDispatch } from "../../services/redux/store/hooks"
 
 export const useClearAdditionalMessagesOnChatChange = () => {
