@@ -27,6 +27,9 @@ export const useChatListSearch = ({
         )
       );
     }
+    else if(searchVal.trim().length==0){
+      setFilteredChats([]);
+    }
   }, [searchVal]);
 
   return { filteredChats };

@@ -1,5 +1,6 @@
 "use client";
 import { useChatListSearch } from "@/hooks/useChat/useChatListSearch";
+import { useFilteredChatsVisibility } from "@/hooks/useChat/useFilteredChatsVisibility";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
@@ -19,6 +20,10 @@ export const ChatListWithSearchInput = ({ chats }: PropTypes) => {
     loggedInUserId,
     searchVal,
   });
+  const { showFilteredChats } = useFilteredChatsVisibility({
+    filteredChats,
+    searchVal,
+  });
 
   return (
     <div className="flex flex-col gap-y-5">
@@ -27,8 +32,8 @@ export const ChatListWithSearchInput = ({ chats }: PropTypes) => {
         setSearchVal={setSearchVal}
       />
       <ChatList
-        chats={filteredChats.length ? filteredChats : chats}
-        isFiltered={filteredChats.length > 0}
+        chats={showFilteredChats ? filteredChats : chats}
+        isFiltered={showFilteredChats}
       />
     </div>
   );
