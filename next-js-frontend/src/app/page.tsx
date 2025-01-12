@@ -1,5 +1,6 @@
 import { ChatAreaWrapper } from "@/components/chat/ChatAreaWrapper";
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { ChatHeaderWrapper } from "@/components/chat/ChatHeaderWrapper";
 import { ChatListWithSearchInputWrapper } from "@/components/chat/ChatListWithSearchInputWrapper";
 import { ChatListWrapper } from "@/components/chat/ChatListWrapper";
 import { ChatWrapper } from "@/components/chat/ChatWrapper";
@@ -42,7 +43,7 @@ export default async function ChatPage() {
 
         <ChatAreaWrapper>
           <div className="flex flex-col gap-y-3 h-full justify-between relative">
-            <ChatHeader loggedInUserId={user._id} />
+            <ChatHeaderWrapper/>
             <MessageListWrapper loggedInUserId={user._id} />
             <MessageFromWrapper>
               <MessageForm />

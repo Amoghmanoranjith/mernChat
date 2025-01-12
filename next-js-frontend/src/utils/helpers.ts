@@ -131,11 +131,14 @@ const getChatName = (
   selectedChatDetails: ChatWithUnreadMessages | null,
   loggedInUserId: User["_id"] | undefined | null
 ) => {
-  return selectedChatDetails?.isGroupChat
-    ? selectedChatDetails?.name
-    : selectedChatDetails?.members.filter(
-        (member) => member._id !== loggedInUserId
-      )[0]?.username;
+  let chatName = "N/A";
+  if(selectedChatDetails?.isGroupChat){
+    chatName = selectedChatDetails.name as string;
+  }
+  else{
+    chatName = getOtherMemberOfPrivateChat(selectedChatDetails as ChatWithUnreadMessages, loggedInUserId as string)?.username as string;
+  }
+  return chatName.length > 16 ? chatName.substring(0, 16) + "..." : chatName;
 };
 
 const getChatAvatar = (

@@ -5,8 +5,9 @@ export const useOpenProfileForm = () => {
 
     const dispatch = useAppDispatch()
 
-    return ()=>{
+    const openProfileForm = ()=>{
         dispatch(setNavMenu(false))
         dispatch(setProfileForm(true))
     }
+    return {openProfileForm};
 }

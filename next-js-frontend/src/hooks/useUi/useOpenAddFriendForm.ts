@@ -5,8 +5,9 @@ export const useOpenAddFriendForm = () => {
 
     const dispatch = useAppDispatch()
 
-    return ()=>{
+    const openAddFriendForm=()=>{
         dispatch(setNavMenu(false))
         dispatch(setAddFriendForm(true))
     }
+    return {openAddFriendForm};
 }
