@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/navbar/Navbar";
 import { SocketProvider } from "@/context/socket.context";
 import StoreProvider from "@/services/redux/store/storeProvider";
 import type { Metadata } from "next";
@@ -27,14 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <StoreProvider>
-          <SocketProvider>
-            <header>
-              <Navbar />
-            </header>
-            <main className="h-[calc(100vh-3.5rem)]">{children}</main>
-          </SocketProvider>
+          <SocketProvider>{children}</SocketProvider>
         </StoreProvider>
       </body>
     </html>
