@@ -10,7 +10,7 @@ const authSlice = createSlice({
     name:"authSlice",
     initialState,
     reducers:({
-        updateLoggedInUser:(state,action:PayloadAction<User>)=>{
+        updateLoggedInUser:(state,action:PayloadAction<User | null>)=>{
             state.loggedInUser=action.payload
         },
         updateLoggedInUserPublicKey:(state,action:PayloadAction<Pick<User,'publicKey'>>)=>{
@@ -25,9 +25,6 @@ const authSlice = createSlice({
             if(state.loggedInUser)
                 state.loggedInUser.fcmTokenExists = action.payload
         },
-        logout:(state)=>{
-            state.loggedInUser=null
-        }
     })
 })
 
@@ -40,7 +37,6 @@ export const {
     updateLoggedInUserPublicKey,
     updateLoggedInUserNotificationStatus,
     updateLoggedInUserFcmTokenStatus,
-    logout
 
 } = authSlice.actions
 
