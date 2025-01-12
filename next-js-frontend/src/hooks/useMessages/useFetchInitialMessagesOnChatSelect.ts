@@ -9,7 +9,7 @@ export const useFetchInitialMessagesOnChatSelect = () => {
   useEffect(() => {
     if (selectedChatId) {
       // Fetch the first page of messages when the selectedChatId changes
-      getMessages({ _id: selectedChatId, page: 1 }, true);
+      getMessages({ chatId: selectedChatId, page: 1 }, true);
     }
   }, [selectedChatId, getMessages]); // Effect runs whenever selectedChatId changes
 };
