@@ -23,9 +23,9 @@ export const ChatListSkeleton = () => {
                     </div>
                 </div>
                 
-                <p className="text-sm text-secondary-darker">
+                <div className="text-sm text-secondary-darker">
                   <div className="animate-pulse bg-gray-300 w-20 h-2 rounded-xl mt-2"></div>
-                </p>
+                </div>
     
             </div>
     

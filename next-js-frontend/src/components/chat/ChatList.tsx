@@ -1,22 +1,21 @@
+"use client";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { ChatListItem } from "./ChatListItem";
 import { sortChats } from "@/utils/helpers";
+import { ChatListItem } from "./ChatListItem";
 
 type PropTypes = {
   chats: ChatWithUnreadMessages[];
-  loggedInUserId: string;
+  isFiltered: boolean;
 };
 
-export const ChatList = ({ chats, loggedInUserId }: PropTypes) => {
-  const sortedChats = sortChats(chats);
+export const ChatList = ({ chats, isFiltered }: PropTypes) => {
+  const sortedChats = isFiltered ? chats : sortChats(chats);
 
   return (
-    <>
-      <div className="flex flex-col gap-y-4">
-        {sortedChats.map((chat) => (
-          <ChatListItem key={chat._id} chat={chat} loggedInUserId={loggedInUserId}/>
-        ))}
-      </div>
-    </>
+    <div className="flex flex-col gap-y-4">
+      {sortedChats.map((chat) => (
+        <ChatListItem key={chat._id} chat={chat} />
+      ))}
+    </div>
   );
 };

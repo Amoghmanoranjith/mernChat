@@ -9,8 +9,7 @@ import { chatApi } from "@/services/api/chat.api";
 import { friendApi } from "@/services/api/friend.api";
 import { requestApi } from "@/services/api/request.api";
 import { updateLoggedInUser } from "@/services/redux/slices/authSlice";
-import { selectSelectedChatId } from "@/services/redux/slices/chatSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
+import { useAppDispatch } from "@/services/redux/store/hooks";
 import { useEffect } from "react";
 
 type PropTypes = {
@@ -28,19 +27,21 @@ export const ChatWrapper = ({
   friends,
   user,
 }: PropTypes) => {
-
-
   const dispatch = useAppDispatch();
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     dispatch(updateLoggedInUser(user));
-    dispatch(chatApi.util.upsertQueryData("getChats",undefined,[...chats]));
-    dispatch(friendApi.util.upsertQueryData("getFriends",undefined,[...friends]));
-    dispatch(requestApi.util.upsertQueryData("getUserFriendRequests",undefined,[...friendRequest]));
-  },[])
+    dispatch(chatApi.util.upsertQueryData("getChats", undefined, [...chats]));
+    dispatch(
+      friendApi.util.upsertQueryData("getFriends", undefined, [...friends])
+    );
+    dispatch(
+      requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [
+        ...friendRequest,
+      ])
+    );
+  }, []);
 
-  const selectedChatId = useAppSelector(selectSelectedChatId);
-  useFetchInitialMessagesOnChatSelect({ selectedChatId });
-
-  return <div>{children}</div>;
+  useFetchInitialMessagesOnChatSelect();
+  return children;
 };

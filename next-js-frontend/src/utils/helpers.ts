@@ -2,11 +2,11 @@ import { User } from "@/interfaces/auth.interface";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
-  differenceInSeconds,
-  differenceInMinutes,
-  differenceInHours,
   differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
   differenceInMonths,
+  differenceInSeconds,
   differenceInYears,
 } from "date-fns";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
@@ -180,19 +180,93 @@ const sortChats = (chats: ChatWithUnreadMessages[]) => {
   });
 };
 
+const getAppropriateLastLatestMessageForGroupChats = (
+  latestMessage: ChatWithUnreadMessages["latestMessage"]
+) => {
+  return latestMessage.isPoll
+    ? "Sent a poll"
+    : latestMessage.url
+    ? "Sent a gif"
+    : latestMessage.attachments?.length
+    ? "Sent an attachment"
+    : latestMessage.content?.length
+    ? (latestMessage.content.length>25 ? latestMessage.content.substring(0, 25) + "..." : latestMessage.content)
+    : null;
+};
+
+const getAppropriateLastLatestMessageForPrivateChats = (
+  latestMessage: ChatWithUnreadMessages["latestMessage"]
+) => {
+  return latestMessage.isPoll
+    ? "Sent a poll"
+    : latestMessage.url
+    ? "Sent a gif"
+    : latestMessage.attachments?.length
+    ? "Sent an attachment"
+    : null;
+};
+
+const getAppropriateUnreadMessageForGroupChats = (
+  unreadMessage: ChatWithUnreadMessages["unreadMessages"]
+) => {
+  return unreadMessage.message?.poll
+    ? "Sent a poll"
+    : unreadMessage.message?.url
+    ? "Sent a gif"
+    : unreadMessage.message?.attachments
+    ? "Sent an attachment"
+    : unreadMessage.message?.content
+    ? (unreadMessage.message.content.length>25 ? unreadMessage.message.content.substring(0, 25) + "..." : unreadMessage.message.content)
+    : null;
+};
+
+const getAppropriateUnreadMessageForPrivateChats = (
+  unreadMessage: ChatWithUnreadMessages["unreadMessages"]
+) => {
+  return unreadMessage.message?.poll
+    ? "Sent a poll"
+    : unreadMessage.message?.url
+    ? "Sent a gif"
+    : unreadMessage.message?.attachments
+    ? "Sent an attachment"
+    : null;
+};
+
+const getOtherMemberOfPrivateChat = (
+  chat: ChatWithUnreadMessages,
+  loggedInUserId: string
+) => {
+  return chat?.members.filter((member) => member._id !== loggedInUserId)[0];
+};
+
+const getOtherMembersOfGroupChatThatAreActive = (
+  chat: ChatWithUnreadMessages,
+  loggedInUserId: string
+) => {
+  return chat.members.filter(
+    (member) => member._id !== loggedInUserId && member.isActive
+  );
+};
+
 export {
-  isFetchBaseQueryError,
-  isErrorWithMessage,
-  printDraft,
   base64ToArrayBuffer,
-  uint8ArrayToBase64,
   base64ToUint8Array,
-  formatRelativeTime,
-  fetchUserFriendRequest,
   fetchUserChats,
+  fetchUserFriendRequest,
   fetchUserFriends,
-  getLoggedInUserFromHeaders,
-  getChatName,
+  formatRelativeTime,
+  getAppropriateLastLatestMessageForGroupChats,
+  getAppropriateLastLatestMessageForPrivateChats,
+  getAppropriateUnreadMessageForGroupChats,
+  getAppropriateUnreadMessageForPrivateChats,
   getChatAvatar,
+  getChatName,
+  getLoggedInUserFromHeaders,
+  getOtherMemberOfPrivateChat,
+  getOtherMembersOfGroupChatThatAreActive,
+  isErrorWithMessage,
+  isFetchBaseQueryError,
+  printDraft,
   sortChats,
+  uint8ArrayToBase64,
 };
