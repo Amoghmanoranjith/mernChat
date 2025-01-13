@@ -6,7 +6,8 @@ export const useToggleChatDetailsBar = () => {
     const dispatch = useAppDispatch()
     const chatDetailsBar = useAppSelector(selectChatDetailsBar)
 
-    return ()=>{
+    const toggleChatDetailsBar=()=>{
         dispatch(setChatDetailsBar(!chatDetailsBar))
     }
+    return {toggleChatDetailsBar};
 }
