@@ -1,11 +1,13 @@
-type PropTypes = {
-    url:string
-}
+import Image from "next/image";
 
-export const Gif = ({url}:PropTypes) => {
+type PropTypes = {
+  url: string;
+};
+
+export const Gif = ({ url }: PropTypes) => {
   return (
     <div className="h-96 max-xl:h-80 ">
-        <img className="w-full h-full object-contain" src={url} alt="gif" />
+      <Image className="w-full h-full object-contain" width={100} height={100} src={url} alt="gif" />
     </div>
-  )
-}
+  );
+};

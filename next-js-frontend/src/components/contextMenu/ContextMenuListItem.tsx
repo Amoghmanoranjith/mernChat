@@ -6,14 +6,14 @@ type PropTypes = {
   handlerFunc: () => void;
 };
 
-export const ContextMenuFormItem = ({ handlerFunc, icon, name }: PropTypes) => {
+export const ContextMenuListItem = ({ handlerFunc, icon, name }: PropTypes) => {
   return (
     <div
       onClick={handlerFunc}
       className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
     >
-      <p key={name}>{name}</p>
-      {icon as any}
+      <p>{name}</p>
+      <span>{icon}</span>
     </div>
   );
 };

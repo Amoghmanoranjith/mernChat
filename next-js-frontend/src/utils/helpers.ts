@@ -1,5 +1,6 @@
 import { User } from "@/interfaces/auth.interface";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { PollOption } from "@/interfaces/message.interface";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
   differenceInDays,
@@ -251,6 +252,10 @@ const getOtherMembersOfGroupChatThatAreActive = (
   );
 };
 
+const haveUserVotedThisOption = (option:PollOption,loggedInUserId:string)=>{
+  return option.votes.findIndex(vote=>vote._id===loggedInUserId)!==-1
+}
+
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
@@ -272,4 +277,5 @@ export {
   printDraft,
   sortChats,
   uint8ArrayToBase64,
+  haveUserVotedThisOption,
 };

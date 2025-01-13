@@ -12,12 +12,12 @@ type PropTypes = {
 
 export const MessageListWrapper = ({ loggedInUserId }: PropTypes) => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  const { data, isFetching, isLoading, isSuccess } = useGetMessages();
+  const { data, isFetching, isLoading } = useGetMessages();
 
   if (isFetching || isLoading) {
     return <MessageListSkeleton />;
   }
-  if (isSuccess && data && selectedChatDetails) {
+  if (data && selectedChatDetails) {
     return (
       <MessageList
         messages={data.messages}
@@ -26,7 +26,7 @@ export const MessageListWrapper = ({ loggedInUserId }: PropTypes) => {
         loggedInUserId={loggedInUserId}
       />
     );
+  } else {
+    return null;
   }
-
-  return null;
 };

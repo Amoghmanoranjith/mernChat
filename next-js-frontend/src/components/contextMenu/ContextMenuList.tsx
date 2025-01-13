@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { ContextMenuFormItem } from "./ContextMenuFormItem";
+import { ContextMenuListItem } from "./ContextMenuListItem";
 
 type PropTypes = {
   contextOptions: {
@@ -9,11 +9,11 @@ type PropTypes = {
   }[];
 };
 
-export const ContextMenuForm = ({ contextOptions }: PropTypes) => {
+export const ContextMenuList = ({ contextOptions }: PropTypes) => {
   return (
     <div className="flex flex-col">
       {contextOptions.map(({ name, icon, handlerFunc }) => (
-        <ContextMenuFormItem
+        <ContextMenuListItem
           handlerFunc={handlerFunc}
           icon={icon}
           name={name}

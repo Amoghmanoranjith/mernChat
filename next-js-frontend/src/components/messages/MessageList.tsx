@@ -48,50 +48,13 @@ export const MessageList = ({
   const prevHeightRef = useRef<number>(0);
   const prevScrollTopRef = useRef<number>(0);
 
-  useScrollBottomAndSetPageTo1AndClearAdditionalMessagesOnChatChange({
-    messageContainerRef,
-    setPage,
-    selectedChatId,
-  });
-  useSetHasMoreMessagesBasedOnTotalPages({
-    setHasMoreMessages,
-    totalPages,
-  });
-  useFetchMessagesOnPageChange({
-    getMessages,
-    page,
-    selectedChatId,
-    setHasMore: setHasMoreMessages,
-    totalPages,
-  });
-  useHandleScroll({
-    container,
-    hasMoreMessages,
-    IsFetchingMessages,
-    prevHeightRef,
-    prevScrollTopRef,
-    setIsNearBottom,
-    setPage,
-  });
-  useScrollToBottomOnNewMessage({
-    container,
-    isNearBottom,
-    messages,
-    prevHeightRef,
-    prevScrollTopRef,
-  });
-  usePreserveScrollPositionOnPagination({
-    container,
-    IsFetchingMessages,
-    page,
-    prevHeightRef,
-    prevScrollTopRef,
-  });
-  useScrollToBottomOnTypingWhenUserIsNearBottom({
-    container,
-    isNearBottom,
-    selectedChatDetails,
-  });
+  useScrollBottomAndSetPageTo1AndClearAdditionalMessagesOnChatChange({messageContainerRef,setPage,selectedChatId,});
+  useSetHasMoreMessagesBasedOnTotalPages({setHasMoreMessages,totalPages,});
+  useFetchMessagesOnPageChange({getMessages,page,selectedChatId,setHasMore: setHasMoreMessages,totalPages,});
+  useHandleScroll({container,hasMoreMessages,IsFetchingMessages,prevHeightRef,prevScrollTopRef,setIsNearBottom,setPage,});
+  useScrollToBottomOnNewMessage({container,isNearBottom,messages,prevHeightRef,prevScrollTopRef,});
+  usePreserveScrollPositionOnPagination({container,IsFetchingMessages,page,prevHeightRef,prevScrollTopRef,});
+  useScrollToBottomOnTypingWhenUserIsNearBottom({container,isNearBottom,selectedChatDetails,});
 
   return (
     <>

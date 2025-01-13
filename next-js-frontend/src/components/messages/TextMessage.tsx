@@ -1,8 +1,8 @@
 "use client";
 import { useDecryptMessage } from "@/hooks/useUtils/useDecryptMessage";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { EditMessageForm } from "./EditMessageForm";
 import { useState } from "react";
+import { EditMessageForm } from "./EditMessageForm";
 
 type PropTypes = {
   cipherText: string;
@@ -33,8 +33,9 @@ export const TextMessage = ({
 
   const [readMore, setReadMore] = useState<boolean>(false);
   const isMessageLong = decryptedMessage.length > 500;
+  const inEditState = editMessageId === messageId;
 
-  return editMessageId === messageId ? (
+  return inEditState ? (
     <EditMessageForm
       messageId={messageId}
       prevContentValue={decryptedMessage}

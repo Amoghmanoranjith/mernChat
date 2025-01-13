@@ -2,7 +2,7 @@ import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
 import { Gif } from "../ui/Gif";
 import { AttachmentList } from "./AttachmentList";
-import { PollCardForm } from "./PollCardForm";
+import { PollCard } from "./PollCard";
 import { TextMessage } from "./TextMessage";
 
 type PropTypes = {
@@ -32,8 +32,8 @@ export const RenderAppropriateMessage = ({
             {message.sender.username}
           </p>
         )}
-      {message.isPoll && message.pollQuestion && (
-        <PollCardForm
+      {message.isPoll && message.pollQuestion &&  (
+        <PollCard
           isMutipleAnswers={message?.isMultipleAnswers ? true : false}
           messageId={message._id}
           question={message.pollQuestion}
