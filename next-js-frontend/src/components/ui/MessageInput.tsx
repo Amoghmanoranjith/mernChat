@@ -1,8 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useDynamicRowValue } from "../../hooks/useUtils/useDynamicRowValue";
-import { AttachmentIcon } from "./icons/AttachmentIcon";
-import { GifIcon } from "./icons/GifIcon";
+import { MessageInputExtraOptions } from "../messages/MessageInputExtraOptions";
 import { SendIcon } from "./icons/SendIcon";
 import { SmileIcon } from "./icons/SmileIcon";
 
@@ -65,26 +64,12 @@ export const MessageInput = ({
         onKeyDown={handleKeyDown}
       />
       {!messageVal.trim() && (
-        <motion.div
-          variants={{ hide: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-          initial="hide"
-          animate="show"
-          className="flex"
-        >
-          <button
-            onClick={() => toggleAttachmentsMenu((prev) => !prev)}
-            className="px-3 py-4 justify-center items-center flex relative"
-          >
-            <AttachmentIcon />
-          </button>
-
-          <button onClick={toggleGif} type="button" className="px-3 py-4">
-            <GifIcon />
-          </button>
-        </motion.div>
+        <MessageInputExtraOptions
+          toggleAttachmentsMenu={toggleAttachmentsMenu}
+          toggleGif={toggleGif}
+        />
       )}
-
-      {messageVal?.trim().length > 0 && (
+      {messageVal.trim().length && (
         <motion.button
           onMouseDown={(e) => e.preventDefault()}
           initial={{ x: 5, opacity: 0, position: "fixed" }}

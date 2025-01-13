@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type PropTypes = {
   preview: string;
@@ -20,7 +21,13 @@ export const SelectedAttachmentPreviewItem = ({
       >
         -
       </button>
-      <img className="w-20 h-20 object-cover" src={preview} alt="" />
+      <Image
+        width={50}
+        height={50}
+        className="w-20 h-20 object-cover"
+        src={preview}
+        alt="selected-attachment"
+      />
     </motion.div>
   );
 };

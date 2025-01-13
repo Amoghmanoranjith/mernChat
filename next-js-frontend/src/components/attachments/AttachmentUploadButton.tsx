@@ -1,28 +1,23 @@
+import { useHandleUploadAttachment } from "@/hooks/useAttachment/useHandleUploadAttachment";
 import { motion } from "framer-motion";
 import { UploadIcon } from "../ui/icons/UploadIcon";
-import { useSendAttachments } from "@/hooks/useAttachment/useSendAttachments";
 
 type PropTypes = {
-    selectedAttachments: Array<Blob>;
-    setSelectedAttachments: React.Dispatch<React.SetStateAction<Array<Blob>>>;
-    setAttachmentsPreview: React.Dispatch<React.SetStateAction<Array<string>>>;
-    selectedChatDetails: any;
-}
+  selectedAttachments: Array<Blob>;
+  setSelectedAttachments: React.Dispatch<React.SetStateAction<Array<Blob>>>;
+  selectedChatDetails: any;
+};
 
-export const AttachmentUploadButton = ({selectedAttachments,selectedChatDetails,setAttachmentsPreview,setSelectedAttachments}:PropTypes) => {
-
-    const {uploadAttachment} = useSendAttachments();
-
-    const handleUploadAttachments = ()=>{
-        if(selectedChatDetails && selectedAttachments){
-          uploadAttachment({
-            attachments:selectedAttachments,
-            chatId:selectedChatDetails?._id,
-          })
-          setSelectedAttachments([])
-          setAttachmentsPreview([])
-        }
-      }
+export const AttachmentUploadButton = ({
+  selectedAttachments,
+  selectedChatDetails,
+  setSelectedAttachments,
+}: PropTypes) => {
+  const { handleUploadAttachments } = useHandleUploadAttachment({
+    selectedAttachments,
+    selectedChatDetails,
+    setSelectedAttachments,
+  });
 
   return (
     <motion.button
@@ -30,10 +25,7 @@ export const AttachmentUploadButton = ({selectedAttachments,selectedChatDetails,
       onClick={handleUploadAttachments}
       className="p-4 bg-primary text-white rounded-full shadow-xl"
     >
-      <div className="flex items-center gap-x-3">
-        <UploadIcon />
-        <p className="hidden">Uploading</p>
-      </div>
+      <UploadIcon />
     </motion.button>
   );
 };
