@@ -1,20 +1,28 @@
+"use client";
 import { useDecryptMessage } from "@/hooks/useUtils/useDecryptMessage";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
 
 type PropTypes = {
-    cipherText: string;
-}
+  cipherText: string;
+  chat: ChatWithUnreadMessages;
+};
 
-export const DisplayDecryptedMessage = ({cipherText}:PropTypes) => {
+export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
 
-    const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
-    const selectedChatDetails = useAppSelector(selectSelectedChatDetails) as ChatWithUnreadMessages;
-    const {decryptedMessage}=useDecryptMessage({cipherText,loggedInUserId,selectedChatDetails})
+  console.log(
+    "logging from DisplayDecryptedMessage component",
+    loggedInUserId,
+    chat._id
+  );
 
-  return (
-    <span>{decryptedMessage}</span>
-  )
-}
+  const { decryptedMessage } = useDecryptMessage({
+    cipherText,
+    loggedInUserId,
+    selectedChatDetails: chat,
+  });
+
+  return <span>{decryptedMessage}</span>;
+};

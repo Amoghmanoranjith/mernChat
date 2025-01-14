@@ -11,13 +11,15 @@ import { HamburgerIcon } from "../ui/icons/HamburgerIcon";
 import { FriendRequestButton } from "./FriendRequestButton";
 import { NavMenu } from "./NavMenu";
 import { ToggleThemeButton } from "./ToggleThemeButton";
+import { User } from "@/interfaces/auth.interface";
+import { DEFAULT_AVATAR } from "@/constants";
 
 export const Navbar = () => {
   const { data: friendRequests } = useGetUserFriendRequestsQuery();
   const isNavMenuOpen = useAppSelector(selectNavMenu);
   const toggleNavMenu = useToggleNavMenu();
   const { toggleChatBar } = useToggleChatBar();
-  const loggedInUser = useAppSelector(selectLoggedInUser);
+  const loggedInUser = useAppSelector(selectLoggedInUser) as User;
 
   return (
     <nav className="flex items-center h-14 justify-around shadow bg-background text-text select-none">
@@ -43,7 +45,7 @@ export const Navbar = () => {
         <div className="relative shrink-0">
           <Image
             onClick={toggleNavMenu}
-            src={loggedInUser?.avatar!}
+            src={loggedInUser?.avatar || DEFAULT_AVATAR}
             width={60}
             height={60}
             alt={`${loggedInUser?.username} avatar`}

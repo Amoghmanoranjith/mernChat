@@ -43,21 +43,51 @@ const base64ToArrayBuffer = (base64: any) => {
   return bytes.buffer;
 };
 
-// Convert Uint8Array to Base64
+// Function to convert a Uint8Array (byte array) to a Base64-encoded string
 const uint8ArrayToBase64 = (array: any) => {
-  return btoa(String.fromCharCode.apply(null, array));
+  
+  // `String.fromCharCode(...array)` is used to convert each byte in the Uint8Array to its corresponding character.
+  // The spread operator `...` unpacks the individual byte values of the array and passes them as individual arguments to `String.fromCharCode`.
+  // `String.fromCharCode` converts each of these byte values (in the range 0-255) into a corresponding character in the string.
+  // Example: If the byte array is [72, 101, 108, 108, 111], it converts to the string "Hello".
+  const str = String.fromCharCode(...array);
+  
+  // `btoa` is used to encode the string into Base64 format.
+  // Base64 encoding takes binary data (in the form of a string) and converts it into an ASCII string representation 
+  // that uses only readable characters (A-Z, a-z, 0-9, +, /, and = for padding).
+  // This encoded string can be safely stored or transmitted over systems that only support text-based data.
+  // For example: "Hello" becomes "SGVsbG8=" after Base64 encoding.
+  return btoa(str);
 };
 
-// Convert Base64 to Uint8Array
+
+// Function to convert a Base64-encoded string to a Uint8Array (byte array)
 const base64ToUint8Array = (base64: string) => {
+  // Step 1: Decode the Base64 string back into a binary string
+  // `atob` takes a Base64-encoded string and decodes it into a binary string.
+  // Each character in the binary string represents a single byte (8 bits) of the original binary data.
   const binaryString = atob(base64);
+
+  // Step 2: Get the length of the binary string
+  // The length of the binary string corresponds to the number of bytes in the original data.
   const len = binaryString.length;
+
+  // Step 3: Create a Uint8Array with the same length as the binary string
+  // A Uint8Array is used to store the byte values of the binary data. Each element in the array represents one byte.
   const bytes = new Uint8Array(len);
+
+  // Step 4: Loop through each character in the binary string
   for (let i = 0; i < len; i++) {
+    // `binaryString.charCodeAt(i)` gets the Unicode value (0–255) of the character at index `i`.
+    // Since the binary string was decoded from Base64, each character corresponds to one byte of data.
     bytes[i] = binaryString.charCodeAt(i);
   }
+
+  // Step 5: Return the Uint8Array
+  // The Uint8Array now contains the byte representation of the original data encoded in the Base64 string.
   return bytes;
 };
+
 
 const formatRelativeTime = (date: Date) => {
   const now = new Date();
