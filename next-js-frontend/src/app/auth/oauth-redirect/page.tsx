@@ -1,5 +1,5 @@
 'use client';
-import { useGenerateKeyPair } from '@/hooks/useAuth/useGenerateKeyPair';
+import { useGenerateKeyPair } from '@/hooks/useAuth/useGenerateKeyPairAndReturnThemInJwkFormat';
 import { useVerifyOAuthToken } from '@/hooks/useAuth/useVerifyOAuthToken';
 import { User } from '@/interfaces/auth.interface';
 import { selectLoggedInUser, updateLoggedInUser } from '@/services/redux/slices/authSlice';

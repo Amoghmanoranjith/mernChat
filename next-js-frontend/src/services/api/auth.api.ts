@@ -60,7 +60,7 @@ export const authApi = createApi({
         sendPrivateKeyRecoveryEmail:builder.query<void,void>({
             query:()=>"/send-private-key-recovery-email"
         }),
-        updateUserKeys:builder.mutation<Pick<User , 'publicKey'>,Pick<User , 'publicKey'> & {privateKey:string}>({
+        updateUserKeysInDatabase:builder.mutation<{publicKey:string},{publicKey:string,privateKey:string}>({
             query:({publicKey,privateKey})=>({
                 url:"/user/keys",
                 method:"PATCH",
@@ -102,7 +102,7 @@ export const {
     useLazySendOtpQuery,
     useLazyLogoutQuery,
     useCheckAuthQuery,
-    useUpdateUserKeysMutation,
+    useUpdateUserKeysInDatabaseMutation,
     useVerifyPasswordMutation,
     useVerifyPrivateKeyTokenMutation,
     useUpdateFcmTokenMutation,
