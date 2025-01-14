@@ -8,6 +8,10 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const path = request.nextUrl.pathname;
 
+  if(!token && ['/auth/login','auth/signup'].includes(path)){
+    return NextResponse.next();
+  } 
+
   if(!token && ['/'].includes(path)){
     // if user is not logged in and trying to access home page, redirect to login page
     return NextResponse.redirect(new URL('/auth/login', request.url))
@@ -47,5 +51,5 @@ export async function middleware(request: NextRequest) {
  
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/','/auth/login','/auth/signup']
+  matcher: ['/']
 }

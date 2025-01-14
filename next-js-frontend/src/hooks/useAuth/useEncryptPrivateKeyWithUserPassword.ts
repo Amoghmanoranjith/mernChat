@@ -2,12 +2,11 @@ import { encryptPrivateKey } from "@/utils/encryption";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
-    password:string | null;
+    password:string | null | undefined;
     privateKeyJWK:JsonWebKey | null;
-    publicKeyJWK:JsonWebKey | null;
 }
 
-export const useEncryptPrivateKeyWithUserPassword = ({password,privateKeyJWK,publicKeyJWK}:PropTypes) => {
+export const useEncryptPrivateKeyWithUserPassword = ({password,privateKeyJWK}:PropTypes) => {
 
     const [encryptedPrivateKey,setEncryptedPrivateKey] = useState<string | null>(null);
 
@@ -17,10 +16,10 @@ export const useEncryptPrivateKeyWithUserPassword = ({password,privateKeyJWK,pub
     }
 
     useEffect(()=>{
-        if(password && privateKeyJWK && publicKeyJWK){
+        if(password && privateKeyJWK){
             handleEncryptPrivateKey(password,privateKeyJWK);
         }
-    },[password,privateKeyJWK,publicKeyJWK])
+    },[password,privateKeyJWK])
 
     return {encryptedPrivateKey};
 };

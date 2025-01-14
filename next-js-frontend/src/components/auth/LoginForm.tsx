@@ -1,17 +1,19 @@
 "use client";
+import { useUpdateLoggedInUserState } from "@/hooks/useAuth/useUpdateLoggedInUserState";
+import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from "@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated";
 import type { loginSchemaType } from "@/schemas/auth.schema";
 import { loginSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useLogin } from "../../hooks/useAuth/useLogin";
-import { useUpdateLogin } from "../../hooks/useAuth/useUpdateLogin";
 import { FormInput } from "../ui/FormInput";
 import { SubmitButton } from "../ui/SubmitButton";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const LoginForm = () => {
   const { login, data, isLoading, isSuccess } = useLogin();
-  useUpdateLogin(isSuccess, data);
+  useUpdateLoggedInUserState({isSuccess,user:data});
+  useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
 
   const {
     register,

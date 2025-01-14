@@ -6,10 +6,11 @@ const page = () => {
     <>
       <div className="flex flex-col gap-y-8">
         <h3 className="text-4xl font-bold text-fluid-h4">Signup</h3>
-        <SocialLogin googleLink={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`} />
+        <SocialLogin
+          googleLink={`${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`}
+        />
       </div>
-
-      {/* <SignupForm /> */}
+      <SignupForm />
     </>
   );
 };

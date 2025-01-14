@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { InitializeIndexedDbWrapper } from "@/components/auth/InitializeIndexedDbWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,9 @@ export default function RootLayout({
         <StoreProvider>
           <SocketProvider>
               <Toaster/>
-              {children}
+              <InitializeIndexedDbWrapper>
+                {children}
+              </InitializeIndexedDbWrapper>
           </SocketProvider>
         </StoreProvider>
       </body>

@@ -1,7 +1,7 @@
 'use client';
 import { useVerifyOtpMutation } from "@/services/api/auth.api"
 import { useToast } from "../useUI/useToast"
-import { useUpdateLogin } from "./useUpdateLogin"
+import { useUpdateLogin } from "./useUpdateLoggedInUserState"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 

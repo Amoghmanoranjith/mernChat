@@ -13,7 +13,7 @@ const authSlice = createSlice({
         updateLoggedInUser:(state,action:PayloadAction<User | null>)=>{
             state.loggedInUser=action.payload
         },
-        updateLoggedInUserPublicKey:(state,action:PayloadAction<Pick<User,'publicKey'>>)=>{
+        updateLoggedInUserPublicKey:(state,action:PayloadAction<Required<Pick<User,'publicKey'>>>)=>{
             if(state.loggedInUser)
                 state.loggedInUser.publicKey = action.payload.publicKey
         },

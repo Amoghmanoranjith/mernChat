@@ -29,9 +29,12 @@ export const sendToken = (res:Response,payload:IUser['_id'],statusCode:number,da
 
         if(oAuthNewUser){
             const combinedSecret = googleId+env.PRIVATE_KEY_RECOVERY_SECRET
+            // as the user has signed up using OAuth, so they have no password
+            // so we will combine their googleId with a secret to from a "combinedSecret"
+            // and this "combinedSecret" will be used to encrypt their private key instead of using their password as they have no password
+            // and in this way we can also store their private key in an encryptedFormat in the database
             responsePayload['combinedSecret'] = combinedSecret
         }
-        console.log("responsePayload",responsePayload);
         return res.status(statusCode).json(responsePayload)
     }
         

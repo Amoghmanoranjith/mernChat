@@ -1,19 +1,25 @@
+'use client';
+import { useConvertPrivateAndPublicKeyInJwkFormat } from "@/hooks/useAuth/useConvertPrivateAndPublicKeyInJwkFormat";
 import { useEncryptPrivateKeyWithUserPassword } from "@/hooks/useAuth/useEncryptPrivateKeyWithUserPassword";
-import { useGenerateKeyPairAndReturnThemInJwkFormat } from "@/hooks/useAuth/useGenerateKeyPairAndReturnThemInJwkFormat";
+import { useGenerateKeyPair } from "@/hooks/useAuth/useGenerateKeyPair";
 import { useStoreUserKeysInDatabase } from "@/hooks/useAuth/useStoreUserKeysInDatabase";
+import { useStoreUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useStoreUserPrivateKeyInIndexedDB";
+import { useUpdateLoggedInUserPublicKeyInState } from "@/hooks/useAuth/useUpdateLoggedInUserPublicKeyInState";
+import { useUpdateLoggedInUserState } from "@/hooks/useAuth/useUpdateLoggedInUserState";
+import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from "@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated";
 import type { signupSchemaType } from "@/schemas/auth.schema";
 import { signupSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSignup } from "../../hooks/useAuth/useSignup";
-import { useUpdateLogin } from "../../hooks/useAuth/useUpdateLogin";
 import { FormInput } from "../ui/FormInput";
 import { SubmitButton } from "../ui/SubmitButton";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const SignupForm = () => {
   const { signup, isSuccess, data:user, isLoading } = useSignup();
-  useUpdateLogin(isSuccess, user);
+  useUpdateLoggedInUserState({user,isSuccess});
+  useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
 
   const {
     register,
@@ -24,10 +30,12 @@ export const SignupForm = () => {
 
   const password = watch("password");
 
-  const {privateKeyJWK,publicKeyJWK} = useGenerateKeyPairAndReturnThemInJwkFormat({user});
-  const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK,publicKeyJWK});
+  const {privateKey,publicKey} = useGenerateKeyPair({user});
+  const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
+  const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
   const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-
+  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:user?._id});
+  useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
 
   const onSubmit: SubmitHandler<signupSchemaType> = (data) => {
     const { confirmPassword, ...credentials } = data;

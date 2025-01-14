@@ -4,7 +4,7 @@ export interface User {
   username: string;
   avatar: string;
   email: string;
-  publicKey: string;
+  publicKey?: JsonWebKey;
   createdAt: Date;
   updatedAt: Date;
   verified?: boolean;
