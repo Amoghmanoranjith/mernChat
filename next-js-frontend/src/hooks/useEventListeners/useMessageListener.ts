@@ -1,24 +1,24 @@
-import { Events } from "../../enums/events"
-import type { IMessage } from "../../interfaces/messages"
-import { messageApi } from "../../services/api/messageApi"
-import { useAppDispatch } from "../../services/redux/store/hooks"
-import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { Event } from "@/interfaces/events.interface";
+import { Message } from "@/interfaces/message.interface";
+import { messageApi } from "@/services/api/message.api";
+import { useAppDispatch } from "@/services/redux/store/hooks";
+import { useSocketEvent } from "../useSocket/useSocketEvent";
 
-export const useMessageListener = () => {    
+export const useMessageListener = () => {
+  const dispatch = useAppDispatch();
 
-  
-    const dispatch = useAppDispatch()
-
-    useSocketEvent(Events.MESSAGE,async(newMessage:IMessage)=>{
-
-          dispatch(
-            messageApi.util.updateQueryData('getMessagesByChatId',{_id:newMessage.chat,page:1},(draft)=>{
-              draft.messages.push(newMessage)
-              if(!draft.totalPages){
-                draft.totalPages =1
-              }
-            })
-          )
-
-      })
-}
+  useSocketEvent(Event.MESSAGE, async (newMessage: Message) => {
+    dispatch(
+      messageApi.util.updateQueryData(
+        "getMessagesByChatId",
+        { chatId: newMessage.chat, page: 1 },
+        (draft) => {
+          draft.messages.push(newMessage);
+          if (!draft.totalPages) {
+            draft.totalPages = 1;
+          }
+        }
+      )
+    );
+  });
+};

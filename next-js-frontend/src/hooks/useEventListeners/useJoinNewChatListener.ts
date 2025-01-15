@@ -1,12 +1,12 @@
-import { getSocket } from "../../context/socket"
-import { Events } from "../../enums/events"
+import { getSocket } from "@/context/socket.context"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { Event } from "@/interfaces/events.interface"
 
 export const useJoinNewChatListener = () => {
 
     const socket = getSocket()
 
-    useSocketEvent(Events.JOIN_NEW_CHAT,(chatId:string)=>{
-        socket?.emit(Events.JOIN_NEW_CHAT,chatId)
+    useSocketEvent(Event.JOIN_NEW_CHAT,(chatId:string)=>{
+        socket?.emit(Event.JOIN_NEW_CHAT,chatId)
     })
 }

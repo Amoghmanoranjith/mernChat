@@ -1,26 +1,21 @@
-import { Events } from "../../enums/events"
-import { IEditMessageEventReceiveData } from "../../interfaces/messages"
-import { messageApi } from "../../services/api/messageApi"
-import { useAppDispatch } from "../../services/redux/store/hooks"
+import { Event } from "@/interfaces/events.interface"
+import { EditMessageEventReceiveData } from "@/interfaces/message.interface"
+import { messageApi } from "@/services/api/message.api"
+import { useAppDispatch } from "@/services/redux/store/hooks"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
 
 export const useMessageEditListener = () => {
 
     const dispatch = useAppDispatch()
 
-    useSocketEvent(Events.MESSAGE_EDIT,({_id,chat,content,isEdited}:IEditMessageEventReceiveData)=>{
-
+    useSocketEvent(Event.MESSAGE_EDIT,({_id,chat,content,isEdited}:EditMessageEventReceiveData)=>{
         dispatch(
-            messageApi.util.updateQueryData("getMessagesByChatId",{_id:chat,page:1},(draft)=>{
-
+            messageApi.util.updateQueryData("getMessagesByChatId",{chatId:chat,page:1},(draft)=>{
                 const msg = draft.messages.find(draft=>draft._id===_id)
-
                 if(msg){
-
                     msg.isEdited=isEdited
                     msg.content=content
                 }
-
             })
         )
     })

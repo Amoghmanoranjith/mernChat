@@ -1,18 +1,21 @@
-import { Events } from "../../enums/events"
-import { IFriendRequest } from "../../interfaces/request"
-import { requestApi } from "../../services/api/requestApi"
-import { useAppDispatch } from "../../services/redux/store/hooks"
-import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { Event } from "@/interfaces/events.interface";
+import type { FriendRequest } from "@/interfaces/request.interface";
+import { requestApi } from "@/services/api/request.api";
+import { useAppDispatch } from "@/services/redux/store/hooks";
+import { useSocketEvent } from "../useSocket/useSocketEvent";
 
 export const useFriendRequestListener = () => {
+  const dispatch = useAppDispatch();
 
-    const dispatch = useAppDispatch()
-
-    useSocketEvent(Events.NEW_FRIEND_REQUEST,(newRequest:IFriendRequest)=>{
-        dispatch(
-          requestApi.util.updateQueryData("getUserFriendRequests",undefined,(draft)=>{
-            draft.push(newRequest)
-          })
-        )
-      })
-}
+  useSocketEvent(Event.NEW_FRIEND_REQUEST, (newRequest: FriendRequest) => {
+    dispatch(
+      requestApi.util.updateQueryData(
+        "getUserFriendRequests",
+        undefined,
+        (draft) => {
+          draft.push(newRequest);
+        }
+      )
+    );
+  });
+};

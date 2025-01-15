@@ -1,8 +1,8 @@
-import { Events } from "../../enums/events"
-import { IMemberRemovedEventReceiveData } from "../../interfaces/chat"
-import { chatApi } from "../../services/api/chatApi"
-import { removeSelectedChatMembers, selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
-import { useAppDispatch, useAppSelector } from "../../services/redux/store/hooks"
+import { MemberRemovedEventReceiveData } from "@/interfaces/chat.interface"
+import { Event } from "@/interfaces/events.interface"
+import { chatApi } from "@/services/api/chat.api"
+import { removeSelectedChatMembers, selectSelectedChatDetails } from "@/services/redux/slices/chatSlice"
+import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
 
 export const useMemberRemovedListener = () => {
@@ -11,7 +11,7 @@ export const useMemberRemovedListener = () => {
     const dispatch = useAppDispatch()
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
 
-    useSocketEvent(Events.MEMBER_REMOVED,({chatId,membersId}:IMemberRemovedEventReceiveData)=>{
+    useSocketEvent(Event.MEMBER_REMOVED,({chatId,membersId}:MemberRemovedEventReceiveData)=>{
         
         const isMemberRemovedFromSelectedChatId = selectedChatDetails?._id === chatId
 

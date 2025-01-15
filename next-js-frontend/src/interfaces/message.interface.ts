@@ -90,11 +90,11 @@ export interface VoteInEventReceiveData {
     optionIndex:number
 }
 
-export interface IVoteOutEventReceiveData extends Omit<VoteInEventReceiveData,'user'> {
+export interface VoteOutEventReceiveData extends Omit<VoteInEventReceiveData,'user'> {
     user:Pick<ChatMember , '_id'>
 }
 
-export interface INewReactionEventReceiveData {
+export interface NewReactionEventReceiveData {
     chatId:string
     messageId:string
     user:Pick<ChatMember, '_id' | 'username' | 'avatar'>

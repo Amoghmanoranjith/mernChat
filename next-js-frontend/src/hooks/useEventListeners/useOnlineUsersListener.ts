@@ -1,14 +1,14 @@
-import { Events } from "../../enums/events";
-import { chatApi } from "../../services/api/chatApi";
-import { friendApi } from "../../services/api/friendApi";
-import { useAppDispatch } from "../../services/redux/store/hooks";
+import { Event } from "@/interfaces/events.interface";
+import { chatApi } from "@/services/api/chat.api";
+import { friendApi } from "@/services/api/friend.api";
+import { useAppDispatch } from "@/services/redux/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
 export const useOnlineUsersListener = () => {
 
   const dispatch = useAppDispatch();
 
-  useSocketEvent(Events.ONLINE_USERS, (onlineUserIds:Array<string>) => {
+  useSocketEvent(Event.ONLINE_USERS, (onlineUserIds:Array<string>) => {
     
     dispatch(
       friendApi.util.updateQueryData('getFriends', undefined, (draft) => {
