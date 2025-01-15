@@ -1,7 +1,6 @@
 import type { Message, UnreadMessage } from "./message.interface"
 
 export interface ChatIntitalState {
-    selectedChatId:string | null
     selectedChatDetails:ChatWithUnreadMessages | null
 }
 

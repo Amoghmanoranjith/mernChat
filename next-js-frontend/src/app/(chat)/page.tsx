@@ -36,7 +36,7 @@ export default async function ChatPage() {
     >
       <div className="h-full w-full flex p-4 max-md:p-2 gap-x-6 bg-background select-none">
         <ChatListWrapper>
-          <ChatListWithSearchInputWrapper />
+          <ChatListWithSearchInputWrapper/>
         </ChatListWrapper>
 
         <ChatAreaWrapper>

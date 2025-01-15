@@ -20,8 +20,8 @@ export const ChatHeaderSecondaryInfo = ({
   loggedInUserId,
 }: PropTypes) => {
 
-  const isPrivateChatActive = !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat.isActive;
-  const isPrivateChatInActive = !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat.isActive;
+  const isPrivateChatActive = !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat?.isActive;
+  const isPrivateChatInActive = !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat?.isActive;
   const isGroupChat = selectedChatDetails.isGroupChat;
   const totalMembersInGroupChat = selectedChatDetails.members.length;
   const activeMemberCountInGroupChat = getOtherMembersOfGroupChatThatAreActive(selectedChatDetails,loggedInUserId);
@@ -30,7 +30,7 @@ export const ChatHeaderSecondaryInfo = ({
     <>
       {isPrivateChatInActive && (
         <p className="text-secondary-darker max-sm:text-sm">
-          last seen {formatRelativeTime(otherMemberOfPrivateChat.lastSeen)}
+          last seen {formatRelativeTime(otherMemberOfPrivateChat?.lastSeen)}
         </p>
       )} 
       

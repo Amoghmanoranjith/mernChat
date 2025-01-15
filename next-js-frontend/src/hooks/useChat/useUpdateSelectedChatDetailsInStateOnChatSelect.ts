@@ -1,6 +1,6 @@
 import { useGetChatsQuery } from "@/services/api/chat.api";
 import {
-  selectSelectedChatId,
+  selectSelectedChatDetails,
   updateSelectedChatDetails,
 } from "@/services/redux/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export const useUpdateSelectedChatDetailsInStateOnChatSelect = () => {
   const dispatch = useAppDispatch();
-  const selectedChatId = useAppSelector(selectSelectedChatId);
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
   const { data: chats } = useGetChatsQuery();
   useEffect(() => {
     if (selectedChatId && chats?.length) {

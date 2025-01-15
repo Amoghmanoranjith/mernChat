@@ -163,13 +163,13 @@ const getChatName = (
   loggedInUserId: User["_id"] | undefined | null
 ) => {
   let chatName = "N/A";
-  if(selectedChatDetails?.isGroupChat){
+  if(selectedChatDetails && selectedChatDetails?.isGroupChat){
     chatName = selectedChatDetails.name as string;
   }
   else{
     chatName = getOtherMemberOfPrivateChat(selectedChatDetails as ChatWithUnreadMessages, loggedInUserId as string)?.username as string;
   }
-  return chatName.length > 16 ? chatName.substring(0, 16) + "..." : chatName;
+  return chatName?.length > 16 ? chatName?.substring(0, 16) + "..." : chatName;
 };
 
 const getChatAvatar = (

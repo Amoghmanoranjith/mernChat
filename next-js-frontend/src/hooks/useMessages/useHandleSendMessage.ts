@@ -18,7 +18,7 @@ export const useHandleSendMessage = ({
     e.preventDefault();
     setMessageVal("");
     if (messageVal.trim().length) {
-      sendMessage(messageVal, undefined);
+      sendMessage();
       setEmojiForm(false);
     }
   };

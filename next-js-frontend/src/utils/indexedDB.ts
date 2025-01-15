@@ -138,10 +138,8 @@ const getUserPrivateKeyFromIndexedDB = async ({userId}:{userId: string}): Promis
 };
 
 // Function to store a shared cryptographic key in IndexedDB
-const storeSharedKeyInIndexedDB = async ({userId1,userId2,sharedKey}:{userId1: string, userId2: string, sharedKey: CryptoKey}) => {
+const storeSharedKeyInIndexedDB = async ({userId1,userId2,sharedKeyJwk}:{userId1: string, userId2: string, sharedKeyJwk: JsonWebKey}) => {
 
-  // Convert the CryptoKey to JWK format before opening the transaction
-  const sharedKeyJwk = await convertCryptoKeyToJwk(sharedKey); // Converts the CryptoKey to JSON Web Key format (JWK)
 
   // Open the IndexedDB database (DB_NAME) and specify the version (VERSION)
   const request = indexedDB.open(DB_NAME, VERSION);
@@ -186,7 +184,7 @@ const storeSharedKeyInIndexedDB = async ({userId1,userId2,sharedKey}:{userId1: s
 };
 
 // Function to retrieve a stored shared cryptographic key between two users from IndexedDB
-const getStoredSharedKeyFromIndexedDB = async ({userId1,userId2}:{userId1:string,userId2:string}) => {
+const getStoredSharedKeyFromIndexedDB = async ({userId1,userId2}:{userId1:string,userId2:string}):Promise<JsonWebKey | null> => {
   // Return a promise that will resolve with the stored shared key or null if not found
   return new Promise((resolve, reject) => {
 

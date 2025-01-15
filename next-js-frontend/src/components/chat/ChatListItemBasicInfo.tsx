@@ -23,11 +23,11 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
         chat,
         loggedInUserId
       );
-      if (otherActiveMembers.length) {
+      if (otherActiveMembers?.length) {
         return (
           <div className="text-sm text-secondary-darker flex items-center gap-x-1 ml-1">
             <ActiveDot />
-            <p>{otherActiveMembers.length}</p>
+            <p>{otherActiveMembers?.length}</p>
           </div>
         );
       }
@@ -46,17 +46,13 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
   );
 
   const chatName = getChatName(chat, loggedInUserId) as string;
-  const displayChatName =
-    chatName.length > 16 ? chatName.substring(0, 16) + "..." : chatName;
 
   return (
     <>
       <div className="flex items-center gap-x-1">
-        <p className="font-medium break-words">{displayChatName}</p>
+        <p className="font-medium break-words">{chatName}</p>
         <span>
-          {!chat.isGroupChat &&
-            getOtherMemberOfPrivateChat(chat, loggedInUserId)
-              .verificationBadge && <VerificationBadgeIcon />}
+          {!chat.isGroupChat && getOtherMemberOfPrivateChat(chat, loggedInUserId)?.verificationBadge && <VerificationBadgeIcon/>}
         </span>
         <div>{renderOnlineStatus()}</div>
       </div>

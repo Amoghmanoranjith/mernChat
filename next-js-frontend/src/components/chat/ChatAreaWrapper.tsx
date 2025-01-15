@@ -4,7 +4,6 @@ import { useMediaQuery } from "@/hooks/useUtils/useMediaQuery";
 import { useSwipe } from "@/hooks/useUtils/useSwipe";
 import {
   updateSelectedChatDetails,
-  updateSelectedChatId,
 } from "@/services/redux/slices/chatSlice";
 import {
   selectChatBar,
@@ -37,7 +36,6 @@ export const ChatAreaWrapper = ({ children }: PropTypes) => {
     if (chatDetailsBar) {
       dispatch(setChatDetailsBar(false));
     } else if (is1024) {
-      dispatch(updateSelectedChatId(null));
       dispatch(updateSelectedChatDetails(null));
       dispatch(setChatBar(true));
     }

@@ -28,7 +28,7 @@ const generateKeyPair = async () => {
   return keyPair;
 }
 // message encryption function
-const encryptMessage = async (sharedKey: CryptoKey, message: string): Promise<string> => {
+const encryptMessage = async ({sharedKey,message}:{sharedKey: CryptoKey, message: string}): Promise<string> => {
   
   // Generate a random initialization vector (IV) for each encryption. AES-GCM requires a unique IV for every encryption operation.
   // This ensures the same message encrypted multiple times will produce different ciphertexts.
@@ -98,7 +98,7 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
 };
 
 // Function to derive a shared secret key using ECDH and the provided private and public keys
-const deriveSharedSecretKey = async(privateKey: CryptoKey, publicKey: CryptoKey) => {
+const deriveSharedSecretKey = async({privateKey,publicKey}:{privateKey: CryptoKey, publicKey: CryptoKey}) => {
   const sharedSecretKey = await crypto.deriveKey(
     {
       name: "ECDH",          // Key exchange algorithm: Elliptic Curve Diffie-Hellman (ECDH)
@@ -263,30 +263,30 @@ const decryptPrivateKey = async (password: string, combinedBufferBase64: string)
 // - jwk: The JsonWebKey object to be converted.
 // - isPrivate: A boolean indicating whether the key is private (used for key derivation) or not.
 // Returns: A promise that resolves to a CryptoKey object.
-const convertJwkToCryptoKey = async (jwk: JsonWebKey, isPrivate: boolean): Promise<CryptoKey> => {
+const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkFormat: JsonWebKey, isPrivateKey: boolean}): Promise<CryptoKey> => {
   try {
     let key; // Placeholder to store the resulting CryptoKey.
 
     // Step 1: Check the type of key (kty field in JWK) to determine the algorithm.
-    if (jwk.kty === "EC") {
+    if (KeyInJwkFormat.kty === "EC") {
       // If the key type is "EC" (Elliptic Curve), import it for use with the ECDH (Elliptic Curve Diffie-Hellman) algorithm.
       // This is typically used for key agreement or key exchange.
       key = await crypto.importKey(
         "jwk", // Input format: The key is in JWK format.
-        jwk,   // The actual JWK object to import.
+        KeyInJwkFormat,   // The actual JWK object to import.
         {
           name: "ECDH",        // The algorithm name: Elliptic Curve Diffie-Hellman.
           namedCurve: "P-384", // The curve to use: P-384 is a standard elliptic curve.
         },
         true,                  // Extractable: Indicates whether the key can be exported (true) or not (false).
-        isPrivate ? ['deriveKey'] : [] 
+        isPrivateKey ? ['deriveKey'] : [] 
         // Key usages: If it's a private key, it will be used for key derivation. Public keys will have an empty usage.
       );
-    } else if (jwk.kty === "oct") {
+    } else if (KeyInJwkFormat.kty === "oct") {
       // If the key type is "oct" (Octet sequence), assume it's a symmetric key for AES-GCM encryption.
       key = await crypto.importKey(
         "jwk", // Input format: The key is in JWK format.
-        jwk,   // The actual JWK object to import.
+        KeyInJwkFormat,   // The actual JWK object to import.
         {
           name: "AES-GCM", // The algorithm name: AES-GCM (Authenticated Encryption with Galois/Counter Mode).
         },
@@ -317,7 +317,7 @@ const convertJwkToCryptoKey = async (jwk: JsonWebKey, isPrivate: boolean): Promi
 //
 // Returns:
 // - A promise that resolves to a JsonWebKey (JWK) object.
-const convertCryptoKeyToJwk = async (cryptoKey: CryptoKey): Promise<JsonWebKey> => {
+const convertCryptoKeyToJwk = async ({cryptoKey}:{cryptoKey: CryptoKey}): Promise<JsonWebKey> => {
   // Step 1: Use the Web Crypto API's exportKey method to export the CryptoKey.
   // - The first parameter specifies the desired format ("jwk").
   // - The second parameter is the CryptoKey to export.

@@ -2,12 +2,13 @@
 import { useChatListItemClick } from "@/hooks/useChat/useChatListItemClick";
 import type { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { selectSelectedChatId } from "@/services/redux/slices/chatSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
 import Image from "next/image";
 import { getChatAvatar } from "../../utils/helpers";
 import { ChatListItemBasicInfo } from "./ChatListItemBasicInfo";
 import { ChatListItemSecondaryInfo } from "./ChatListItemSecondaryInfo";
+import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
+import { DEFAULT_AVATAR } from "@/constants";
 
 type PropTypes = {
   chat: ChatWithUnreadMessages;
@@ -16,7 +17,7 @@ type PropTypes = {
 export const ChatListItem = ({ chat }: PropTypes) => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
   const { handleChatListItemClick } = useChatListItemClick();
-  const selectedChatId = useAppSelector(selectSelectedChatId);
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
 
   return (
     <div
@@ -27,7 +28,7 @@ export const ChatListItem = ({ chat }: PropTypes) => {
     >
       <Image
         className="aspect-square rounded-full object-cover max-md:w-14"
-        src={getChatAvatar(chat, loggedInUserId) as string}
+        src={getChatAvatar(chat, loggedInUserId) as string || DEFAULT_AVATAR}
         alt="chat avatar"
         width={70}
         height={70}

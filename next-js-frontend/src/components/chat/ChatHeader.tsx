@@ -10,6 +10,7 @@ import {
 } from "../../utils/helpers";
 import { ChatHeaderBasicInfo } from "./ChatHeaderBasicInfo";
 import { ChatHeaderSecondaryInfo } from "./ChatHeaderSecondaryInfo";
+import { DEFAULT_AVATAR } from "@/constants";
 
 type PropTypes = {
   selectedChatDetails: ChatWithUnreadMessages;
@@ -38,7 +39,7 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
       <div className="flex gap-x-3">
         <Image
           className="w-14 h-14 rounded-full max-sm:w-10 max-sm:h-10"
-          src={chatAvatar}
+          src={chatAvatar || DEFAULT_AVATAR}
           alt={"chat-avatar"}
           width={56}
           height={56}

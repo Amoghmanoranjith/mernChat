@@ -3,16 +3,12 @@ import { ChatIntitalState, ChatMember, ChatWithUnreadMessages } from "../../../i
 import { RootState } from "../store/store";
 
 const initialState:ChatIntitalState =  {
-    selectedChatId:null,
     selectedChatDetails:null,
 }
 const chatSlice = createSlice({
     name:"chatSlice",
     initialState,
     reducers:{
-        updateSelectedChatId:(state,action:PayloadAction<ChatIntitalState['selectedChatId']>)=>{
-            state.selectedChatId=action.payload
-        },
         updateSelectedChatDetails:(state,action:PayloadAction<ChatWithUnreadMessages | null>)=>{
             state.selectedChatDetails=action.payload
         },
@@ -42,12 +38,10 @@ const chatSlice = createSlice({
 })
 
 // exporting selector
-export const selectSelectedChatId = (state:RootState)=>state.chatSlice.selectedChatId
 export const selectSelectedChatDetails = (state:RootState)=>state.chatSlice.selectedChatDetails
 
 // exporting actions
 export const {
-    updateSelectedChatId,
     updateSelectedChatDetails,
     updateUserTyping,
     removeUserTyping,

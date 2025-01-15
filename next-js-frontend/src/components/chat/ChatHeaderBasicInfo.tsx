@@ -22,7 +22,7 @@ export const ChatHeaderBasicInfo = ({
     <>
       <h4 className="font-medium text-4xl max-sm:text-2xl">{chatName}</h4>
       {!selectedChatDetails.isGroupChat &&
-        otherMemberOfPrivateChat.verificationBadge && (
+        otherMemberOfPrivateChat?.verificationBadge && (
           <span>
             <VerificationBadgeIcon />
           </span>
