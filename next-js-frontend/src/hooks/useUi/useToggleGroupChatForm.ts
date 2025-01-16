@@ -6,9 +6,10 @@ export const useToggleGroupChatForm = () => {
     const dispatch = useAppDispatch()
     const groupChatForm = useAppSelector(selectGroupChatForm)
 
-    return ()=>{
-        
+    const toggleGroupChatForm = ()=>{
         dispatch(setNavMenu(false))
         dispatch(setNewgroupChatForm(!groupChatForm))
     }
+
+    return {toggleGroupChatForm};
 }

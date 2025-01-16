@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useAddMember } from "../../hooks/useMember/useAddMember"
-import { IFriend } from "../../interfaces/friends"
-import { useGetFriendsQuery } from "../../services/api/friendApi"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { MemberList } from "./MemberList"
 import {motion} from 'framer-motion'
 import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm"
+import { Friend } from "@/interfaces/friends.interface"
+import { useGetFriendsQuery } from "@/services/api/friend.api"
 
 export const AddMemberForm = () => {
 
@@ -15,9 +15,9 @@ export const AddMemberForm = () => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
   const toggleAddMemberForm = useToggleAddMemberForm()
 
-  const [selectedMembers,setSelectedMembers] = useState<Array<string>>([])
+  const [selectedMembers,setSelectedMembers] = useState<string[]>([])
   const [searchVal,setSearchVal] = useState<string>('')
-  const [filteredFriends, setFilteredFriends] = useState<Array<IFriend>>([]);
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
   const {addMember} = useAddMember()
 

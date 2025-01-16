@@ -1,4 +1,4 @@
-import { useUpdateChatMutation } from "../../services/api/chatApi"
+import { useUpdateChatMutation } from "@/services/api/chat.api"
 import { useToast } from "../useUI/useToast"
 
 export const useUpdateChat = () => {

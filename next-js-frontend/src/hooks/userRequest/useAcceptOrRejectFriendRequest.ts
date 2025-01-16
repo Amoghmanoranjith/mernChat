@@ -1,4 +1,4 @@
-import { useHandleFriendRequestMutation } from "../../services/api/requestApi"
+import { useHandleFriendRequestMutation } from "@/services/api/request.api"
 import { useToast } from "../useUI/useToast"
 
 export const useAcceptOrRejectFriendRequest = () => {

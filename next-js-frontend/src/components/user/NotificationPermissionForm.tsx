@@ -1,13 +1,12 @@
 import { getToken } from "firebase/messaging"
 import { motion } from "framer-motion"
-import { env } from "../../config/envConfig"
-import { messaging } from "../../config/firebaseConfig"
 import { useUpdateFcmToken } from "../../hooks/useAuth/useUpdateFcmToken"
 import { setNotificationPermissionForm } from "../../services/redux/slices/uiSlice"
 import { useAppDispatch } from "../../services/redux/store/hooks"
 import { useEffect, useState } from "react"
 import { useUpdateNotificationsFlag } from "../../hooks/useUser/useUpdateNotificationsFlag"
 import toast from "react-hot-toast"
+import { messaging } from "@/config/firebase.config"
 
 export const NotificationPermissionForm = () => {
 
@@ -51,9 +50,9 @@ export const NotificationPermissionForm = () => {
 
             setLoading(true)
 
-            if(env && env.VITE_FIREBASE_VAPID_KEY) {
+            if(process.env.VITE_FIREBASE_VAPID_KEY) {
                 try {
-                    const fcmToken = await getToken(messaging, { vapidKey: env.VITE_FIREBASE_VAPID_KEY });
+                    const fcmToken = await getToken(messaging, { vapidKey: process.env.VITE_FIREBASE_VAPID_KEY });
                     setToken(fcmToken)
                 } 
                 catch (error) {

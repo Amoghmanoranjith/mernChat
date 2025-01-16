@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
-import { useUpdateProfileMutation } from "../../services/api/userApi"
 import { useToast } from "../../hooks/useUI/useToast"
 import { ACCEPTED_IMAGE_TYPES } from "../../constants"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { formatRelativeTime } from "../../utils/helpers"
+import { useUpdateProfileMutation } from "@/services/api/user.api"
 
 export const ProfileForm = () => {
 

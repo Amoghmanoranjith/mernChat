@@ -1,4 +1,4 @@
-import { useLazySearchUserQuery } from "../../services/api/userApi"
+import { useLazySearchUserQuery } from "@/services/api/user.api"
 import { useToast } from "../useUI/useToast"
 
 export const useSearchUser = () => {

@@ -2,11 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useUpdateChat } from "../../hooks/useChat/useUpdateChat"
-import { GroupChatSchemaType, groupChatSchema } from "../../schemas/chat"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { Avatar } from "../ui/Avatar"
 import { FormInput } from "../ui/FormInput"
+import { GroupChatSchemaType, groupChatSchema } from "@/schemas/chat.schema"
 
 export const ChatUpdateForm = () => {
 

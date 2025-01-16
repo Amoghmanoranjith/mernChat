@@ -1,4 +1,4 @@
-import { useAddMemberMutation } from "../../services/api/chatApi"
+import { useAddMemberMutation } from "@/services/api/chat.api"
 import { useToast } from "../useUI/useToast"
 
 export const useAddMember = () => {

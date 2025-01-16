@@ -1,11 +1,11 @@
+import { useGetFriendsQuery } from "@/services/api/friend.api"
 import { useEffect, useState } from "react"
 import { useSendFriendRequest } from "../../hooks/useFriend/useSendFriendRequest"
 import { useSearchUser } from "../../hooks/useSearch/useSearchUser"
-import { UserList } from "./UserList"
-import { useGetFriendsQuery } from "../../services/api/friendApi"
-import { useAppSelector } from "../../services/redux/store/hooks"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
+import { useAppSelector } from "../../services/redux/store/hooks"
 import { UserListSkeleton } from "../ui/skeleton/UserListSkeleton"
+import { UserList } from "./UserList"
 
 export const AddFriendForm = () => {
 

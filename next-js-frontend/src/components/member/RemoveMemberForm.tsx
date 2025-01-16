@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { useRemoveMember } from "../../hooks/useMember/useRemoveMember"
-import { IChatWithUnreadMessages } from "../../interfaces/chat"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { MemberList } from "./MemberList"
@@ -8,6 +7,7 @@ import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import {motion} from 'framer-motion'
 import toast from "react-hot-toast"
 import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemberForm"
+import { ChatWithUnreadMessages } from "@/interfaces/chat.interface"
 
 export const RemoveMemberForm = () => {
 
@@ -20,8 +20,8 @@ export const RemoveMemberForm = () => {
     const isMemberLength3 = selectedChatDetails && selectedChatDetails?.members.length <= 3
 
     const [searchVal,setSearchVal] = useState<string>('')
-    const [filteredMembers,setFilteredMembers] = useState<IChatWithUnreadMessages['members']>([])
-    const [selectedMembers,setSelectedMembers] = useState<Array<string>>([])
+    const [filteredMembers,setFilteredMembers] = useState<ChatWithUnreadMessages['members']>([])
+    const [selectedMembers,setSelectedMembers] = useState<string[]>([])
 
     useEffect(()=>{
         if(!searchVal.trim().length && selectedChatDetails){

@@ -1,8 +1,8 @@
 import { useEffect } from "react"
-import { useUpdateFcmTokenMutation } from "../../services/api/authApi"
 import { useToast } from "../useUI/useToast"
 import { useAppDispatch } from "../../services/redux/store/hooks"
 import { updateLoggedInUserFcmTokenStatus } from "../../services/redux/slices/authSlice"
+import { useUpdateFcmTokenMutation } from "@/services/api/auth.api"
 
 export const useUpdateFcmToken = () => {
 

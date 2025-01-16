@@ -1,4 +1,4 @@
-import { useSendFriendRequestMutation } from "../../services/api/requestApi"
+import { useSendFriendRequestMutation } from "@/services/api/request.api"
 import { useToast } from "../useUI/useToast"
 
 export const useSendFriendRequest = () => {
