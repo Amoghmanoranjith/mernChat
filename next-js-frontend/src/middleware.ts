@@ -28,11 +28,18 @@ export async function middleware(request: NextRequest) {
         'Cookie':`token=${token}`
       }
     })
-    const userData: User = await response.json();
-    if(userData.verified){
-      return NextResponse.redirect(new URL('/', request.url));
+
+    if(response.ok){
+      const userData: User = await response.json();
+      if(userData.verified){
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    }
+    else{
+      return NextResponse.redirect(new URL('/auth/login', request.url));
     }
   }
+
   if(token && ['/'].includes(path)){
     // if user is logged in and trying to access home-page
     // then verify the token and redirect to login page if token is invalid
@@ -54,7 +61,9 @@ export async function middleware(request: NextRequest) {
         return nextResponse;
       }
       else{
-        return NextResponse.redirect(new URL('/auth/verification', request.url)) 
+        const redirectResponse = NextResponse.redirect(new URL('/auth/verification', request.url));
+        redirectResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
+        return redirectResponse;
       }
     }
     else{
