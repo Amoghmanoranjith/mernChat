@@ -16,7 +16,7 @@ const page = () => {
         <AuthRedirectLink
           pageName="Login"
           text="Go back?"
-          to="/auth/login"
+          to="auth/login"
         />
     </div>
   )

@@ -1,9 +1,10 @@
+'use client';
 import { FormInput } from "../ui/FormInput"
-import { useForm, SubmitHandler } from "react-hook-form"
-import { forgotPasswordSchema, type forgotPasswordSchemaType } from "../../schemas/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForgotPassword } from "../../hooks/useAuth/useForgotPassword"
 import { SubmitButton } from "../ui/SubmitButton"
+import { forgotPasswordSchema, forgotPasswordSchemaType } from "@/schemas/auth.schema"
+import { SubmitHandler, useForm } from "react-hook-form"
 
 export const ForgotPasswordForm = () => {
 
