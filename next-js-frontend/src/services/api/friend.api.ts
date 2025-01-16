@@ -4,7 +4,7 @@ import { Friend } from "../../interfaces/friends.interface";
 export const friendApi = createApi({
     reducerPath:"friendApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:`${process.env.BASE_URL}/friend`,
+        baseUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/friend`,
         credentials:"include"
     }),
 

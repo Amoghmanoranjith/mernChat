@@ -5,7 +5,7 @@ import { setFriendRequestForm } from '../redux/slices/uiSlice'
 export const requestApi = createApi({
     reducerPath:"requestApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:`${process.env.BASE_URL}/request`,
+        baseUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/request`,
         credentials:"include"
     }),
     endpoints:(builder)=>({

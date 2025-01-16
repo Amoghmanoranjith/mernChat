@@ -9,7 +9,7 @@ import { UserList } from "./UserList"
 
 export const AddFriendForm = () => {
 
-    const [inputVal,setInputVal] = useState<string>()
+    const [inputVal,setInputVal] = useState<string>("")
     const loggedInUserId = useAppSelector(selectLoggedInUser)?._id
 
     const {data:friends} = useGetFriendsQuery()

@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from "react"
 import { useAddMember } from "../../hooks/useMember/useAddMember"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
@@ -16,7 +17,7 @@ export const AddMemberForm = () => {
   const toggleAddMemberForm = useToggleAddMemberForm()
 
   const [selectedMembers,setSelectedMembers] = useState<string[]>([])
-  const [searchVal,setSearchVal] = useState<string>('')
+  const [searchVal,setSearchVal] = useState<string>("")
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
   const {addMember} = useAddMember()
@@ -29,7 +30,7 @@ export const AddMemberForm = () => {
   }
 
   useEffect(() => {
-    if (friends) {
+    if (friends && searchVal) {
       const filtered = friends.filter(friend => friend.username.toLowerCase().includes(searchVal.toLowerCase()));
       setFilteredFriends(filtered);
     }

@@ -5,7 +5,7 @@ import { updateLoggedInUser, updateLoggedInUserNotificationStatus } from '../red
 export const userApi = createApi({
     reducerPath:"userApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:`${process.env.BASE_URL}/user`,
+        baseUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/user`,
         credentials:"include"
     }),
 
