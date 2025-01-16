@@ -22,6 +22,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
+  if(token && ['/auth/verification'].includes(path)){
+    const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
+      headers: {
+        'Cookie':`token=${token}`
+      }
+    })
+    const userData: User = await response.json();
+    if(userData.verified){
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
   if(token && ['/'].includes(path)){
     // if user is logged in and trying to access home-page
     // then verify the token and redirect to login page if token is invalid
@@ -36,9 +47,15 @@ export async function middleware(request: NextRequest) {
       // then get the user data and set it in the header
       // so that it can be used in page components ahead
       const userData: User = await response.json();
-      const nextResponse = NextResponse.next();
-      nextResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
-      return nextResponse;
+
+      if(userData.verified){
+        const nextResponse = NextResponse.next();
+        nextResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
+        return nextResponse;
+      }
+      else{
+        return NextResponse.redirect(new URL('/auth/verification', request.url)) 
+      }
     }
     else{
       // if token is invalid, redirect to login page
@@ -46,10 +63,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+
   return NextResponse.next();
 }
  
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/']
+  matcher: ['/','/auth/verification']
 }

@@ -1,8 +1,8 @@
+import { otpVerificationSchema, otpVerificationSchemaType } from "@/schemas/auth.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { otpVerificationSchema, otpVerificationSchemaType } from "../../schemas/auth"
-import { FormInput } from "../ui/FormInput"
-import { useForm, SubmitHandler } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { useVerifyOtp } from "../../hooks/useAuth/useVerifyOtp"
+import { FormInput } from "../ui/FormInput"
 
 export const OtpVerificationForm = () => {
 

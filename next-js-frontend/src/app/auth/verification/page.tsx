@@ -5,15 +5,13 @@ import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
 
 const page = () => {
+  
   const loggedInUser = useAppSelector(selectLoggedInUser);
   const { sendOtp, isLoading, isSuccess } = useSendOtp();
 
-  const handleSendOtp = () => {
-    sendOtp();
-  };
-
   return (
     <div className="flex flex-col gap-y-6">
+
       <div className="flex flex-col gap-y-4">
         <h4 className="text-4xl text-fluid-h4 font-bold">
           Verify your email address
@@ -26,19 +24,14 @@ const page = () => {
       </div>
 
       <div>
-        {isSuccess ? (
-          <OtpVerificationForm/>
-        ) : (
-          <button
-            disabled={isLoading}
-            onClick={handleSendOtp}
-            type="submit"
-            className="bg-primary px-6 py-2 rounded-sm max-sm:w-full"
-          >
-            Get OTP
+        {isSuccess ? <OtpVerificationForm/>
+         : 
+          <button disabled={isLoading} onClick={()=>sendOtp()} type="submit" className="bg-primary px-6 py-2 rounded-sm max-sm:w-full">
+          Get OTP
           </button>
-        )}
+        }
       </div>
+
     </div>
   );
 };
