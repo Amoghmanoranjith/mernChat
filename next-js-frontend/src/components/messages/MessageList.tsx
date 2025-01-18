@@ -11,8 +11,8 @@ import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
 import { useRef, useState } from "react";
 import { CircleLoading } from "../shared/CircleLoading";
-import { MessageCard } from "./MessageCard";
 import { TypingIndicator } from "./TypingIndicator";
+import { MessageListItem } from "./MessageListItem";
 
 type PropTypes = {
   messages: Message[];
@@ -64,7 +64,7 @@ export const MessageList = ({
       >
         {IsFetchingMessages && <CircleLoading />}
         {messages.map((message, index) => (
-          <MessageCard
+          <MessageListItem
             key={index}
             openContextMenuMessageId={openContextMenuMessageId}
             selectedChatDetails={selectedChatDetails}

@@ -1,16 +1,16 @@
-import { IFriendRequest } from "../../interfaces/request"
-import { FriendRequestItem } from "./FriendRequestItem"
+import { FriendRequest } from "@/interfaces/request.interface"
+import { FriendRequestItem } from "./FriendRequestItem";
 
 type PropTypes = {
-    users:Array<IFriendRequest>
-    friendRequestHandler:(requestId: IFriendRequest['_id'], action: "accept" | "reject") => void
+    users:FriendRequest[];
+    friendRequestHandler:(requestId: FriendRequest['_id'], action: "accept" | "reject") => void
 }
 export const FriendRequestList = ({users,friendRequestHandler}:PropTypes) => {
   return (
     <div className="flex flex-col gap-y-3">
         {
             users.map(user=>(
-                <FriendRequestItem user={user} friendRequestHandler={friendRequestHandler}/>
+                <FriendRequestItem key={user._id} user={user} friendRequestHandler={friendRequestHandler} />
             ))
         }
     </div>

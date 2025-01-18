@@ -28,7 +28,7 @@ type PropTypes = {
   >;
 };
 
-export const MessageCard = ({
+export const MessageListItem = ({
   message,
   openContextMenuMessageId,
   reactionMenuMessageId,

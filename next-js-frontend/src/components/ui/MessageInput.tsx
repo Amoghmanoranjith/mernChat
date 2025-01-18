@@ -69,7 +69,7 @@ export const MessageInput = ({
           toggleGif={toggleGif}
         />
       )}
-      {messageVal.trim().length && (
+      {messageVal.trim().length>0 && (
         <motion.button
           onMouseDown={(e) => e.preventDefault()}
           initial={{ x: 5, opacity: 0, position: "fixed" }}

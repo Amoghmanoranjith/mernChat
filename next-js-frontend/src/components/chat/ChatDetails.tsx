@@ -1,6 +1,6 @@
 import { IAttachment } from "../../interfaces/attachment"
 import { IChatWithUnreadMessages } from "../../interfaces/chat"
-import { AvatarList } from "../shared/AvatarList"
+import { AvatarList } from "../shared/AppBrandingProfileImages"
 import { ChevronRightIcon } from "../ui/icons/ChevronRightIcon"
 import { AddMemberSection } from "./AddMemberSection"
 import { ChatDetailsHeader } from "./ChatDetailsHeader"

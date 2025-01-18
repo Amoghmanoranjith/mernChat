@@ -1,8 +1,5 @@
 "use client";
-
-import { useGetMessages } from "@/hooks/useMessages/useGetMessages";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { useFetchInitialMessagesOnChatSelect } from "@/hooks/useMessages/useFetchInitialMessagesOnChatSelect";
 import { MessageListSkeleton } from "../ui/skeleton/MessageListSkeleton";
 import { MessageList } from "./MessageList";
 
@@ -11,13 +8,13 @@ type PropTypes = {
 };
 
 export const MessageListWrapper = ({ loggedInUserId }: PropTypes) => {
-  const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  const { data, isFetching, isLoading } = useGetMessages();
+
+  const {data,isFetching,isLoading,selectedChatDetails} = useFetchInitialMessagesOnChatSelect();
 
   if (isFetching || isLoading) {
     return <MessageListSkeleton />;
   }
-  if (data && selectedChatDetails) {
+  if(data && selectedChatDetails) {
     return (
       <MessageList
         messages={data.messages}
@@ -26,7 +23,5 @@ export const MessageListWrapper = ({ loggedInUserId }: PropTypes) => {
         loggedInUserId={loggedInUserId}
       />
     );
-  } else {
-    return null;
   }
 };

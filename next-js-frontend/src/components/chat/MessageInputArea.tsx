@@ -33,7 +33,6 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
 
   const { handleMessageSubmit } = useHandleSendMessage({
     messageVal,
-    setEmojiForm,
     setMessageVal,
   });
 

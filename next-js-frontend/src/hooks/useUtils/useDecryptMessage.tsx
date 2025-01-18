@@ -30,7 +30,7 @@ export const useDecryptMessage = ({
   );
 
   const handleSetSharedKey = async () => {
-    const key = await getSharedKey(loggedInUserId, otherMember);
+    const key = await getSharedKey({loggedInUserId,otherMember});
     if (key) {
       setSharedKey(key);
     }

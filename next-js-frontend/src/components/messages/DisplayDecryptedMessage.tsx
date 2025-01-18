@@ -12,17 +12,11 @@ type PropTypes = {
 export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
 
-  console.log(
-    "logging from DisplayDecryptedMessage component",
-    loggedInUserId,
-    chat._id
-  );
-
   const { decryptedMessage } = useDecryptMessage({
     cipherText,
     loggedInUserId,
     selectedChatDetails: chat,
   });
 
-  return <span>{decryptedMessage}</span>;
+  return <span>{decryptedMessage.length > 16 ? decryptedMessage.substring(0,20)+"...":decryptedMessage}</span>;
 };

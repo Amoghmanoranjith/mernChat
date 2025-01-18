@@ -14,13 +14,15 @@ export const TenorGifForm = () => {
     sendMessage(undefined, image.url);
   };
 
+  const tenorApiKey = process.env.NEXT_PUBLIC_TENOR_API_KEY;
+
   return (
     <div className="w-[35rem] h-[35rem] max-xl:w-[30rem] max-sm:w-[100%] max-sm:h-[30rem]">
-      {process.env.TENOR_API_KEY && (
+      {tenorApiKey && (
         <GifPicker
           onGifClick={handleGifClick}
           theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
-          tenorApiKey={process.env.TENOR_API_KEY}
+          tenorApiKey={tenorApiKey}
           width={"100%"}
           height={"100%"}
           country="IN"

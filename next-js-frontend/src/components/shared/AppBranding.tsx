@@ -1,7 +1,6 @@
 import { chatAnimation } from "@/assets";
-import { AVATARS } from "@/constants";
 import { LottieAnimation } from "../ui/LottieAnimation";
-import { AvatarList } from "./AvatarList";
+import { AppBrandingProfileImages } from "./AppBrandingProfileImages";
 
 export const AppBranding = () => {
   return (
@@ -22,8 +21,7 @@ export const AppBranding = () => {
         Join our vibrant community of more than 1lakh+ people and build
         connections that last forever
       </p>
-
-      <AvatarList avatars={AVATARS} />
+      <AppBrandingProfileImages/>
     </div>
   );
 };

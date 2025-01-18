@@ -1,6 +1,5 @@
 "use client";
 
-import { useFetchInitialMessagesOnChatSelect } from "@/hooks/useMessages/useFetchInitialMessagesOnChatSelect";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
 import { User } from "@/interfaces/auth.interface";
@@ -25,8 +24,6 @@ export const ChatWrapper = ({
 }: PropTypes) => {
 
   usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});
-  useFetchInitialMessagesOnChatSelect();
-
   useAttachEventListeners();
 
 
