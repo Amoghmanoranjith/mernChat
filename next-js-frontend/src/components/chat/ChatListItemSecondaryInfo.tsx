@@ -48,9 +48,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
           // we can our utility function to get the appropriate message
           return (
             <span className="text-sm text-secondary-darker">
-              {getAppropriateLastLatestMessageForPrivateChats(
-                chat.latestMessage
-              )}
+              {getAppropriateLastLatestMessageForPrivateChats(chat.latestMessage)}
             </span>
           );
         }
@@ -78,7 +76,6 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         } else {
           // but if the unread message is not a text message
           // then we can use our utility function to get the appropriate message
-          console.log('triggered babay!!!');
           return (
             <span className="text-sm text-secondary-darker">
               {getAppropriateUnreadMessageForPrivateChats(chat.unreadMessages)}
@@ -91,7 +88,9 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
 
   return (
     <>
-      {renderHelper()}
+      <div className=" w-full h-full">
+        {renderHelper()}
+      </div>
       {chat.unreadMessages?.count > 0 && (
         <p className="bg-primary flex items-center justify-center text-white rounded-full h-5 w-5 p-2">
           {chat.unreadMessages?.count}

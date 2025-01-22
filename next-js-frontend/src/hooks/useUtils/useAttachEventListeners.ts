@@ -6,7 +6,7 @@ import { useJoinNewChatListener } from "../useEventListeners/useJoinNewChatListe
 import { useMemberRemovedListener } from "../useEventListeners/useMemberRemovedListener";
 import { useMessageDeleteListener } from "../useEventListeners/useMessageDeleteListener";
 import { useMessageEditListener } from "../useEventListeners/useMessageEditListener";
-import { useMessageListener } from "../useEventListeners/useMessageListener";
+import { useMessageListener } from "../useEventListeners/useUpdateUnreadMessagesAsSeenOnChatSelect";
 import { useMessageSeenListener } from "../useEventListeners/useMessageSeenListener";
 import { useNewGroupListener } from "../useEventListeners/useNewGroupListener";
 import { useNewMemberAddedListener } from "../useEventListeners/useNewMemberAddedListener";

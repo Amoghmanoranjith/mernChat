@@ -35,11 +35,11 @@ export const ChatListItem = ({ chat }: PropTypes) => {
       />
 
       <div className="w-full flex flex-col gap-y-1">
-        <div className="flex items-center gap-x-2 justify-between w-full">
+        <div className="flex items-center gap-x-2 justify-between w-full shrink-0">
           <ChatListItemBasicInfo chat={chat} />
         </div>
-        <div className="flex justify-between items-center">
-          <ChatListItemSecondaryInfo chat={chat} />
+        <div className="flex justify-between items-center shrink-0">
+          <ChatListItemSecondaryInfo key={chat._id} chat={chat} />
         </div>
       </div>
     </div>
