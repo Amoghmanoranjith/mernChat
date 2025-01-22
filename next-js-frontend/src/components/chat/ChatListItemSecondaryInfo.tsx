@@ -13,8 +13,9 @@ type PropTypes = {
 };
 
 export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
+  console.log(chat.userTyping.length);
   const renderHelper = () => {
-    if (chat.userTyping.length) {
+    if (chat.userTyping.length>0) {
       // if any user is typing
       // then show typing indicator animation
       return (

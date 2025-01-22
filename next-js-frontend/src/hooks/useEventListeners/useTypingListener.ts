@@ -4,16 +4,24 @@ import { chatApi } from "@/services/api/chat.api"
 import { removeUserTyping, selectSelectedChatDetails, updateUserTyping } from "@/services/redux/slices/chatSlice"
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { useEffect, useRef } from "react"
 
 
 export const useTypingListener = () => {
-
+  
     const dispatch = useAppDispatch()
 
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
+    const selectedChatDetailsRef = useRef(selectedChatDetails);
 
+    useEffect(() => {
+      selectedChatDetailsRef.current = selectedChatDetails;
+    }, [selectedChatDetails]);
+    
     useSocketEvent(Event.USER_TYPING,({chatId,user}:UserTypingEventReceiveData)=>{
-        const isTypinginOpennedChat = chatId===selectedChatDetails?._id
+      
+        const isTypinginOpennedChat = chatId === selectedChatDetailsRef.current?._id;
+
         if(isTypinginOpennedChat){
             const existInTypingArray = selectedChatDetails?.userTyping.some(({_id})=>_id===user._id)
             if(!existInTypingArray){

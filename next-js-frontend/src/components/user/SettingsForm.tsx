@@ -13,7 +13,7 @@ export const SettingsForm = () => {
 
     const loggedInUser = useAppSelector(selectLoggedInUser)
 
-    const [notificationsEnabled,setNotificationsEnabled] = useState<boolean | undefined>()
+    const [notificationsEnabled,setNotificationsEnabled] = useState<boolean>(false)
 
     useEffect(()=>{
         if(loggedInUser){

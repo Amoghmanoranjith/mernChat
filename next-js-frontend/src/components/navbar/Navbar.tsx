@@ -15,7 +15,7 @@ import { User } from "@/interfaces/auth.interface";
 import { DEFAULT_AVATAR } from "@/constants";
 
 export const Navbar = () => {
-  const { data: friendRequests } = useGetUserFriendRequestsQuery();
+  const { data: friendRequests} = useGetUserFriendRequestsQuery();
   const isNavMenuOpen = useAppSelector(selectNavMenu);
   const toggleNavMenu = useToggleNavMenu();
   const { toggleChatBar } = useToggleChatBar();
@@ -32,24 +32,23 @@ export const Navbar = () => {
       </h4>
 
       <div className="flex item-center gap-x-10">
-        <div>
-          {friendRequests && friendRequests.length > 0 && (
-            <FriendRequestButton
-              numberOfFriendRequest={friendRequests.length}
-            />
-          )}
-        </div>
-
+          {
+            friendRequests && friendRequests.length > 0 && (
+              <FriendRequestButton
+                numberOfFriendRequest={friendRequests ? friendRequests.length : 0}
+              />
+            )
+          }
         <ToggleThemeButton />
 
         <div className="relative shrink-0">
           <Image
             onClick={toggleNavMenu}
             src={loggedInUser?.avatar || DEFAULT_AVATAR}
-            width={60}
-            height={60}
+            width={100}
+            height={100}
             alt={`${loggedInUser?.username} avatar`}
-            className="rounded-full object-cover shrink-0"
+            className="size-10 rounded-full object-cover shrink-0"
           />
           <AnimatePresence>{isNavMenuOpen && <NavMenu />}</AnimatePresence>
         </div>

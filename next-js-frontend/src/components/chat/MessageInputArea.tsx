@@ -28,7 +28,7 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
 
   const { toggleGifForm } = useToggleGif();
 
-  const isTyping = useDebounce(messageVal, 350);
+  const isTyping = useDebounce(messageVal, 200);
   useEmitTypingEvent(isTyping);
 
   const { handleMessageSubmit } = useHandleSendMessage({

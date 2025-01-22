@@ -1,3 +1,4 @@
+'use client';
 import { useOpenFriendRequestForm } from "@/hooks/useUI/useOpenFriendRequestForm";
 import { Badge } from "../ui/Badge";
 import { UserIcon } from "../ui/icons/UserIcon";

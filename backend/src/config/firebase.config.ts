@@ -1,10 +1,18 @@
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
-import { getMessaging } from 'firebase-admin/messaging';
+import admin from "firebase-admin";
+import credentials from "../firebase-admin-cred.json" assert { type: "json" };
 
+// Define the type for serviceAccount
+const serviceAccount: admin.ServiceAccount = {
+  projectId: credentials.project_id,
+  privateKey: credentials.private_key,
+  clientEmail: credentials.client_email,
+};
 
-const app = initializeApp({
-    credential:applicationDefault(),
-    projectId:"baatchit-ee221"
-});
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
-export const messaging = getMessaging(app)
+export const messaging = admin.messaging();

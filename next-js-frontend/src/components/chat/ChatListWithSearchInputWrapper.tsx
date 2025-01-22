@@ -4,10 +4,10 @@ import { ChatListWithSearchInput } from "./ChatListWithSearchInput";
 import { ChatListWithSearchSkeleton } from "../ui/skeleton/ChatListWithSearchSkeleton";
 
 export const ChatListWithSearchInputWrapper = () => {
-  const { data: chats } = useGetChatsQuery();
+  const {currentData} = useGetChatsQuery();
 
-  return chats ? (
-    <ChatListWithSearchInput chats={chats} />
+  return currentData ? (
+    <ChatListWithSearchInput chats={currentData} />
   ) : (
     <ChatListWithSearchSkeleton />
   );

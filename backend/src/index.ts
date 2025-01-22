@@ -320,7 +320,6 @@ io.on("connection",async(socket:AuthenticatedSocket)=>{
     })
 
     socket.on(Events.USER_TYPING,({chatId}:{chatId:string})=>{
-        
         socket.broadcast.to(chatId).emit(Events.USER_TYPING,{
             user:{
                 _id:socket.user?._id.toString(),

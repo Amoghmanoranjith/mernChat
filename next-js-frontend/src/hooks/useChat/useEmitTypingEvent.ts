@@ -11,16 +11,11 @@ export const useEmitTypingEvent = (isTyping:string) => {
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
 
     useEffect(()=>{
-
         if(selectedChatDetails && isTyping){
-
-            const data:UserTypingEventPayloadData  = 
-            {
+            const data:UserTypingEventPayloadData = {
                 chatId:selectedChatDetails._id
             }
-
             socket?.emit(Event.USER_TYPING,data)
         }
-
     },[isTyping])
 }
