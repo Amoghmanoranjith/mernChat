@@ -20,24 +20,39 @@ import { useVoteInListener } from "../useEventListeners/useVoteInListener";
 import { useVoteOutListener } from "../useEventListeners/useVoteOutListener";
 
 export const useAttachEventListeners = () => {
+
+  // friend request
   useFriendRequestListener();
+
+  // messages
   useMessageListener();
   useMessageSeenListener();
-  useNewGroupListener();
   useUnreadMessageListener();
+  useMessageEditListener();
+  useMessageDeleteListener();
+  useTypingListener();
+
+  
+  // user status
   useOfflineListener();
   useOnlineListener();
-  useTypingListener();
-  useNewMemberAddedListener();
-  useMessageEditListener();
-  useDeleteChatListener();
-  useMemberRemovedListener();
+  useOnlineUsersListener();
+  
+  
+  // polling
   useVoteInListener();
   useVoteOutListener();
-  useOnlineUsersListener();
-  useMessageDeleteListener();
+  
+  // group chats
+  useNewGroupListener();
   useGroupUpdateEventListener();
   useJoinNewChatListener();
+  useNewMemberAddedListener();
+  useMemberRemovedListener();
+  useDeleteChatListener();
+
+  // reactions
   useNewReactionListener();
   useDeleteReactionListener();
+  
 };

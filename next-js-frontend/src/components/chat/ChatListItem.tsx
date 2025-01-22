@@ -1,14 +1,14 @@
 "use client";
+import { DEFAULT_AVATAR } from "@/constants";
 import { useChatListItemClick } from "@/hooks/useChat/useChatListItemClick";
 import type { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
+import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
 import Image from "next/image";
 import { getChatAvatar } from "../../utils/helpers";
 import { ChatListItemBasicInfo } from "./ChatListItemBasicInfo";
 import { ChatListItemSecondaryInfo } from "./ChatListItemSecondaryInfo";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { DEFAULT_AVATAR } from "@/constants";
 
 type PropTypes = {
   chat: ChatWithUnreadMessages;

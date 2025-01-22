@@ -9,14 +9,9 @@ export const useMessageListener = () => {
 
   useSocketEvent(Event.MESSAGE, async (newMessage: Message) => {
     dispatch(
-      messageApi.util.updateQueryData(
-        "getMessagesByChatId",
-        { chatId: newMessage.chat, page: 1 },
-        (draft) => {
+      messageApi.util.updateQueryData("getMessagesByChatId",{ chatId: newMessage.chat, page: 1 },(draft) => {
           draft.messages.push(newMessage);
-          if (!draft.totalPages) {
-            draft.totalPages = 1;
-          }
+          if (!draft.totalPages) draft.totalPages = 1;
         }
       )
     );

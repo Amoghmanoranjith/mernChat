@@ -6,24 +6,19 @@ import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
 export const useMessageSeenListener = () => {
-  const dispatch = useAppDispatch();
 
+  const dispatch = useAppDispatch();
   const loggedInUser = useAppSelector(selectLoggedInUser);
 
   useSocketEvent(
-    Event.MESSAGE_SEEN,
-    ({ chat: chatId, user }: MessageSeenEventReceiveData) => {
+    Event.MESSAGE_SEEN,({ chat: chatId, user}: MessageSeenEventReceiveData) => {
+
       const isOwnMessageSeenUpdate = user._id === loggedInUser?._id;
 
       dispatch(
         chatApi.util.updateQueryData("getChats", undefined, (draft) => {
           const chat = draft.find((draft) => draft._id === chatId);
-
-          if (chat) {
-            if (isOwnMessageSeenUpdate) {
-              chat.unreadMessages.count = 0;
-            }
-          }
+          if (chat && isOwnMessageSeenUpdate) chat.unreadMessages.count = 0;
         })
       );
     }

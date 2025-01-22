@@ -13,7 +13,6 @@ type PropTypes = {
 };
 
 export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
-  console.log(chat.userTyping.length);
   const renderHelper = () => {
     if (chat.userTyping.length>0) {
       // if any user is typing
@@ -79,6 +78,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         } else {
           // but if the unread message is not a text message
           // then we can use our utility function to get the appropriate message
+          console.log('triggered babay!!!');
           return (
             <span className="text-sm text-secondary-darker">
               {getAppropriateUnreadMessageForPrivateChats(chat.unreadMessages)}

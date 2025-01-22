@@ -268,16 +268,6 @@ const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respon
             "unreadMessages.sender.avatar": "$unreadMessages.sender.avatar.secureUrl"
           }
         },
-      //   export interface IUnreadMessage {
-      //     count:number
-      //     message:{
-      //         content?:string
-      //         url?:boolean
-      //         attachments?:boolean
-      //         poll?:boolean
-      //     },
-      //     sender:IChatMember
-      // }
       {
         $addFields: {
           "unreadMessages": {

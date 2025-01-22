@@ -1,5 +1,6 @@
 "use client";
 
+import { useUpdateUnreadChatAsSeen } from "@/hooks/useChat/useUpdateUnreadChatAsSeen";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
 import { User } from "@/interfaces/auth.interface";
@@ -24,6 +25,7 @@ export const ChatWrapper = ({
 }: PropTypes) => {
 
   usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});
+  useUpdateUnreadChatAsSeen();
   useAttachEventListeners();
 
 
