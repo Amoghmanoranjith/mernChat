@@ -19,7 +19,7 @@ export const Display2RecentVotesAndRemaningVotesCount = ({
           initial={{ x: -5, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
         >
-          <Image src={avatar} width={6} height={6} alt={username} />
+          <Image src={avatar} className="size-6 rounded-full" width={100} height={100} alt={username} />
         </motion.span>
       ))}
       {remaningVotes > 0 && (

@@ -1,4 +1,4 @@
-import { Avatar } from "./Avatar"
+import Image from "next/image"
 
 type PropTypes = {
     username:string,
@@ -8,7 +8,7 @@ type PropTypes = {
 export const TypingCard = ({username,avatar}:PropTypes) => {
   return (
     <div className="flex item-center gap-x-2">
-        <Avatar height={6} width={6} imgUrl={avatar} alt={username}/>
+        <Image className="size-6"  height={100} width={100} src={avatar} alt={username}/>
         <p className="text-secondary-darker">{username}</p> 
     </div>
   )

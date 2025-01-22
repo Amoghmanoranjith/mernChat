@@ -37,8 +37,8 @@ export const MessageReactionListItem = ({
           className="rounded-full size-10"
           src={reaction?.user?.avatar}
           alt={reaction?.user?.username}
-          width={20}
-          height={20}
+          width={100}
+          height={100}
         />
         <div className="flex flex-col">
           <p>{reaction.user?.username}</p>

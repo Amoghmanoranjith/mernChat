@@ -1,13 +1,13 @@
+import Image from "next/image";
 import { selectVotesData } from "../../services/redux/slices/uiSlice";
 import { useAppSelector } from "../../services/redux/store/hooks";
-import { Avatar } from "../ui/Avatar";
 
 export const ViewVotes = () => {
 
     const votesData = useAppSelector(selectVotesData)
 
   return (
-    <div className="flex flex-col gap-y-8">
+    <div className="flex flex-col gap-y-8 select-none">
 
         <h6 className="font-medium text-xl">{votesData?.pollQuestion}</h6>
 
@@ -30,7 +30,7 @@ export const ViewVotes = () => {
                             {
                                 votes.map(({_id,avatar,username})=>(
                                     <div key={_id} className="flex gap-x-2 items-center">
-                                        <Avatar imgUrl={avatar} alt={username} height={6} width={6}/>
+                                        <Image width={100} height={100} className="size-6 rounded-full object-cover shrink-0" src={avatar} alt={"user-picture"}/>
                                         <p>{username}</p>
                                     </div>
                                 ))

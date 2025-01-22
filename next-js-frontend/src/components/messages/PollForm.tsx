@@ -8,10 +8,9 @@ import { useTogglePoolForm } from "../../hooks/useUI/useTogglePoolForm"
 import { FormInput } from "../ui/FormInput"
 import { SubmitButton } from "../ui/SubmitButton"
 import { ToggleSwitch } from "../ui/ToggleSwitch"
+import { PlusIconWithoutCircle } from "../ui/icons/PlusIconWithoutCircle"
 
 export const PollForm = () => {
-
-
 
   const {sendMessage} = useSendMessage()
   const {togglePollForm} = useTogglePoolForm()
@@ -67,17 +66,11 @@ export const PollForm = () => {
         <div className="flex flex-col gap-y-4">
 
             <div className="flex items-center gap-x-2">
-
                 <p>Options</p>
-
                 <button onClick={handleAddOption} type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
+                  <PlusIconWithoutCircle/>
                 </button>
-
             </div>
-            
             
             {
               fields.map((feild,index)=>(
@@ -93,12 +86,9 @@ export const PollForm = () => {
             }
 
             {
-              fields.length>1 && 
-
+              fields.length > 0 && 
               <div className="flex items-center justify-between">
-
                   <p>Allow multiple answers</p>
-
                   <ToggleSwitch
                     initialValue={isMultipleAnswers}
                     toggle={()=>setIsMultipleAnswers(!isMultipleAnswers)}

@@ -1,10 +1,10 @@
-import { IChatMember } from "../../interfaces/chat"
-import { Avatar } from "../ui/Avatar"
+import { ChatMember } from "@/interfaces/chat.interface"
+import Image from "next/image"
 
 type PropTypes = {
     isMemberAlready:boolean
     selectable:boolean
-    member:IChatMember
+    member:ChatMember
     isSelected?:boolean
     toggleSelection:(memberId: string) => void
 }
@@ -14,7 +14,7 @@ export const MemberCard = ({member,isSelected=false,isMemberAlready,selectable,t
     <div onClick={()=>isMemberAlready?"":selectable?toggleSelection(member._id):""} className={`flex justify-between rounded-md cursor-pointer ${isSelected?"bg-primary hover:bg-primary-dark":'hover:bg-secondary-darker'} p-2 shadow-sm`}>
         
         <div className="flex gap-x-2 items-center">
-          <Avatar imgUrl={member.avatar} height={7} width={7} alt={member.username}/>
+          <Image src={member.avatar} height={100} width={100} className="size-7" alt={member.username}/>
           <p>{member.username}</p>
         </div>
         

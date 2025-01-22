@@ -4,9 +4,9 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { useUpdateChat } from "../../hooks/useChat/useUpdateChat"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
-import { Avatar } from "../ui/Avatar"
 import { FormInput } from "../ui/FormInput"
 import { GroupChatSchemaType, groupChatSchema } from "@/schemas/chat.schema"
+import Image from "next/image"
 
 export const ChatUpdateForm = () => {
 
@@ -62,10 +62,11 @@ export const ChatUpdateForm = () => {
 
           <div className="relative">
             <input onChange={handleImageChange} type="file" className="w-full h-full cursor-pointer absolute opacity-0" />
-            <Avatar
-              height={40}
-              width={40}
-              imgUrl={selectedImagePreview?selectedImagePreview:selectedChatDetails.avatar}
+            <Image
+              src={selectedImagePreview?selectedImagePreview:selectedChatDetails.avatar}
+              className="size-40"
+              height={100}
+              width={100}
               alt="group chat avatar"
             />
           </div>
