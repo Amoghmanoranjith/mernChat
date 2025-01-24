@@ -1,4 +1,4 @@
-import { useVerifyPasswordMutation } from "../../services/api/authApi"
+import { useVerifyPasswordMutation } from "@/services/api/auth.api"
 import { useToast } from "../useUI/useToast"
 
 export const useVerifyPassword = () => {

@@ -77,7 +77,7 @@ export const generatePrivateKeyRecoveryToken = async(userId:string)=>{
     await PrivateKeyRecoveryToken.deleteMany({user:userId}),
     await PrivateKeyRecoveryToken.create({user:userId,hashedToken})
     
-    const verificationUrl = `${config.clientUrl}/auth/privatekey-verification/${token}`
+    const verificationUrl = `${config.clientUrl}/auth/private-key-recovery-token-verification?token=${token}`
 
     return {verificationUrl}
 }

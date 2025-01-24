@@ -229,6 +229,8 @@ const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,r
         payload['combinedSecret'] = req.user.googleId+env.PRIVATE_KEY_RECOVERY_SECRET
     }
 
+    await isExistingToken.deleteOne();
+
     return res.status(200).json(payload)
 
 })

@@ -11,6 +11,7 @@ import {
   selectNotificationPermissionForm,
   selectPollForm,
   selectProfileForm,
+  selectRecoverPrivateKeyForm,
   selectRemoveMemberForm,
   selectSettingsForm,
   selectViewVotes,
@@ -42,6 +43,7 @@ import { NotificationPermissionForm } from "../user/NotificationPermissionForm";
 import { ProfileForm } from "../user/ProfileForm";
 import { SettingsForm } from "../user/SettingsForm";
 import { Modal } from "./Modal";
+import { RecoverPrivateKeyForm } from "../auth/RecoverPrivateKeyForm";
 
 export const ModalWrapper = () => {
   const dispatch = useAppDispatch();
@@ -138,6 +140,11 @@ export const ModalWrapper = () => {
       >
         <NotificationPermissionForm />
       </Modal>
+
+      <Modal isOpen={useAppSelector(selectRecoverPrivateKeyForm)} onClose={()=>""}>
+          <RecoverPrivateKeyForm/>
+      </Modal>
+
     </>
   );
 };

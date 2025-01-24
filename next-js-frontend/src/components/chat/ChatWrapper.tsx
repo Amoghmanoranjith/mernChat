@@ -1,5 +1,6 @@
 "use client";
 
+import { useCheckUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useCheckUserPrivateKeyInIndexedDB";
 import { useUpdateUnreadMessagesAsSeenOnChatSelect } from "@/hooks/useChat/useUpdateUnreadChatAsSeen";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
@@ -27,6 +28,7 @@ export const ChatWrapper = ({
   usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});
   useUpdateUnreadMessagesAsSeenOnChatSelect();
   useAttachEventListeners();
+  useCheckUserPrivateKeyInIndexedDB({loggedInUser:user});
 
 
   return children;

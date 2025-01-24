@@ -1,4 +1,4 @@
-import { useLazySendPrivateKeyRecoveryEmailQuery } from "../../services/api/authApi"
+import { useLazySendPrivateKeyRecoveryEmailQuery } from "@/services/api/auth.api"
 import { useToast } from "../useUI/useToast"
 
 export const useSendPrivateKeyRecoveryEmail = () => {
