@@ -4,7 +4,7 @@ import type { ChatWithUnreadMessages } from "../../interfaces/chat.interface";
 export const chatApi = createApi({
     reducerPath:"chatApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:process.env.BASE_URL,
+        baseUrl:process.env.NEXT_PUBLIC_BASE_URL,
         credentials:"include"
     }),
     endpoints:(builder)=>({

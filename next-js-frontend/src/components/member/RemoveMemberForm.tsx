@@ -13,7 +13,7 @@ export const RemoveMemberForm = () => {
 
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
 
-    const toggleRemoveMemberForm = useToggleRemoveMemberForm()
+    const {toggleRemoveMember} = useToggleRemoveMemberForm()
 
     const loggedInUserId = useAppSelector(selectLoggedInUser)
 
@@ -58,7 +58,7 @@ export const RemoveMemberForm = () => {
     const handleRemoveMember = ()=>{
 
         if(selectedChatDetails){
-            toggleRemoveMemberForm()
+            toggleRemoveMember()
             removeMember({chatId:selectedChatDetails?._id,memberIds:selectedMembers})
         }
     }

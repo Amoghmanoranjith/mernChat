@@ -15,9 +15,6 @@ export const useDecryptMessage = ({
   selectedChatDetails,
   cipherText,
 }: PropTypes) => {
-  if (selectedChatDetails?.isGroupChat) {
-    return { decryptedMessage: cipherText };
-  }
 
   const [sharedKey, setSharedKey] = useState<CryptoKey>();
   const [decryptedMessage, setDecryptedMessage] = useState<string>("");

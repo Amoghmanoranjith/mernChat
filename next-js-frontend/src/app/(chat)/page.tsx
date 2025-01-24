@@ -1,4 +1,6 @@
 import { ChatAreaWrapper } from "@/components/chat/ChatAreaWrapper";
+import { ChatDetailsLoaderWrapper } from "@/components/chat/ChatDetailsLoaderWrapper";
+import { ChatDetailsWrapper } from "@/components/chat/ChatDetailsWrapper";
 import { ChatHeaderWrapper } from "@/components/chat/ChatHeaderWrapper";
 import { ChatListWithSearchInputWrapper } from "@/components/chat/ChatListWithSearchInputWrapper";
 import { ChatListWrapper } from "@/components/chat/ChatListWrapper";
@@ -36,7 +38,7 @@ export default async function ChatPage() {
     >
       <div className="h-full w-full flex p-4 max-md:p-2 gap-x-6 bg-background select-none">
         <ChatListWrapper>
-          <ChatListWithSearchInputWrapper/>
+          <ChatListWithSearchInputWrapper />
         </ChatListWrapper>
 
         <ChatAreaWrapper>
@@ -46,6 +48,10 @@ export default async function ChatPage() {
             <MessageInputAreaWrapper />
           </div>
         </ChatAreaWrapper>
+
+        <ChatDetailsWrapper>
+          <ChatDetailsLoaderWrapper loggedInUser={user} />
+        </ChatDetailsWrapper>
       </div>
     </ChatWrapper>
   );

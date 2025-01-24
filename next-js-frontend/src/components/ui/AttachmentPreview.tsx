@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { selectAttachments } from "../../services/redux/slices/uiSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
+import Image from "next/image"
 
 export const AttachmentPreview = () => {
 
@@ -44,7 +45,7 @@ export const AttachmentPreview = () => {
         <div className="flex items-center w-full justify-center flex-wrap gap-y-4 gap-x-2">
             {
                 attachments.map((attachment,index)=>(
-                    <img onClick={()=>setcurrentAttachmentIndex(index)} className={`w-20 h-20 object-contain cursor-pointer ${currentAttachmentIndex===index?"outline outline-1 outline-secondary-darker p-1 rounded-sm":null} `} src={attachment} alt="" />
+                    <Image key={index} onClick={()=>setcurrentAttachmentIndex(index)} className={`w-20 h-20 object-contain cursor-pointer ${currentAttachmentIndex===index?"outline outline-1 outline-secondary-darker p-1 rounded-sm":null} `} src={attachment} alt="attachment" height={200} width={200} />
                 ))
             }
         </div>

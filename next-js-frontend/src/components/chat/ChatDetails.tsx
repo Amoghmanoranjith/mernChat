@@ -1,27 +1,28 @@
-import { IAttachment } from "../../interfaces/attachment"
-import { IChatWithUnreadMessages } from "../../interfaces/chat"
-import { AvatarList } from "../shared/AppBrandingProfileImages"
-import { ChevronRightIcon } from "../ui/icons/ChevronRightIcon"
-import { AddMemberSection } from "./AddMemberSection"
-import { ChatDetailsHeader } from "./ChatDetailsHeader"
-import { RemoveMemberSection } from "./RemoveMemberSection"
-import { SharedMedia } from "./SharedMedia"
+'use client';
+import { useFetchAttachments } from "@/hooks/useAttachment/useFetchAttachments";
+import { useToggleChatDetailsBar } from "@/hooks/useUI/useToggleChatDetailsBar";
+import { User } from "@/interfaces/auth.interface";
+import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { ChevronRightIcon } from "../ui/icons/ChevronRightIcon";
+import { AddMemberSection } from "./AddMemberSection";
+import { ChatDetailsHeader } from "./ChatDetailsHeader";
+import { DisplayGroupMembersAvatar } from "./DisplayGroupMembersAvatar";
+import { RemoveMemberSection } from "./RemoveMemberSection";
+import { SharedMedia } from "./SharedMedia";
 
 
 type PropTypes = {
-    isAdmin:boolean
-    isGroupChat:boolean
-    chatAvatar:string
-    chatName:string
-    members:IChatWithUnreadMessages['members']
-    attachments:IAttachment
-    isAttachmentsFetching:boolean
-    selectedChatId:string
-    toggleChatDetailsBar: () => void
-    fetchMoreAttachments: (chatId: string, page: number) => void
+    selectedChatDetails:ChatWithUnreadMessages
+    loggedInUser:User
 }
 
-export const ChatDetails = ({isAdmin,chatName,chatAvatar,members,isGroupChat,attachments,selectedChatId,toggleChatDetailsBar,fetchMoreAttachments}:PropTypes) => {
+export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
+
+  const {toggleChatDetailsBar} = useToggleChatDetailsBar();
+  const {sharedMedia} = useFetchAttachments()
+
+  const isAdmin = selectedChatDetails.isGroupChat && selectedChatDetails.admin === loggedInUser._id;
+  const isGroupChat = selectedChatDetails.isGroupChat;
 
   return (
     
@@ -32,56 +33,33 @@ export const ChatDetails = ({isAdmin,chatName,chatAvatar,members,isGroupChat,att
         </button>
 
         <div className="flex flex-col gap-y-4 items-center">
-
             <ChatDetailsHeader
-              isGroupChat={isGroupChat}
-              isAdmin={isAdmin}
-              avatar={chatAvatar}
-              chatName={chatName}
-              membersLength={members.length}
+              chat={selectedChatDetails}
+              loggedInUser={loggedInUser}
             />
-            
         </div>
 
         <div className="flex flex-col gap-y-6 w-full">
             
             <div className="flex flex-col gap-y-4">
-
                 <div className="flex justify-between items-center">
-
-                    <div className="flex items-center">
-
-                        <AvatarList w={8} h={8} avatars={members.slice(0,4).map(member=>member.avatar)}/>
-                        {
-                          ((members.length-4)>0) && 
-                          <p className="w-8 h-8 rounded-full bg-secondary-dark flex justify-center items-center">+{members.length-4}</p>
-                        }
-                    </div>
-
-                    {isGroupChat && <p>See all</p>}
-
+                    <DisplayGroupMembersAvatar members={selectedChatDetails.members}/>
+                    {isGroupChat && <span>See all</span>}
                 </div>
-
                 {
-                  isAdmin && isGroupChat && 
-                  
+                  isGroupChat && isAdmin && 
                   <>
                   <AddMemberSection/>
                   <RemoveMemberSection/>
                   </>
                 }
-
             </div>
 
-            
-            {
-              <SharedMedia
-                selectedChatId={selectedChatId}
-                attachments={attachments}
-                fetchMoreAttachments={fetchMoreAttachments}
-              />
-            }
-
+            <SharedMedia
+              attachments={sharedMedia?.attachments}
+              selectedChatId={selectedChatDetails._id}
+            /> 
+                       
         </div>
 
     </div>

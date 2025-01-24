@@ -2,7 +2,7 @@ import { useAttachmentsClick } from "@/hooks/useAttachment/useAttachmentsClick";
 import Image from "next/image";
 
 type PropTypes = {
-  attachments: Array<string>;
+  attachments: string[];
 };
 
 export const AttachmentList = ({ attachments }: PropTypes) => {

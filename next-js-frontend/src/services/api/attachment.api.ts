@@ -4,7 +4,7 @@ import { Attachment } from "../../interfaces/attachment.interface";
 export const attachmentApi = createApi({
     reducerPath:"attachmentApi",
     baseQuery:fetchBaseQuery({
-        baseUrl:`${process.env.BASE_URL}/attachment`,
+        baseUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/attachment`,
         credentials:"include"
     }),
 

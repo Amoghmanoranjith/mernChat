@@ -49,7 +49,7 @@ export const ChatHeaderSecondaryInfo = ({
           <div className="flex items-center gap-x-2">
             <ActiveDot />
             <span className="text-secondary-darker max-sm:text-sm">
-              {`${activeMemberCountInGroupChat} online`}
+              {`${activeMemberCountInGroupChat.length} online`}
             </span>
           </div>
         </>

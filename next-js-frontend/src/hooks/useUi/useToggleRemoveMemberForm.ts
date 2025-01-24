@@ -6,7 +6,9 @@ export const useToggleRemoveMemberForm = () => {
     const dispatch = useAppDispatch()
     const removeMemberForm = useAppSelector(selectRemoveMemberForm)
 
-    return ()=>{
+    const toggleRemoveMember = ()=>{
         dispatch(setRemoveMemberForm(!removeMemberForm))
     }
+
+    return {toggleRemoveMember};
 }
