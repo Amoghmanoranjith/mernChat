@@ -12,33 +12,43 @@ export const useNewGroupListener = () => {
   const dispatch = useAppDispatch();
   const loggedInUserId = useAppSelector(selectLoggedInUser)?._id;
 
-  useSocketEvent(Event.NEW_GROUP, (newChat: ChatWithUnreadMessages) => {
+  useSocketEvent(Event.NEW_GROUP, (newChat:ChatWithUnreadMessages) => {
+
+    console.log(newChat);
+
     if (loggedInUserId && !newChat.isGroupChat) {
+
       const member = getOtherMemberOfPrivateChat(newChat, loggedInUserId);
 
       if (member) {
-        const newFriend: Friend = {
-          _id: member._id,
-          avatar: member.avatar,
-          createdAt: new Date(),
-          isActive: true,
-          username: member.username,
-          lastSeen: member.lastSeen,
-          publicKey: member.publicKey,
-          verificationBadge: member.verificationBadge,
-        };
-        dispatch(
-          friendApi.util.updateQueryData("getFriends", undefined, (draft) => {
-            draft.push(newFriend);
-          })
-        );
+
+          dispatch(
+              friendApi.util.updateQueryData("getFriends", undefined, (draft) => {
+
+                const newFriend: Friend = {
+                  _id: member._id,
+                  avatar: member.avatar,
+                  createdAt: JSON.stringify(new Date()),
+                  isActive: true,
+                  username: member.username,
+                  lastSeen: member.lastSeen,
+                  publicKey: member.publicKey,
+                  verificationBadge: member.verificationBadge,
+                };
+                
+                draft.push(newFriend);
+              })
+          );
       }
     }
 
+
     dispatch(
       chatApi.util.updateQueryData("getChats", undefined, (draft) => {
+        newChat.createdAt = JSON.stringify(newChat.createdAt);
         draft.push(newChat);
       })
     );
+
   });
 };

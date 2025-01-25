@@ -26,7 +26,7 @@ export interface ChatWithUnreadMessages {
     seenBy:ChatMember[]
     userTyping:ChatMember[]
     latestMessage:Message
-    createdAt:Date
+    createdAt:string
 }
 
 export interface UserTypingEventReceiveData {

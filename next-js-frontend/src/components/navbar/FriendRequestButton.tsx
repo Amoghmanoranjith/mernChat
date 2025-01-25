@@ -1,7 +1,7 @@
 'use client';
 import { useOpenFriendRequestForm } from "@/hooks/useUI/useOpenFriendRequestForm";
 import { Badge } from "../ui/Badge";
-import { UserIcon } from "../ui/icons/UserIcon";
+import { FriendRequestIcon } from "../ui/icons/FriendRequestIcon";
 
 type PropTypes = {
   numberOfFriendRequest: number;
@@ -12,7 +12,7 @@ export const FriendRequestButton = ({ numberOfFriendRequest }: PropTypes) => {
   return (
     <button onClick={openFriendRequestForm}>
       <div className="relative">
-        <UserIcon />
+        <FriendRequestIcon />
         <Badge value={numberOfFriendRequest} />
       </div>
     </button>

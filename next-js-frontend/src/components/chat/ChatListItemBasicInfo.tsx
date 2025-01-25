@@ -38,11 +38,11 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
   };
 
   const time = formatRelativeTime(
-    new Date(
-      chat.unreadMessages.message?.createdAt ||
+      JSON.stringify(
+        chat.unreadMessages.message?.createdAt ||
         chat.latestMessage?.createdAt ||
         chat.createdAt
-    )
+      )
   );
 
   const chatName = getChatName(chat, loggedInUserId) as string;

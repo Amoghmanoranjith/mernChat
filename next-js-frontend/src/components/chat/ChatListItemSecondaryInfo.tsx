@@ -40,7 +40,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         // if is is not a group chat
         // then for last latest text messages we have to decrypt the message, then only we can show that
         // as in private chats E2EE(end-to-end-enncrytion) is applied
-        if (chat.latestMessage.content?.length) {
+        if (chat.latestMessage?.content?.length) {
           // here we will decrypt the message and then show it
           return <DisplayDecryptedMessage cipherText={chat.latestMessage.content} chat={chat}/>
         } else {
@@ -69,10 +69,10 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
       } else {
         // if it is not a group chat
         // and the unreadMessage is a textMessage then we have to decrypt the message first as private chats are E2EE
-        if (chat.unreadMessages.message.content?.length) {
+        if (chat.unreadMessages.message?.content?.length) {
           // here will have to decrypt the message
           // and then only we can show it
-          return <DisplayDecryptedMessage cipherText={chat.unreadMessages.message.content} chat={chat}/>
+          return <DisplayDecryptedMessage cipherText={chat.unreadMessages?.message?.content} chat={chat}/>
         } else {
           // but if the unread message is not a text message
           // then we can use our utility function to get the appropriate message

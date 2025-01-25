@@ -143,8 +143,7 @@ const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respo
           {user:isExistingRequest.sender,friend:isExistingRequest.receiver}
         ])
 
-        if(!isExistingRequest.sender.isActive && isExistingRequest.sender?.fcmToken && isExistingRequest.sender.notificationsEnabled){
-          console.log('request accpeted push notificaiton triggered');
+        if(isExistingRequest.sender.notificationsEnabled && !isExistingRequest.sender.isActive && isExistingRequest.sender?.fcmToken){
           sendPushNotification({fcmToken:isExistingRequest.sender.fcmToken,body:`${req.user.username} has accepted your friend request 😃`})
         }
 
@@ -161,13 +160,35 @@ const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respo
         
         const membersStringIds = [isExistingRequest.sender.toString(),isExistingRequest.receiver.toString()]
 
-        emitEvent(req,Events.JOIN_NEW_CHAT,membersStringIds,newChat._id.toString())
         emitEvent(req,Events.NEW_GROUP,membersStringIds,transformedChat[0])
 
+        // now will use the two members id, that are part of this chat
+        // and will use their _id to get their socketId from the userSocketIds object (Map)
+        // and will join them to the chat room i.e their created chat._id
+        // so that they can listen to the events
+        // that are broadcasted to this chat room
+        const member1SocketId = userSocketIds.get(isExistingRequest.sender.toString());
+        const member2SocketId = userSocketIds.get(isExistingRequest.receiver.toString());
+        const chatId = newChat._id.toString();
+        const io = req.app.get('io');
+
+        if (member1SocketId) {
+          const member1Socket = io.sockets.sockets.get(member1SocketId);
+          if (member1Socket) {
+              member1Socket.join(chatId);
+          }
+        }
+        if (member2SocketId) {
+            const member2Socket = io.sockets.sockets.get(member2SocketId);
+            if (member2Socket) {
+                member2Socket.join(chatId);
+            }
+        }
         await isExistingRequest.deleteOne()
 
         return res.status(200).json(isExistingRequest._id)
     }
+
     else if(action==='reject'){
         await isExistingRequest.deleteOne()
 

@@ -32,7 +32,7 @@ export const ChatDetailsHeader = ({chat,loggedInUser}:PropTypes) => {
       <div className="relative">
         <Image
             alt="chat avatar"
-            className="size-20"
+            className="size-20 object-cover rounded-full"
             src={avatar || DEFAULT_AVATAR}
             width={100}
             height={100}

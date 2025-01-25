@@ -89,7 +89,8 @@ const base64ToUint8Array = (base64: string) => {
 };
 
 
-const formatRelativeTime = (date: Date) => {
+const formatRelativeTime = (stringDate: string) => {
+  const date = JSON.parse(stringDate) as Date;
   const now = new Date();
   const seconds = differenceInSeconds(now, date);
   const minutes = differenceInMinutes(now, date);
@@ -217,13 +218,13 @@ const sortChats = (chats: ChatWithUnreadMessages[]) => {
 const getAppropriateLastLatestMessageForGroupChats = (
   latestMessage: ChatWithUnreadMessages["latestMessage"]
 ) => {
-  return latestMessage.isPoll
+  return latestMessage?.isPoll
     ? "Sent a poll"
-    : latestMessage.url
+    : latestMessage?.url
     ? "Sent a gif"
-    : latestMessage.attachments?.length
+    : latestMessage?.attachments?.length
     ? "Sent an attachment"
-    : latestMessage.content?.length
+    : latestMessage?.content?.length
     ? (latestMessage.content.length>25 ? latestMessage.content.substring(0, 25) + "..." : latestMessage.content)
     : null;
 };
@@ -231,11 +232,11 @@ const getAppropriateLastLatestMessageForGroupChats = (
 const getAppropriateLastLatestMessageForPrivateChats = (
   latestMessage: ChatWithUnreadMessages["latestMessage"]
 ) => {
-  return latestMessage.isPoll
+  return latestMessage?.isPoll
     ? "Sent a poll"
-    : latestMessage.url
+    : latestMessage?.url
     ? "Sent a gif"
-    : latestMessage.attachments?.length
+    : latestMessage?.attachments?.length
     ? "Sent an attachment"
     : null;
 };
@@ -243,13 +244,13 @@ const getAppropriateLastLatestMessageForPrivateChats = (
 const getAppropriateUnreadMessageForGroupChats = (
   unreadMessage: ChatWithUnreadMessages["unreadMessages"]
 ) => {
-  return unreadMessage.message?.poll
+  return unreadMessage?.message?.poll
     ? "Sent a poll"
-    : unreadMessage.message?.url
+    : unreadMessage?.message?.url
     ? "Sent a gif"
-    : unreadMessage.message?.attachments
+    : unreadMessage?.message?.attachments
     ? "Sent an attachment"
-    : unreadMessage.message?.content
+    : unreadMessage?.message?.content
     ? (unreadMessage.message.content.length>25 ? unreadMessage.message.content.substring(0, 25) + "..." : unreadMessage.message.content)
     : null;
 };
@@ -257,11 +258,11 @@ const getAppropriateUnreadMessageForGroupChats = (
 const getAppropriateUnreadMessageForPrivateChats = (
   unreadMessage: ChatWithUnreadMessages["unreadMessages"]
 ) => {
-  return unreadMessage.message?.poll
+  return unreadMessage?.message?.poll
     ? "Sent a poll"
-    : unreadMessage.message?.url
+    : unreadMessage?.message?.url
     ? "Sent a gif"
-    : unreadMessage.message?.attachments
+    : unreadMessage?.message?.attachments
     ? "Sent an attachment"
     : null;
 };

@@ -2,11 +2,9 @@ import { useDeleteChatListener } from "../useEventListeners/useDeleteChatListene
 import { useDeleteReactionListener } from "../useEventListeners/useDeleteReactionListener";
 import { useFriendRequestListener } from "../useEventListeners/useFriendRequestListener";
 import { useGroupUpdateEventListener } from "../useEventListeners/useGroupUpdateEventListener";
-import { useJoinNewChatListener } from "../useEventListeners/useJoinNewChatListener";
 import { useMemberRemovedListener } from "../useEventListeners/useMemberRemovedListener";
 import { useMessageDeleteListener } from "../useEventListeners/useMessageDeleteListener";
 import { useMessageEditListener } from "../useEventListeners/useMessageEditListener";
-import { useMessageListener } from "../useEventListeners/useUpdateUnreadMessagesAsSeenOnChatSelect";
 import { useMessageSeenListener } from "../useEventListeners/useMessageSeenListener";
 import { useNewGroupListener } from "../useEventListeners/useNewGroupListener";
 import { useNewMemberAddedListener } from "../useEventListeners/useNewMemberAddedListener";
@@ -16,6 +14,7 @@ import { useOnlineListener } from "../useEventListeners/useOnlineListener";
 import { useOnlineUsersListener } from "../useEventListeners/useOnlineUsersListener";
 import { useTypingListener } from "../useEventListeners/useTypingListener";
 import { useUnreadMessageListener } from "../useEventListeners/useUnreadMessageListener";
+import { useMessageListener } from "../useEventListeners/useUpdateUnreadMessagesAsSeenOnChatSelect";
 import { useVoteInListener } from "../useEventListeners/useVoteInListener";
 import { useVoteOutListener } from "../useEventListeners/useVoteOutListener";
 
@@ -46,7 +45,6 @@ export const useAttachEventListeners = () => {
   // group chats
   useNewGroupListener();
   useGroupUpdateEventListener();
-  useJoinNewChatListener();
   useNewMemberAddedListener();
   useMemberRemovedListener();
   useDeleteChatListener();

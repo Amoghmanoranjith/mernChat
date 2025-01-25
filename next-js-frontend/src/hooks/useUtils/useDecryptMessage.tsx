@@ -28,9 +28,7 @@ export const useDecryptMessage = ({
 
   const handleSetSharedKey = async () => {
     const key = await getSharedKey({loggedInUserId,otherMember});
-    if (key) {
-      setSharedKey(key);
-    }
+    if (key) setSharedKey(key);
   };
 
   const handleDecryptMessage = async (
@@ -44,8 +42,13 @@ export const useDecryptMessage = ({
   };
 
   useEffect(() => {
-    handleSetSharedKey();
-  }, []);
+    if(!selectedChatDetails.isGroupChat){
+      handleSetSharedKey();
+    }
+    else{
+      setDecryptedMessage(cipherText);
+    }
+  }, [selectedChatDetails.isGroupChat]);
 
   useEffect(() => {
     if (sharedKey) {

@@ -86,7 +86,7 @@ export const ProfileForm = () => {
 
                     </div>
     
-                    <p>Joined {formatRelativeTime(new Date(loggedInUser.createdAt))}</p>
+                    <p>Joined {formatRelativeTime(JSON.stringify(new Date(loggedInUser.createdAt)))}</p>
 
                     {
                         editActive && 
