@@ -14,7 +14,7 @@ import { useOnlineListener } from "../useEventListeners/useOnlineListener";
 import { useOnlineUsersListener } from "../useEventListeners/useOnlineUsersListener";
 import { useTypingListener } from "../useEventListeners/useTypingListener";
 import { useUnreadMessageListener } from "../useEventListeners/useUnreadMessageListener";
-import { useMessageListener } from "../useEventListeners/useUpdateUnreadMessagesAsSeenOnChatSelect";
+import { useMessageListener } from "../useEventListeners/useMessageListener";
 import { useVoteInListener } from "../useEventListeners/useVoteInListener";
 import { useVoteOutListener } from "../useEventListeners/useVoteOutListener";
 

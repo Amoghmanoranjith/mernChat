@@ -13,11 +13,11 @@ const chatSlice = createSlice({
             state.selectedChatDetails=action.payload
         },
         updateUserTyping:(state,action:PayloadAction<ChatMember>)=>{
-            state.selectedChatDetails?.userTyping.push(action.payload)
+            state.selectedChatDetails?.userTyping.push(action.payload);
         },
-        removeUserTyping:(state,action:PayloadAction<ChatMember>)=>{
+        removeUserTyping:(state,action:PayloadAction<ChatMember['_id']>)=>{
             if(state.selectedChatDetails?.userTyping)
-                state.selectedChatDetails.userTyping = state.selectedChatDetails?.userTyping.filter(user=>user._id!==action.payload._id)
+                state.selectedChatDetails.userTyping = state.selectedChatDetails?.userTyping.filter(user=>user._id!==action.payload)
         },
         updateSelectedChatMembers:(state,action:PayloadAction<Array<ChatMember>>)=>{
             if(state.selectedChatDetails && state.selectedChatDetails.members.length)

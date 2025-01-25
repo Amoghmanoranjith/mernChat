@@ -3,8 +3,8 @@ import { Event } from "@/interfaces/events.interface"
 import { chatApi } from "@/services/api/chat.api"
 import { removeUserTyping, selectSelectedChatDetails, updateUserTyping } from "@/services/redux/slices/chatSlice"
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks"
-import { useSocketEvent } from "../useSocket/useSocketEvent"
 import { useEffect, useRef } from "react"
+import { useSocketEvent } from "../useSocket/useSocketEvent"
 
 
 export const useTypingListener = () => {
@@ -23,11 +23,12 @@ export const useTypingListener = () => {
         const isTypinginOpennedChat = chatId === selectedChatDetailsRef.current?._id;
 
         if(isTypinginOpennedChat){
-            const existInTypingArray = selectedChatDetails?.userTyping.some(({_id})=>_id===user._id)
+            const existInTypingArray = selectedChatDetails?.userTyping.some(user=>user._id===user._id)
+
             if(!existInTypingArray){
               dispatch(updateUserTyping(user))
               setTimeout(() => {
-                  dispatch(removeUserTyping(user))
+                dispatch(removeUserTyping(user._id));
               }, 1500);
             }
         }
@@ -37,7 +38,7 @@ export const useTypingListener = () => {
               chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
                 const chat = draft.find(chat=>chat._id===chatId)
                 if(chat){
-                  if(!chat.userTyping.some(u=>u._id===user._id)){
+                  if(!chat.userTyping.some(user=>user._id===user._id)){
                     chat.userTyping.push(user)
                     userExistsInTypingArray = true
                   }
@@ -49,7 +50,6 @@ export const useTypingListener = () => {
                 dispatch(
                   chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
                     const chat = draft.find(chat=>chat._id===chatId)
-        
                     if(chat){ 
                       chat.userTyping =  chat.userTyping.filter(u=>u._id!==user._id)
                     }
@@ -57,8 +57,6 @@ export const useTypingListener = () => {
                 )
               }, 1500);
             }
-
-          
         }
 
       })
