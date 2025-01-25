@@ -78,16 +78,12 @@ export const useVerifyPrivateKeyRecoveryToken = ({recoveryToken}:PropTypes) => {
 
     useEffect(()=>{
         if(recoveryToken && loggedInUser){
-            console.log('recoveryToken',recoveryToken);
-            console.log('calling the api man!!');
             verifyRecoveryToken({recoveryToken});
         }
     },[recoveryToken,loggedInUser])
 
     useEffect(()=>{
         if(isSuccess && loggedInUser){
-            console.log('loggedInUser',loggedInUser);
-            console.log('isSuccess',isSuccess);
             handleDecrptPrivateKey()
         }
     },[isSuccess,loggedInUser])

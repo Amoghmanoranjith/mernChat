@@ -15,7 +15,7 @@ export const RecoverPrivateKeyForm = () => {
         hasUserSignedUpViaOAuth={hasUserSignedUpViaOAuth}
       />
       {hasUserSignedUpViaOAuth ? (
-        <RecoveryOptionsForOAuthSignedUpUser />
+        <RecoveryOptionsForOAuthSignedUpUser loggedInUser={loggedInUser}/>
       ) : (
         <RecoveryOptionsForManualSignedUpUser loggedInUser={loggedInUser} />
       )}

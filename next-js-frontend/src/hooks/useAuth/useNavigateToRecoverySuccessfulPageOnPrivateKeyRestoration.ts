@@ -11,7 +11,6 @@ export default function useNavigateToRecoverySuccessfulPageOnPrivateKeyRestorati
 
     useEffect(()=>{
         if(isPrivateKeyRestoredInIndexedDB){
-            console.log('is Private key restored or not',isPrivateKeyRestoredInIndexedDB);
             router.replace("/auth/private-key-restoration-success")
         }
     },[isPrivateKeyRestoredInIndexedDB])

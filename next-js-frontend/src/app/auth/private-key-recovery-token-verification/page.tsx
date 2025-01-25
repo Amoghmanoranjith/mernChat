@@ -1,8 +1,7 @@
 'use client';
 import useNavigateToRecoverySuccessfulPageOnPrivateKeyRestoration from "@/hooks/useAuth/useNavigateToRecoverySuccessfulPageOnPrivateKeyRestoration";
 import { useVerifyPrivateKeyRecoveryToken } from "@/hooks/useAuth/useVerifyPrivateKeyRecoveryToken";
-import { useSearchParams } from "next/navigation"
-import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function page() {
 
