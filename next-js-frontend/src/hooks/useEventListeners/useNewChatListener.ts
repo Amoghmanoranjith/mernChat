@@ -8,13 +8,13 @@ import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
 import { getOtherMemberOfPrivateChat } from "@/utils/helpers";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
-export const useNewGroupListener = () => {
+export const useNewChatListener = () => {
   const dispatch = useAppDispatch();
   const loggedInUserId = useAppSelector(selectLoggedInUser)?._id;
 
-  useSocketEvent(Event.NEW_GROUP, (newChat:ChatWithUnreadMessages) => {
+  useSocketEvent(Event.NEW_CHAT, (newChat:ChatWithUnreadMessages) => {
 
-    console.log(newChat);
+    console.log("Event.NEW_CHAT event received with chat data ",newChat);
 
     if (loggedInUserId && !newChat.isGroupChat) {
 

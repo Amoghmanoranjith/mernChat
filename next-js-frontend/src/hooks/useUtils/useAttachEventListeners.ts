@@ -6,7 +6,7 @@ import { useMemberRemovedListener } from "../useEventListeners/useMemberRemovedL
 import { useMessageDeleteListener } from "../useEventListeners/useMessageDeleteListener";
 import { useMessageEditListener } from "../useEventListeners/useMessageEditListener";
 import { useMessageSeenListener } from "../useEventListeners/useMessageSeenListener";
-import { useNewGroupListener } from "../useEventListeners/useNewGroupListener";
+import { useNewChatListener } from "../useEventListeners/useNewChatListener";
 import { useNewMemberAddedListener } from "../useEventListeners/useNewMemberAddedListener";
 import { useNewReactionListener } from "../useEventListeners/useNewReactionListener";
 import { useOfflineListener } from "../useEventListeners/useOfflineListener";
@@ -42,8 +42,8 @@ export const useAttachEventListeners = () => {
   useVoteInListener();
   useVoteOutListener();
   
-  // group chats
-  useNewGroupListener();
+  // chats
+  useNewChatListener();
   useGroupUpdateEventListener();
   useNewMemberAddedListener();
   useMemberRemovedListener();

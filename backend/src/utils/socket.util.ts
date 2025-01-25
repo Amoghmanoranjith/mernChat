@@ -11,6 +11,7 @@ export const emitEvent = (req:AuthenticatedRequest,event:Events,users:Array<stri
 
 export const emitEventToRoom = (req:AuthenticatedRequest,event:Events,room:string,data:unknown)=>{
     const io:Server = req.app.get("io")
+    console.log(`emitting ${event} to room ${room} with data ${data}`);
     io.to(room).emit(event,data)
 }
 

@@ -38,11 +38,11 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
     >
       <div className="flex gap-x-3">
         <Image
-          className="w-14 h-14 rounded-full max-sm:w-10 max-sm:h-10"
+          className="w-14 h-14 rounded-full max-sm:w-10 max-sm:h-10 object-cover"
           src={chatAvatar || DEFAULT_AVATAR}
           alt={"chat-avatar"}
-          width={56}
-          height={56}
+          width={200}
+          height={200}
         />
         <div className="flex flex-col gap-y-1 max-sm:gap-y-[.5px]">
           <div className="flex items-center gap-x-1">
