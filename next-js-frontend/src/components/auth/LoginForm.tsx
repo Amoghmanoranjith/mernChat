@@ -50,7 +50,7 @@ export const LoginForm = () => {
 
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <SubmitButton disabled={isLoading} btnText="Login" />
+          <SubmitButton isLoading={isLoading} btnText="Login" />
         </div>
 
         <div className="flex justify-between items-center flex-wrap gap-1">

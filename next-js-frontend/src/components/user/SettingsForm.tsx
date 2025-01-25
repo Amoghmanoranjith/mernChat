@@ -1,10 +1,10 @@
+import { getMessaging, getToken } from "firebase/messaging"
 import { useEffect, useState } from "react"
 import { useUpdateFcmToken } from "../../hooks/useAuth/useUpdateFcmToken"
 import { useUpdateNotificationsFlag } from "../../hooks/useUser/useUpdateNotificationsFlag"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
-import { getToken } from "firebase/messaging"
-import { messaging } from "@/config/firebase.config"
+
 
 export const SettingsForm = () => {
 
@@ -20,6 +20,8 @@ export const SettingsForm = () => {
             setNotificationsEnabled(loggedInUser?.notificationsEnabled)
         }
     },[loggedInUser])
+
+    const messaging = getMessaging();
 
     const handleNotificationChange = async()=>{
 

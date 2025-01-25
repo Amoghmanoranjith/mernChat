@@ -21,7 +21,6 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z.object({
     token:z.string({required_error:"password reset token is required"}),
-    userId:z.string({required_error:"userid is required"}),
     newPassword:passwordValidation
 })
 

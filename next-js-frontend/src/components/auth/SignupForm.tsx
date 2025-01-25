@@ -94,7 +94,7 @@ export const SignupForm = () => {
 
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <SubmitButton btnText="Signup" disabled={isLoading} />
+          <SubmitButton btnText="Signup" isLoading={isLoading}/>
           <p className="text-gray-400 font-light">
             By creating this account, you agree that you have read and accepted
             our Terms of Use and Privacy Policy.

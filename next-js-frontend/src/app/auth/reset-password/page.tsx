@@ -1,22 +1,20 @@
 "use client";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { useSearchParams } from 'next/navigation'
 
 const page = () => {
 
-  const searchParams = useSearchParams()
-  const user = searchParams.get('user')
-  const token = searchParams.get('token')
-
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const token = searchParams.get("token");
 
   useEffect(() => {
-    if (!token || !user) {
+    if (!token) {
       router.push("/auth/login");
     }
-  }, [token, user,router]);
+  }, [token,router]);
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -30,8 +28,8 @@ const page = () => {
       </div>
 
       <div>
-        {token && user && (
-          <ResetPasswordForm token={token as string} user={user as string} />
+        {token && (
+          <ResetPasswordForm token={token as string}/>
         )}
       </div>
     </div>

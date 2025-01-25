@@ -78,47 +78,41 @@ const forgotPassword = asyncErrorHandler(async(req:Request,res:Response,next:Nex
     const hashedToken = await bcrypt.hash(token,10)
 
     await ResetPassword.create({user:isValidUser._id,hashedToken})
-    const resetUrl = `${config.clientUrl}/auth/reset-password?token=${token}&user=${isValidUser._id.toString()}`
+    const resetUrl = `${config.clientUrl}/auth/reset-password?token=${token}`
 
     await sendMail(email,isValidUser.username,"resetPassword",resetUrl,undefined)
 
-    res.status(200).json({message:`We have sent a password reset link on ${email}`})
+    res.status(200).json({message:`We have sent a password reset link on ${email}, please check spam if not received`})
 })
 
 const resetPassword = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-    const {token,newPassword,userId}:resetPasswordSchemaType = req.body
 
+    const {token,newPassword}:resetPasswordSchemaType = req.body;
 
-    const doesPasswordResetExists = await ResetPassword.findOne({user:userId})
+    const {_id:decodedUserId} = jwt.verify(token,env.JWT_SECRET) as {_id:string};
 
-    if(!doesPasswordResetExists){
+    const doesPasswordResetRequestExists = await ResetPassword.findOne({user:decodedUserId})
+
+    if(!doesPasswordResetRequestExists){
         return next(new CustomError("Password reset link is invalid",404))
     }
 
-    const isValidUser = await User.findById(userId)
-
-    if(!isValidUser){
-        return next(new CustomError("User not found",404))
-    }
-
-    if(doesPasswordResetExists.expiresAt! < new Date){
-        await doesPasswordResetExists.deleteOne()
+    if(doesPasswordResetRequestExists.expiresAt! < new Date){
+        await doesPasswordResetRequestExists.deleteOne()
         return next(new CustomError("Password reset link has been expired",400))
     }
 
-    const decodedInfo = jwt.verify(token,env.JWT_SECRET) as IUser['_id']
-
-    if(!decodedInfo || !decodedInfo._id || decodedInfo._id.toString()!==userId) {
-        console.log(decodedInfo._id);
-        return next(new CustomError("Password reset link is invalid",400))
+    const user =  await User.findById(decodedUserId);
+    if(!user){
+        return next(new CustomError("User not found",404));
     }
 
-    isValidUser.password = await bcrypt.hash(newPassword,10)
-    await isValidUser.save()
+    user.password = await bcrypt.hash(newPassword,10)
+    await user.save()
 
-    await ResetPassword.deleteMany({user:decodedInfo._id})
+    await ResetPassword.deleteMany({user:decodedUserId});
 
-    return res.status(200).json({message:`Dear ${isValidUser.username}, your password has been reset successfuly`})
+    return res.status(200).json({message:`Dear ${user.username}, your password has been reset successfuly`})
 
 })
 

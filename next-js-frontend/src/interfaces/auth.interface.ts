@@ -21,7 +21,6 @@ export interface Auth {
 
 export interface ResetPassword {
   token: string;
-  userId: string;
   newPassword: string;
 }
 

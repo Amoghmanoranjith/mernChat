@@ -10,14 +10,12 @@ export const ForgotPasswordForm = () => {
 
     const { register, handleSubmit,formState: { errors } ,setValue} = useForm<forgotPasswordSchemaType>({resolver:zodResolver(forgotPasswordSchema)})
 
-    const {forgotPassword} = useForgotPassword()
+    const {forgotPassword,isLoading} = useForgotPassword()
 
     const onSubmit: SubmitHandler<forgotPasswordSchemaType> = ({email})=>{
-
         forgotPassword({email})
         setValue("email",'')
     }
-
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
@@ -27,7 +25,7 @@ export const ForgotPasswordForm = () => {
           register={{...register("email")}}
           error={errors.email?.message}
           />
-        <SubmitButton btnText="Send reset link"></SubmitButton>
+        <SubmitButton isLoading={isLoading} btnText="Send reset link"></SubmitButton>
     </form>
   )
 }
