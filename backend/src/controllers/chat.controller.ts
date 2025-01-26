@@ -11,6 +11,8 @@ import type { addMemberToChatType, createChatSchemaType, removeMemberfromChatTyp
 import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 import { emitEvent, emitEventToRoom, getOtherMembers } from "../utils/socket.util.js";
+import { userSocketIds } from "../index.js";
+import { Server } from "socket.io";
 
 
 export const addUnreadMessagesAndSpectatorStage = {
@@ -119,12 +121,20 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
         
         const membersIdsInString:Array<string> = newGroupChat.members.map(member=>member._id.toString())
 
-        const otherMembers = getOtherMembers({members:membersIdsInString,user:req.user?._id.toString()!})
-        
-        emitEvent(req,Events.NEW_GROUP,otherMembers,transformedChat[0])
-        
-        return res.status(201).json(transformedChat[0])
+        const io:Server = req.app.get("io");
+        const room = newGroupChat._id.toString();
 
+        for(const memberId of membersIdsInString){
+          const memberSocketId = userSocketIds.get(memberId);
+          if(memberSocketId){
+            const memberSocket =  io.sockets.sockets.get(memberSocketId);
+            if(memberSocket){
+              memberSocket.join(room);
+            }
+          }
+        }
+        emitEventToRoom(req,Events.NEW_CHAT,room,transformedChat[0]);
+        return res.status(201);
     }
 
     else if(isGroupChat==='false'){
@@ -166,7 +176,7 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
         const memberStringIds = normalChat.members.map(member=>member._id.toString())
         const otherMembers = getOtherMembers({members:memberStringIds,user:req.user?._id.toString()!})
 
-        emitEvent(req,Events.NEW_GROUP,otherMembers,transformedChat)
+        emitEvent(req,Events.NEW_CHAT,otherMembers,transformedChat)
         
         return res.status(201).json(transformedChat)
     }
@@ -447,7 +457,7 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
 
     ])
 
-    emitEvent(req,Events.NEW_GROUP,members,transformedChat[0])
+    emitEvent(req,Events.NEW_CHAT,members,transformedChat[0])
 
     res.status(200).json(validMembers)
 

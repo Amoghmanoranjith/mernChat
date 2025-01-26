@@ -1,6 +1,7 @@
 import { GroupChatSchemaType } from "@/schemas/chat.schema"
 import { SubmitHandler } from "react-hook-form"
 import toast from "react-hot-toast"
+import { useCloseGroupChatFormOnSuccessfulChatCreation } from "./useCloseGroupChatFormOnSuccessfulChatCreation"
 import { useCreateGroupChat } from "./useCreateGroupChat"
 
 type PropTypes = {
@@ -26,6 +27,8 @@ export const useCreateGroupChatSubmit = ({image,selectedMembers}:PropTypes) => {
           })
         }
     }
+
+    useCloseGroupChatFormOnSuccessfulChatCreation({isSuccess});
 
     return {createGroupChatSubmitHandler};
 }

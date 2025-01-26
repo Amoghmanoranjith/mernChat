@@ -1,5 +1,4 @@
 'use client';
-import { useCloseGroupChatFormOnSuccessfulChatCreation } from "@/hooks/useChat/useCloseGroupChatFormOnSuccessfulChatCreation";
 import { useCreateGroupChatSubmit } from "@/hooks/useChat/useCreateGroupChatSubmit";
 import { useFilteredFriends } from "@/hooks/useFriend/useFilteredFriends";
 import { GroupChatSchemaType, groupChatSchema } from "@/schemas/chat.schema";
@@ -12,6 +11,7 @@ import toast from "react-hot-toast";
 import { ACCEPTED_IMAGE_TYPES, DEFAULT_AVATAR } from "../../constants";
 import { useCreateGroupChat } from "../../hooks/useChat/useCreateGroupChat";
 import { CrossIcon } from "../ui/icons/CrossIcon";
+import { SubmitButton } from "../ui/SubmitButton";
 import { FriendList } from "./FriendList";
 
 
@@ -26,11 +26,10 @@ export const GroupChatForm = () => {
   const {filteredFriends,setFilteredFriends} = useFilteredFriends({searchVal});
   
   const {data:friends} = useGetFriendsQuery()
-  const {isSuccess} = useCreateGroupChat()
+  const {isSuccess,isLoading} = useCreateGroupChat()
   const { register, handleSubmit, watch, formState: { errors } } = useForm<GroupChatSchemaType>({resolver:zodResolver(groupChatSchema)});
   const {createGroupChatSubmitHandler} = useCreateGroupChatSubmit({image,selectedMembers});
 
-  useCloseGroupChatFormOnSuccessfulChatCreation({isSuccess});
   const nameValue = watch("name")
 
 
@@ -55,6 +54,7 @@ export const GroupChatForm = () => {
     }
   }
   
+  const selectedMembersLength = selectedMembers.length;
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -113,8 +113,8 @@ export const GroupChatForm = () => {
 
         </div>
 
-        <button type="submit" className="px-6 py-2 bg-primary text-white rounded shadow-lg">Create group {selectedMembers.length?`with ${selectedMembers.length===1?"1 member":`${selectedMembers.length} members`}`:null}</button>
-      
+        {/* <button type="submit" className="px-6 py-2 bg-primary text-white rounded shadow-lg">Create group {selectedMembers.length?`with ${selectedMembers.length===1?"1 member":`${selectedMembers.length} members`}`:null}</button> */}
+        <SubmitButton isLoading={isLoading} btnText={`Create Group ${selectedMembersLength>0?selectedMembersLength==1?'1 member':selectedMembersLength+" members":""}`}/>
       </form>
 
     </div>
