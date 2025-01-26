@@ -29,10 +29,6 @@ const isErrorWithMessage = (
   );
 };
 
-const printDraft = (data: unknown) => {
-  console.log(JSON.parse(JSON.stringify(data)));
-};
-
 const base64ToArrayBuffer = (base64: any) => {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -316,7 +312,6 @@ export {
   getOtherMemberOfPrivateChat,
   getOtherMembersOfGroupChatThatAreActive, haveUserVotedThisOption, isErrorWithMessage,
   isFetchBaseQueryError,
-  printDraft,
   sortChats,
   uint8ArrayToBase64
 };

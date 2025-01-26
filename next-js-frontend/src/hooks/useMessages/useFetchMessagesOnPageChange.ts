@@ -22,9 +22,6 @@ export const useFetchMessagesOnPageChange = ({page,totalPages,hasMoreMessages,ge
     // Only fetch messages if the page is greater than 1 (indicating the user wants older messages)
     // and if a selectedChatId exists
     if (page > 1 && hasMoreMessages && selectedChatId && !isFetching) {
-      console.log('page value changed page=',page);
-      console.log('calling getPreviousMessage function');
-
       getPreviousMessages({page,chatId:selectedChatId});
     }
     // If the current page equals totalPages, then there are no more messages to load

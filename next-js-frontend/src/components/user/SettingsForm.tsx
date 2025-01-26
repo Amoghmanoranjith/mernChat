@@ -40,7 +40,6 @@ export const SettingsForm = () => {
                             try {
                                 const token = await getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY });
                                 updateFcmToken({ fcmToken: token });
-                                console.log("FCM token obtained and stored.");
                             } 
                             catch (error) {
                                 console.error("Error obtaining FCM token:", error);

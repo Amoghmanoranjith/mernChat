@@ -35,7 +35,6 @@ export const useUnreadMessageListener = () => {
         else{
           // if the message has come is in a chat, that the user has not opened actively currently
           // update the unread message count in the chat list
-          console.log('message is recived in chat that is not opened currently');
           dispatch(
             chatApi.util.updateQueryData('getChats',undefined,(draft)=>{
               

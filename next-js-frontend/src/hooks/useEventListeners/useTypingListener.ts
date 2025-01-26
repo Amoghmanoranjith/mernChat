@@ -35,16 +35,13 @@ export const useTypingListener = () => {
         }
       }
       else{
-        console.log('user is typing in non-openned chat');
         let isNewUserPushedInTypingArray:boolean = false
         dispatch(
           chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
             const chat = draft.find(chat=>chat._id===chatId)
             if(chat){
-              console.log('chat found in which typing is happening');
               const isUserAlreadyTyping = chat.userTyping.some(typingUser=>typingUser._id===user._id)
               if(!isUserAlreadyTyping){
-                console.log('user is being pushed in typing array');
                 chat.userTyping.push(user)
                 isNewUserPushedInTypingArray = true
               }

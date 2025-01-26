@@ -10,7 +10,6 @@ export const useSetPageToOneOnChatChange = ({ setPage }: PropTypes) => {
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
 
   useLayoutEffect(() => {
-    console.log('page setted to 1 from "useSetPageToOneOnChatChange" hook');
     setPage(1);
   }, [selectedChatId,setPage]);
 };
