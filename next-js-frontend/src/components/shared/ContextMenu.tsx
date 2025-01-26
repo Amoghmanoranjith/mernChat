@@ -1,6 +1,4 @@
 import { useDeleteMessage } from "@/hooks/useMessages/useDeleteMessage";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
 import { EmojiClickData } from "emoji-picker-react";
 import { motion } from "framer-motion";
 import { ContextMenuList } from "../contextMenu/ContextMenuList";
@@ -15,6 +13,7 @@ type PropTypes = {
   >;
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
   messageId: string;
+  myMessage: boolean;
 };
 
 export const ContextMenu = ({
@@ -22,9 +21,9 @@ export const ContextMenu = ({
   setEditMessageId,
   onEmojiClick,
   messageId,
+  myMessage,
 }: PropTypes) => {
   const { deleteMessage } = useDeleteMessage();
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id;
 
   const contextOptions = [
     {
@@ -41,8 +40,6 @@ export const ContextMenu = ({
       handlerFunc: () => deleteMessage({ messageId }),
     },
   ];
-
-  const myMessage = loggedInUserId === messageId;
 
   return (
     <motion.div

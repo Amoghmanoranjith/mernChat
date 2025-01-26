@@ -23,10 +23,10 @@ export const useEditMessage = () => {
           (member) => member._id !== loggedInUserId
         )[0];
 
-        const sharedKey = await getSharedKey(loggedInUserId, otherMember);
+        const sharedKey = await getSharedKey({loggedInUserId,otherMember});
 
         if (sharedKey) {
-          encryptedMessage = await encryptMessage(sharedKey, updatedContent);
+          encryptedMessage = await encryptMessage({message:updatedContent,sharedKey});
         }
       }
 

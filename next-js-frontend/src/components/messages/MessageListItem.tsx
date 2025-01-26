@@ -67,8 +67,7 @@ export const MessageListItem = ({
   const myMessage = message.sender._id === loggedInUserId;
   const isContextMenuOpen = openContextMenuMessageId === message._id;
   const isReactionMenuOpen = reactionMenuMessageId === message._id;
-  const messageHasReactions =
-    message?.reactions && message.reactions.length > 0;
+  const messageHasReactions = message?.reactions && message.reactions.length > 0;
 
   return (
     <motion.div
@@ -85,6 +84,7 @@ export const MessageListItem = ({
           setEditMessageId={setEditMessageId}
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}
           onEmojiClick={handleEmojiClick}
+          myMessage={message.sender._id === loggedInUserId}
         />
       )}
       {!myMessage && (
