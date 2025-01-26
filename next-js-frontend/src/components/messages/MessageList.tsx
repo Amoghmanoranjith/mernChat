@@ -92,7 +92,7 @@ export const MessageList = ({
 
   return (
     <>
-    <span className="text-white">{`total page - ${totalPages}  |  page - ${page}  |  isNearBottom - ${isNearBottom}`}</span>
+    {/* <span className="text-white">{`total page - ${totalPages}  |  page - ${page}  |  isNearBottom - ${isNearBottom}`}</span> */}
       <div
         ref={messageContainerRef}
         onScroll={handleScroll}

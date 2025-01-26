@@ -20,12 +20,13 @@ export const useTypingListener = () => {
     
     useSocketEvent(Event.USER_TYPING,({chatId,user}:UserTypingEventReceiveData)=>{
       
-        const isTypinginOpennedChat = chatId === selectedChatDetailsRef.current?._id;
+      if(selectedChatDetailsRef.current){
+
+        const isTypinginOpennedChat = chatId === selectedChatDetailsRef.current._id;
 
         if(isTypinginOpennedChat){
-            const existInTypingArray = selectedChatDetails?.userTyping.some(user=>user._id===user._id)
-
-            if(!existInTypingArray){
+            const isUserAlreadyTyping = selectedChatDetailsRef.current.userTyping.some(typingUser=>typingUser._id==user._id)
+            if(!isUserAlreadyTyping){
               dispatch(updateUserTyping(user))
               setTimeout(() => {
                 dispatch(removeUserTyping(user._id));
@@ -38,7 +39,8 @@ export const useTypingListener = () => {
               chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
                 const chat = draft.find(chat=>chat._id===chatId)
                 if(chat){
-                  if(!chat.userTyping.some(user=>user._id===user._id)){
+                  const isUserAlreadyTyping = chat.userTyping.some(typingUser=>typingUser._id==user._id)
+                  if(!isUserAlreadyTyping){
                     chat.userTyping.push(user)
                     userExistsInTypingArray = true
                   }
@@ -51,13 +53,14 @@ export const useTypingListener = () => {
                   chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
                     const chat = draft.find(chat=>chat._id===chatId)
                     if(chat){ 
-                      chat.userTyping =  chat.userTyping.filter(u=>u._id!==user._id)
+                      chat.userTyping =  chat.userTyping.filter(typingUser=>typingUser._id!==user._id)
                     }
                   })
                 )
-              }, 1500);
+              }, 1000);
             }
         }
+      }
 
       })
 }
