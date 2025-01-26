@@ -63,9 +63,9 @@ export const MessageList = ({
         className="relative flex h-full flex-col gap-y-4 max-xl:gap-y-2 overflow-y-auto overflow-x-hidden"
       >
         {IsFetchingMessages && <CircleLoading />}
-        {messages.map((message, index) => (
+        {messages.map(message => (
           <MessageListItem
-            key={index}
+            key={`${message._id}-${message.isEdited}`}
             openContextMenuMessageId={openContextMenuMessageId}
             selectedChatDetails={selectedChatDetails}
             loggedInUserId={loggedInUserId}
