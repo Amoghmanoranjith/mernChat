@@ -2,7 +2,7 @@ import { useLazyGetMessagesByChatIdQuery } from "@/services/api/message.api"
 import { useToast } from "../useUI/useToast"
 
 export const useGetMessages = () => {
-    const [getMessages,{error,isError,isFetching,isSuccess,isUninitialized,data,isLoading}] = useLazyGetMessagesByChatIdQuery()
+    const [getMessages,{error,isError,isFetching,isSuccess,isUninitialized,data,isLoading,currentData}] = useLazyGetMessagesByChatIdQuery()
     useToast({error,isError,isLoading:isFetching,isSuccess,isUninitialized})
     return {
         getMessages,
@@ -10,5 +10,6 @@ export const useGetMessages = () => {
         isFetching,
         isLoading,
         isSuccess,
+        currentData,
     }
 }

@@ -4,14 +4,14 @@ import { useEffect } from "react";
 import { useGetMessages } from "./useGetMessages";
 
 export const useFetchInitialMessagesOnChatSelect = () => {
-  const { getMessages, data, isFetching, isLoading} = useGetMessages();
-  const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  useEffect(() => {
-    if (selectedChatDetails) {
-      // Fetch the first page of messages when the selectedChatId changes
-      getMessages({ chatId: selectedChatDetails._id, page: 1 }, true);
-    }
-  }, [selectedChatDetails, getMessages]); // Effect runs whenever selectedChatId changes
+  const { getMessages, currentData,isFetching,isLoading,data} = useGetMessages();
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
 
-  return {data, isFetching, isLoading,selectedChatDetails}
+  useEffect(() => {
+    if (selectedChatId) {
+      getMessages({ chatId: selectedChatId, page: 1 }, true);
+    }
+  }, [selectedChatId]);
+
+  return {currentData,isFetching,isLoading,data};
 };

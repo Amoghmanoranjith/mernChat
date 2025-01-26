@@ -1,20 +1,17 @@
-import { AnimatePresence } from "framer-motion";
-import { motion } from "framer-motion";
-import { TypingIndicatorWithUserList } from "../chat/TypingIndicatorWithUserList";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { AnimatePresence, motion } from "framer-motion";
+import { TypingIndicatorWithUserList } from "../chat/TypingIndicatorWithUserList";
 
 type PropTypes = {
   selectedChatDetails: ChatWithUnreadMessages;
-  isNearBottom: boolean;
 };
 
 export const TypingIndicator = ({
   selectedChatDetails,
-  isNearBottom,
 }: PropTypes) => {
   return (
     <AnimatePresence>
-      {isNearBottom && selectedChatDetails.userTyping.length && (
+      {selectedChatDetails.userTyping.length && (
         <motion.div
           className="w-fit"
           variants={{

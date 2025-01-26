@@ -6,7 +6,7 @@ import { ChatListWithSearchInputWrapper } from "@/components/chat/ChatListWithSe
 import { ChatListWrapper } from "@/components/chat/ChatListWrapper";
 import { ChatWrapper } from "@/components/chat/ChatWrapper";
 import { MessageInputAreaWrapper } from "@/components/messages/MessageInputAreaWrapper";
-import { MessageListWrapper } from "@/components/messages/MessageListWrapper";
+import { MessageListSkeletonWrapper } from "@/components/messages/MessageListSkeletonWrapper";
 import {
   fetchUserChats,
   fetchUserFriendRequest,
@@ -44,7 +44,7 @@ export default async function ChatPage() {
         <ChatAreaWrapper>
           <div className="flex flex-col gap-y-3 h-full justify-between relative">
             <ChatHeaderWrapper />
-            <MessageListWrapper loggedInUserId={user._id} />
+            <MessageListSkeletonWrapper loggedInUserId={user._id} />
             <MessageInputAreaWrapper />
           </div>
         </ChatAreaWrapper>

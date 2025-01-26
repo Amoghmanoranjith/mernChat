@@ -29,7 +29,7 @@ export const useTypingListener = () => {
               dispatch(updateUserTyping(user))
               setTimeout(() => {
                 dispatch(removeUserTyping(user._id));
-              }, 1500);
+              }, 1000);
             }
         }
         else{

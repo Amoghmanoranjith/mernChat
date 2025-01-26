@@ -1,7 +1,7 @@
 import { RefObject, useEffect } from "react";
 
 type PropTypes = {
-  container: HTMLDivElement | null;
+  container: RefObject<HTMLDivElement | null>;
   page:number;
   prevHeightRef: RefObject<number>;
   prevScrollTopRef: RefObject<number>;
@@ -9,21 +9,21 @@ type PropTypes = {
 
 };
 
-export const usePreserveScrollPositionOnPagination = ({container,page,prevHeightRef,prevScrollTopRef,IsFetchingMessages}: PropTypes) => {
+export const useRestoreUserScrollPosition = ({container,page,prevHeightRef,prevScrollTopRef,IsFetchingMessages}: PropTypes) => {
   useEffect(() => {
     // Only run this effect when:
     // 1. The user is on a page greater than 1 (loading older messages).
     // 2. The container element is available.
     // 3. Messages are not currently being fetched.
-    if (page > 1 && container && !IsFetchingMessages) {
+    if (page > 1 && container && !IsFetchingMessages && container.current) {
       // Preserve the user's previous scroll position after new messages are added.
       // Calculation:
       // - `container.scrollHeight`: The current total height of the scrollable content.
       // - `prevHeightRef.current`: The height of the scrollable content before new messages were loaded.
       // - `prevScrollTopRef.current`: The user's previous scroll position before new messages were loaded.
       // This ensures the user stays at the same relative position in the chat.
-      container.scrollTop =
-        container.scrollHeight -
+      container.current.scrollTop =
+        container.current.scrollHeight -
         prevHeightRef.current +
         prevScrollTopRef.current;
     }

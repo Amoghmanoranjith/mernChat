@@ -25,9 +25,16 @@ export const ChatWrapper = ({
   user,
 }: PropTypes) => {
 
+  // client side state hydration
   usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});
+
+  // chats
   useUpdateUnreadMessagesAsSeenOnChatSelect();
+
+  // all socket event listners
   useAttachEventListeners();
+
+  // security
   useCheckUserPrivateKeyInIndexedDB({loggedInUser:user});
 
 

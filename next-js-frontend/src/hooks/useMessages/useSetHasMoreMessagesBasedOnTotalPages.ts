@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 type PropTypes = {
   totalPages: number;
-  setHasMoreMessages: React.Dispatch<React.SetStateAction<boolean>>;
+  setHasMoreMessages: Dispatch<SetStateAction<boolean>>
 };
 
 export const useSetHasMoreMessagesBasedOnTotalPages = ({setHasMoreMessages,totalPages}:PropTypes) => {
@@ -11,5 +11,5 @@ export const useSetHasMoreMessagesBasedOnTotalPages = ({setHasMoreMessages,total
         // If there's only 1 page, there are no more messages to load
         // Otherwise, set hasMoreMessages to true to indicate there are more messages
         totalPages === 1 ? setHasMoreMessages(false) : setHasMoreMessages(true);
-      }, [totalPages, setHasMoreMessages]);
+      }, [totalPages]);
 };
