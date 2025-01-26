@@ -30,7 +30,7 @@ export const ChatHeaderSecondaryInfo = ({
     <>
       {isPrivateChatInActive && (
         <p className="text-secondary-darker max-sm:text-sm">
-          last seen {formatRelativeTime(otherMemberOfPrivateChat?.lastSeen)}
+          last seen {formatRelativeTime(JSON.stringify(otherMemberOfPrivateChat?.lastSeen))}
         </p>
       )} 
       

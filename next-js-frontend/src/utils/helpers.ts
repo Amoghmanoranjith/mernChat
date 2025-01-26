@@ -90,27 +90,33 @@ const base64ToUint8Array = (base64: string) => {
 
 
 const formatRelativeTime = (stringDate: string) => {
-  const date = JSON.parse(stringDate) as Date;
-  const now = new Date();
-  const seconds = differenceInSeconds(now, date);
-  const minutes = differenceInMinutes(now, date);
-  const hours = differenceInHours(now, date);
-  const days = differenceInDays(now, date);
-  const months = differenceInMonths(now, date);
-  const years = differenceInYears(now, date);
-
-  if (seconds < 60) {
-    return seconds < 10 ? "just now" : `${seconds}s`;
-  } else if (minutes < 60) {
-    return `${minutes}m ago`;
-  } else if (hours < 24) {
-    return `${hours}h ago`;
-  } else if (days < 30) {
-    return `${days}d ago`;
-  } else if (months < 12) {
-    return `${months}mo ago`;
-  } else {
-    return `${years}y ago`;
+  try {
+    const date = JSON.parse(stringDate) as Date;
+    if(!date) return "N/A";
+    const now = new Date();
+    const seconds = differenceInSeconds(now, date);
+    const minutes = differenceInMinutes(now, date);
+    const hours = differenceInHours(now, date);
+    const days = differenceInDays(now, date);
+    const months = differenceInMonths(now, date);
+    const years = differenceInYears(now, date);
+  
+    if (seconds < 60) {
+      return seconds < 10 ? "just now" : `${seconds}s`;
+    } else if (minutes < 60) {
+      return `${minutes}m ago`;
+    } else if (hours < 24) {
+      return `${hours}h ago`;
+    } else if (days < 30) {
+      return `${days}d ago`;
+    } else if (months < 12) {
+      return `${months}mo ago`;
+    } else {
+      return `${years}y ago`;
+    }
+    
+  } catch (error) {
+    console.log(error);
   }
 };
 
