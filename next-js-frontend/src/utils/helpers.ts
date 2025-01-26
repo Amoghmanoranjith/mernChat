@@ -89,10 +89,16 @@ const base64ToUint8Array = (base64: string) => {
 };
 
 
-const formatRelativeTime = (stringDate: string) => {
+const formatRelativeTime = (stringDate: string | Date) => {
   try {
-    const date = JSON.parse(stringDate) as Date;
-    if(!date) return "N/A";
+    let date:Date 
+    if(typeof stringDate === "string"){
+      date = JSON.parse(stringDate) as Date;
+    }
+    else{
+      date = stringDate
+    }
+    if(!date) return 'N/A';
     const now = new Date();
     const seconds = differenceInSeconds(now, date);
     const minutes = differenceInMinutes(now, date);
@@ -308,11 +314,10 @@ export {
   getChatName,
   getLoggedInUserFromHeaders,
   getOtherMemberOfPrivateChat,
-  getOtherMembersOfGroupChatThatAreActive,
-  isErrorWithMessage,
+  getOtherMembersOfGroupChatThatAreActive, haveUserVotedThisOption, isErrorWithMessage,
   isFetchBaseQueryError,
   printDraft,
   sortChats,
-  uint8ArrayToBase64,
-  haveUserVotedThisOption,
+  uint8ArrayToBase64
 };
+

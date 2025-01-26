@@ -42,10 +42,8 @@ export const useNewChatListener = () => {
       }
     }
 
-
     dispatch(
       chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-        newChat.createdAt = JSON.stringify(newChat.createdAt);
         draft.push(newChat);
       })
     );
