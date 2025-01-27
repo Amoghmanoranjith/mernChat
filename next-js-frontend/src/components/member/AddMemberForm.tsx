@@ -14,7 +14,7 @@ export const AddMemberForm = () => {
   const {data:friends} = useGetFriendsQuery()
   
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
-  const toggleAddMemberForm = useToggleAddMemberForm()
+  const {toggleAddMemberForm}= useToggleAddMemberForm()
 
   const [selectedMembers,setSelectedMembers] = useState<string[]>([])
   const [searchVal,setSearchVal] = useState<string>("")

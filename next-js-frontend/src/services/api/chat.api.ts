@@ -37,7 +37,7 @@ export const chatApi = createApi({
                 };
             }
         }),
-        addMember:builder.mutation<ChatWithUnreadMessages,{members:string[],_id:string}>({
+        addMember:builder.mutation<void,{members:string[],_id:string}>({
             query:({_id,members})=>({
                 url:`/chat/${_id}/members`,
                 method:"PATCH",

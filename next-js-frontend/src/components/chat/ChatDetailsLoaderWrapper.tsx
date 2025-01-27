@@ -10,12 +10,9 @@ type PropTypes = {
 
 export const ChatDetailsLoaderWrapper = ({ loggedInUser }: PropTypes) => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  if (selectedChatDetails)
-    return (
-      <ChatDetails
-        selectedChatDetails={selectedChatDetails}
-        loggedInUser={loggedInUser}
-      />
-    );
-  return null;
+  return (
+    selectedChatDetails && (
+      <ChatDetails selectedChatDetails={selectedChatDetails} loggedInUser={loggedInUser} />
+    )
+  )
 };

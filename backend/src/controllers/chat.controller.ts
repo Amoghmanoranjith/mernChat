@@ -404,12 +404,12 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
     if(!isExistingChat.isGroupChat){
         return next(new CustomError("This is not a group chat, you cannot add members",400))
     }
-
-    if(isExistingChat.admin?._id.toString() !== req.user?._id.toString()){
+    const isAdminAddingMember = isExistingChat.admin?._id.toString() === req.user?._id.toString()
+    if(!isAdminAddingMember){
         return next(new CustomError("You are not allowed to add members as you are not the admin of this chat",400))
     }
 
-    const validMembers =  await User.aggregate([
+    const newMembersToBeAddedDetails =  await User.aggregate([
       {
         $match:{
           _id:{$in:members.map(member=>new Types.ObjectId(member))}
@@ -425,25 +425,15 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
     ]) as Array<IMemberDetails>
 
 
-    const existingMembers = validMembers.filter(validMember=>isExistingChat.members.includes(new Types.ObjectId(validMember._id)))
+    const ifNewMembersToBeAddedExistsAlreadyInChat = newMembersToBeAddedDetails.filter(newMember=>isExistingChat.members.includes(new Types.ObjectId(newMember._id)));
 
-    if(existingMembers.length){
-        return next(new CustomError(`${existingMembers.map(member=>`${member.username}`)} already exists in members of this chat`,400))
+    if(ifNewMembersToBeAddedExistsAlreadyInChat.length){
+        return next(new CustomError(`${ifNewMembersToBeAddedExistsAlreadyInChat.map(member=>`${member.username}`)} already exists in members of this chat`,400))
     }
     
-    isExistingChat.members.push(...validMembers.map(member=>new Types.ObjectId(member._id)))
-    await isExistingChat.save()
-
-    // Extract old members
-    const newMemberIdsSet = new Set(members);
-    const oldMembers = isExistingChat.members.filter(member => !newMemberIdsSet.has(member.toString()));
-
-    const oldMemberIds = oldMembers.map(member=>member._id.toString())
-
-    emitEvent(req,Events.NEW_MEMBER_ADDED,oldMemberIds,{
-      chatId:isExistingChat._id,
-      members:validMembers
-    })
+    const oldMemberIds = isExistingChat.members.map(member=>member._id.toString());
+    isExistingChat.members.push(...newMembersToBeAddedDetails.map(member=>new Types.ObjectId(member._id)));
+    await isExistingChat.save();
 
     const transformedChat = await Chat.aggregate([
       {
@@ -454,13 +444,35 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
       updateAvatarFeild,
       populateMembersStage,
       addUnreadMessagesAndSpectatorStage
-
     ])
+    // now we have to do two task
+    // 1nd emit the "new member added" event to the old members
+    // 2st emit the "new chat" event to the new Members and join their sockets to the new chat room
 
-    emitEvent(req,Events.NEW_CHAT,members,transformedChat[0])
+    const io:Server = req.app.get("io");
 
-    res.status(200).json(validMembers)
+    // joining the new members in the room
+    const newMemberIds =  newMembersToBeAddedDetails.map(newMember=>newMember._id.toString());
+    const room = isExistingChat._id.toString();
+    for(const memberId of newMemberIds){
+      const memberSocketId = userSocketIds.get(memberId);
+      if(memberSocketId){
+        const memberSocket = io.sockets.sockets.get(memberSocketId);
+        if(memberSocket){
+          memberSocket.join(room);
+        }
+      }
+    }
+    // emitting the new chat event to the new members
+    emitEvent(req,Events.NEW_CHAT,newMemberIds,transformedChat[0]);
 
+    // now we will deal wiht old members
+    const payload = {
+      chatId:isExistingChat._id,
+      members:newMembersToBeAddedDetails
+    }
+    emitEvent(req,Events.NEW_MEMBER_ADDED,oldMemberIds,payload);
+    return res.status(200);
 })
 
 const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{

@@ -3,6 +3,7 @@ import { Event } from "@/interfaces/events.interface"
 import { chatApi } from "@/services/api/chat.api"
 import { selectSelectedChatDetails, updateSelectedChatMembers } from "@/services/redux/slices/chatSlice"
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks"
+import { useEffect, useRef } from "react"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
 
 export const useNewMemberAddedListener = () => {
@@ -10,17 +11,20 @@ export const useNewMemberAddedListener = () => {
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
     const dispatch = useAppDispatch()
 
-    useSocketEvent(Event.NEW_MEMBER_ADDED,({chatId,members}:NewMemberAddedEventPayloadData)=>{
+    const selectedChatDetailsRef = useRef(selectedChatDetails);
 
-        const isMemberAddedInSelectedChat:boolean = chatId===selectedChatDetails?._id
+    useEffect(()=>{
+        selectedChatDetailsRef.current = selectedChatDetails;
+    },[selectedChatDetails])
+
+    useSocketEvent(Event.NEW_MEMBER_ADDED,({chatId,members}:NewMemberAddedEventPayloadData)=>{
+        const areNewMembersAddedInSelectedChat:boolean = chatId===selectedChatDetailsRef.current?._id;
         dispatch(
             chatApi.util.updateQueryData("getChats",undefined,(draft)=>{
                 const chat = draft.find(draft=>draft._id===chatId)
                 if(chat){
-                    if(isMemberAddedInSelectedChat){
-                        dispatch(updateSelectedChatMembers(members))
-                    }
-                    chat.members.push(...members)
+                    if(areNewMembersAddedInSelectedChat) dispatch(updateSelectedChatMembers(members));
+                    chat.members.push(...members);
                 }
             })
         )

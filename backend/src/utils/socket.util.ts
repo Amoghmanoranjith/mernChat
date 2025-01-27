@@ -19,6 +19,6 @@ export const getOtherMembers=({members,user}:{members:Array<string>,user:string}
     return members.filter(member=>member!==user)
 }
 
-export const getMemberSockets = (members:Array<string>)=>{
+export const getMemberSockets = (members:string[])=>{
     return members.map(member=>userSocketIds.get(member))
 }

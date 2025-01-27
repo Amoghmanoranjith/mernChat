@@ -14,6 +14,7 @@ export const useNewChatListener = () => {
 
   useSocketEvent(Event.NEW_CHAT, (newChat:ChatWithUnreadMessages) => {
 
+    console.log('new chat event received');
     if (loggedInUserId && !newChat.isGroupChat) {
 
       const member = getOtherMemberOfPrivateChat(newChat, loggedInUserId);
