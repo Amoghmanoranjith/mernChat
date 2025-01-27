@@ -1,13 +1,13 @@
+import { ChatWithUnreadMessages } from "@/interfaces/chat.interface"
+import { motion } from 'framer-motion'
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { useRemoveMember } from "../../hooks/useMember/useRemoveMember"
+import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemberForm"
+import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { MemberList } from "./MemberList"
-import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
-import {motion} from 'framer-motion'
-import toast from "react-hot-toast"
-import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemberForm"
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface"
 
 export const RemoveMemberForm = () => {
 
@@ -98,7 +98,7 @@ export const RemoveMemberForm = () => {
         {
             selectedMembers.length>0 &&
             <motion.div initial={{y:5}} animate={{y:0}} className="flex flex-col gap-y-2">
-                    <button onClick={handleRemoveMember} className="bg-red-500 text-white py-2 rounded-sm disabled:bg-gray-400">Remove {selectedMembers.length} {selectedMembers.length===1?"member":"members"}</button>
+                    <button onClick={handleRemoveMember} className="bg-background text-white py-2 rounded-sm disabled:bg-gray-400">Remove {selectedMembers.length} {selectedMembers.length===1?"member":"members"}</button>
             </motion.div>
         }
 

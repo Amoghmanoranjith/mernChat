@@ -5,19 +5,24 @@ import { selectSelectedChatDetails, updateSelectedChatDetails } from "@/services
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks"
 import toast from "react-hot-toast"
 import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { useEffect, useRef } from "react"
 
 export const useDeleteChatListener = () => {
 
     const dispatch = useAppDispatch()
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
+    const selectedChatDetailsRef = useRef(selectedChatDetails);
+    useEffect(()=>{
+        selectedChatDetailsRef.current = selectedChatDetails;
+    },[selectedChatDetails])
 
     useSocketEvent(Event.DELETE_CHAT,({chatId}:DeleteChatEventReceiveData)=>{
 
-        const wasSelectedChatDeleted = selectedChatDetails?._id === chatId
+        const wasSelectedChatDeleted = selectedChatDetailsRef.current?._id === chatId
 
         if(wasSelectedChatDeleted){
-            dispatch(updateSelectedChatDetails(null))
-            toast.success("Sorry, the chat has been deleted")
+            dispatch(updateSelectedChatDetails(null));
+            toast.error("Sorry, the chat has been deleted, or you have been removed from this chat");
         }
         dispatch(
             chatApi.util.updateQueryData("getChats",undefined,(draft)=>{

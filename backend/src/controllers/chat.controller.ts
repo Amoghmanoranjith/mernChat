@@ -490,35 +490,37 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
         return next(new CustomError("This is not a group chat, you cannot remove members",400))
     }
 
-    if(req.user?._id.toString() !== isExistingChat.admin?._id.toString()){
+    const isAdminRemovingMembers = req.user?._id.toString() === isExistingChat.admin?._id.toString();
+    if(!isAdminRemovingMembers){
         return next(new CustomError("You are not allowed to remove members as you are not the admin of this chat",400))
     }
+    
+    if(isExistingChat.members.length===3){
+      return next(new CustomError("Minimum 3 members are required in a group chat",400))
+    }
 
-    const existingChatMemberIds = isExistingChat.members.map(member=>member._id.toString())
-    const invalidMemberIds = members.filter(member=>!existingChatMemberIds.includes(member))
+    const existingMemberIds = isExistingChat.members.map(member=>member._id.toString());
+    const invalidMemberIds = members.filter(member=>!existingMemberIds.includes(member));
 
     if(invalidMemberIds.length){
       return next(new CustomError("Please provide valid members to remove",400))
     }
 
-    if(isExistingChat.members.length===3){
-      return next(new CustomError("Minimum 3 members are required in a group chat",400))
-    }
-
     const isAdminLeavingIndex = members.findIndex(member=>isExistingChat.admin?._id.toString()===member)
     
     if(isAdminLeavingIndex!==-1){
-        isExistingChat.admin = isExistingChat.members[0]
+        isExistingChat.admin = isExistingChat.members[0];
     }
 
-    isExistingChat.members = isExistingChat.members.filter(existingMember=>!members.includes(existingMember._id.toString()))
-    await isExistingChat.save()
+    isExistingChat.members = isExistingChat.members.filter(existingMember=>!members.includes(existingMember._id.toString()));
+    await isExistingChat.save();
 
-    emitEvent(req,Events.DELETE_CHAT,members,{chatId:isExistingChat._id})
-    emitEvent(req,Events.MEMBER_REMOVED,existingChatMemberIds.filter(id=>!members.includes(id)),{chatId:isExistingChat._id,membersId:members})
+    emitEvent(req,Events.DELETE_CHAT,members,{chatId:isExistingChat._id});
 
-    return res.status(200).json()
+    const remainingMembers = isExistingChat.members.map(member=>member._id.toString());
+    emitEvent(req,Events.MEMBER_REMOVED,remainingMembers,{chatId:isExistingChat._id,membersId:members})
 
+    return res.status(200);
 })
 
 const updateChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
