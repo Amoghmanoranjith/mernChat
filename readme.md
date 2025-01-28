@@ -1,10 +1,11 @@
 # MERN CHAT E2EE 🗨️
 
 
-Baatchit is a modern real-time chat application designed to facilitate seamless communication between users. With Baatchit, users can engage in conversations, share files, see when others are typing, and more, all in real-time.
+Mern-chat is a modern real-time chat application designed to facilitate seamless communication between users. With Baatchit, users can engage in conversations, share files, see when others are typing, and more, all in real-time.
 
-![Baatchit](images/groupChatCreation.png)
-![Baatchit](images/baatchit-gang.png)
+![MernChat](next-js-frontend/public/images/dekstop-screenshots/1.png)
+![MernChat](next-js-frontend/public/images/dekstop-screenshots/3.png)
+![MernChat](next-js-frontend/public/images/dekstop-screenshots/4.png)
 
 ## Features ✨
 
