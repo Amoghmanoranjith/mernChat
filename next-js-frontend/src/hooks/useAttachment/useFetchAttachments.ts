@@ -7,7 +7,7 @@ import { useToast } from "../useUI/useToast"
 export const useFetchAttachments = () => {
 
     const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id
-    const [fetchAttachments, {error,isError,isFetching,isSuccess,isUninitialized,data}] = useLazyFetchAttachmentsQuery()
+    const [fetchAttachments, {error,isError,isFetching,isSuccess,isUninitialized,currentData}] = useLazyFetchAttachmentsQuery()
     useToast({error,isError,isLoading:isFetching,isSuccess,isUninitialized})
 
     useEffect(()=>{
@@ -17,8 +17,8 @@ export const useFetchAttachments = () => {
     },[selectedChatId])
 
     return {
-        fetchMoreAttachments:fetchAttachments,
-        sharedMedia:data,
-        isAttachmentsFetching:isFetching
+        fetchAttachments,
+        sharedMedia:currentData,
+        isFetching,
     }
 }
