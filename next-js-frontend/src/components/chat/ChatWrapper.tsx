@@ -2,6 +2,7 @@
 
 import { useCheckUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useCheckUserPrivateKeyInIndexedDB";
 import { useUpdateUnreadMessagesAsSeenOnChatSelect } from "@/hooks/useChat/useUpdateUnreadChatAsSeen";
+import { useClearExtraPreviousMessagesOnChatChange } from "@/hooks/useMessages/useClearExtraPreviousMessagesOnChatChange";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
 import { User } from "@/interfaces/auth.interface";
@@ -36,6 +37,9 @@ export const ChatWrapper = ({
 
   // security
   useCheckUserPrivateKeyInIndexedDB({loggedInUser:user});
+
+  // messages
+  useClearExtraPreviousMessagesOnChatChange();
 
 
   return children;

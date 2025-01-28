@@ -1,5 +1,4 @@
 "use client";
-import { useClearExtraPreviousMessagesOnChatChange } from "@/hooks/useMessages/useClearExtraPreviousMessagesOnChatChange";
 import { useFetchMessagesOnPageChange } from "@/hooks/useMessages/useFetchMessagesOnPageChange";
 import { useGetMessages } from "@/hooks/useMessages/useGetMessages";
 import { useHandleScroll } from "@/hooks/useMessages/useHandleScroll";
@@ -51,7 +50,6 @@ export const MessageList = ({
   useSetPageToOneOnChatChange({setPage});
   useScrollToBottomOnChatSelect({messageContainerRef});
   useSetHasMoreMessagesBasedOnTotalPages({ setHasMoreMessages, totalPages });
-  useClearExtraPreviousMessagesOnChatChange();
 
   const {handleScroll} = useHandleScroll({
     container:messageContainerRef,
