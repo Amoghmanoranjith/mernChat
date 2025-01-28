@@ -131,35 +131,47 @@ const addHeaders = (token: string) => {
 };
 
 const fetchUserFriends = async (token: string) => {
-  const response = await fetch(
-    process.env.NEXT_PUBLIC_BASE_URL + "/friend",
-    addHeaders(token)
-  );
-  if (response.ok) {
-    const friends = await response.json();
-    return friends;
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/friend",
+      addHeaders(token)
+    );
+    if (response.ok) {
+      const friends = await response.json();
+      return friends;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
 const fetchUserChats = async (token: string) => {
-  const response = await fetch(
-    process.env.NEXT_PUBLIC_BASE_URL + "/chat",
-    addHeaders(token)
-  );
-  if (response.ok) {
-    const chats = await response.json();
-    return chats;
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/chat",
+      addHeaders(token)
+    );
+    if (response.ok) {
+      const chats = await response.json();
+      return chats;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
 const fetchUserFriendRequest = async (token: string) => {
-  const response = await fetch(
-    process.env.NEXT_PUBLIC_BASE_URL + "/request",
-    addHeaders(token)
-  );
-  if (response.ok) {
-    const friendRequest = await response.json();
-    return friendRequest;
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/request",
+      addHeaders(token)
+    );
+    if (response.ok) {
+      const friendRequest = await response.json();
+      return friendRequest;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

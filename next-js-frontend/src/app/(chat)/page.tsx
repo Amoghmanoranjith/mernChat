@@ -7,6 +7,7 @@ import { ChatListWrapper } from "@/components/chat/ChatListWrapper";
 import { ChatWrapper } from "@/components/chat/ChatWrapper";
 import { MessageInputAreaWrapper } from "@/components/messages/MessageInputAreaWrapper";
 import { MessageListSkeletonWrapper } from "@/components/messages/MessageListSkeletonWrapper";
+import { ServerDownMessage } from "@/components/ui/ServerDownMessage";
 import {
   fetchUserChats,
   fetchUserFriendRequest,
@@ -30,6 +31,7 @@ export default async function ChatPage() {
   ]);
 
   return (
+    (friends && chats && friendRequest) ? (
     <ChatWrapper
       chats={chats}
       friendRequest={friendRequest}
@@ -54,5 +56,8 @@ export default async function ChatPage() {
         </ChatDetailsWrapper>
       </div>
     </ChatWrapper>
+  )
+  : 
+  <ServerDownMessage/>
   );
 }

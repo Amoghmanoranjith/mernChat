@@ -23,52 +23,60 @@ export async function middleware(request: NextRequest) {
   }
 
   if(token && ['/auth/verification'].includes(path)){
-    const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
-      headers: {
-        'Cookie':`token=${token}`
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
+        headers: {
+          'Cookie':`token=${token}`
+        }
+      })
+      if(response.ok){
+        const userData: User = await response.json();
+        if(userData.verified){
+          return NextResponse.redirect(new URL('/', request.url));
+        }
       }
-    })
-
-    if(response.ok){
-      const userData: User = await response.json();
-      if(userData.verified){
-        return NextResponse.redirect(new URL('/', request.url));
+      else{
+        return NextResponse.redirect(new URL('/auth/login', request.url));
       }
-    }
-    else{
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+    } catch (error) {
+      console.log(error);
     }
   }
 
   if(token && ['/'].includes(path)){
     // if user is logged in and trying to access home-page
     // then verify the token and redirect to login page if token is invalid
-    const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
-      headers: {
-        'Cookie':`token=${token}`
-      }
-    })
 
-    if(response.ok){
-      // if the token is valid
-      // then get the user data and set it in the header
-      // so that it can be used in page components ahead
-      const userData: User = await response.json();
-
-      if(userData.verified){
-        const nextResponse = NextResponse.next();
-        nextResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
-        return nextResponse;
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
+        headers: {
+          'Cookie':`token=${token}`
+        }
+      })
+  
+      if(response.ok){
+        // if the token is valid
+        // then get the user data and set it in the header
+        // so that it can be used in page components ahead
+        const userData: User = await response.json();
+  
+        if(userData.verified){
+          const nextResponse = NextResponse.next();
+          nextResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
+          return nextResponse;
+        }
+        else{
+          const redirectResponse = NextResponse.redirect(new URL('/auth/verification', request.url));
+          redirectResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
+          return redirectResponse;
+        }
       }
       else{
-        const redirectResponse = NextResponse.redirect(new URL('/auth/verification', request.url));
-        redirectResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
-        return redirectResponse;
+        // if token is invalid, redirect to login page
+        return NextResponse.redirect(new URL('/auth/login', request.url))
       }
-    }
-    else{
-      // if token is invalid, redirect to login page
-      return NextResponse.redirect(new URL('/auth/login', request.url))
+    } catch (error) {
+      console.log(error);
     }
   }
 

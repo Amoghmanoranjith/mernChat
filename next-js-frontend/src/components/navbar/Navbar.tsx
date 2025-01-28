@@ -40,18 +40,22 @@ export const Navbar = () => {
             )
           }
         <ToggleThemeButton />
-
-        <div className="relative shrink-0">
-          <Image
-            onClick={toggleNavMenu}
-            src={loggedInUser?.avatar || DEFAULT_AVATAR}
-            width={100}
-            height={100}
-            alt={`${loggedInUser?.username} avatar`}
-            className="size-10 rounded-full object-cover shrink-0"
-          />
-          <AnimatePresence>{isNavMenuOpen && <NavMenu />}</AnimatePresence>
-        </div>
+        
+        {
+          loggedInUser && (
+          <div className="relative shrink-0">
+            <Image
+              onClick={toggleNavMenu}
+              src={loggedInUser?.avatar || DEFAULT_AVATAR}
+              width={100}
+              height={100}
+              alt={`${loggedInUser?.username} avatar`}
+              className="size-10 rounded-full object-cover shrink-0"
+            />
+            <AnimatePresence>{isNavMenuOpen && <NavMenu />}</AnimatePresence>
+          </div>
+          )
+        }
       </div>
     </nav>
   );
