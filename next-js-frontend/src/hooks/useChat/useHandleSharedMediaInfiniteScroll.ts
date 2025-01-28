@@ -7,16 +7,17 @@ type PropTypes = {
         chatId: string;
         page: number;
     }) => void;
+    isAttachmentsFetching:boolean;
 }
 
-export const useHandleSharedMediaInfiniteScroll = ({totalPages,chatId,fetchMoreAttachments}:PropTypes) => {
+export const useHandleSharedMediaInfiniteScroll = ({totalPages,chatId,fetchMoreAttachments,isAttachmentsFetching}:PropTypes) => {
     
     
-    const [page,setPage] = useState(1) 
+    const [page,setPage] = useState(1);
     const [hasMore,setHasMore] = useState<boolean>(true)
     
     useEffect(()=>{
-        if(hasMore){
+        if(hasMore && !isAttachmentsFetching){
             fetchMoreAttachments({chatId,page})
         }
         if(page===totalPages){

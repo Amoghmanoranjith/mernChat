@@ -3,17 +3,16 @@ import { SharedMediaList } from "../attachments/SharedMediaList";
 
 type PropTypes = {
   attachments: Attachment["attachments"] | undefined;
-  selectedChatId: string;
+  totalAttachments:number | undefined;
 };
 
-export const SharedMedia = ({ attachments }: PropTypes) => {
-  const attachmentsLength = attachments?.length;
+export const SharedMedia = ({ attachments,totalAttachments }: PropTypes) => {
 
   return (
     <div className="flex flex-col gap-y-4">
       <p>
-        {attachmentsLength && attachmentsLength > 0
-          ? `Shared media ${attachmentsLength}`
+        {totalAttachments && totalAttachments > 0
+          ? `Shared media ${totalAttachments}`
           : "No shared media"}
       </p>
       <SharedMediaList />

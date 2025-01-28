@@ -1,9 +1,9 @@
 'use client';
-import { useEffect } from "react"
-import toast from "react-hot-toast"
-import { isErrorWithMessage } from "../../utils/helpers"
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query"
-import { SerializedError } from "@reduxjs/toolkit"
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { isErrorWithMessage } from "../../utils/helpers";
 
 type PropTypes = {
     isLoading:boolean,
@@ -20,31 +20,19 @@ export const useToast = ({error,isError,isLoading,isSuccess,isUninitialized,load
 
     useEffect(()=>{
         if(!isUninitialized){
-
-            if(isLoading){
-                if(loaderToast){
-                    toast.loading("loading")
-                }
+            if(isLoading && loaderToast) toast.loading("loading")
+            if(!isLoading && !isSuccess && isError && errorToast){
+                toast.dismiss()
+                if(isErrorWithMessage(error)) toast.error(error.data.message)
+                else toast.error("some Error occured")
             }
-
-            if(!isLoading && !isSuccess && isError){
-                if(errorToast){
-                    toast.dismiss()
-                    if(isErrorWithMessage(error)){
-                        toast.error(error.data.message)
-                    }else{
-                        toast.error("some Error occured")
-                    }
-                }
+            if(!isLoading && isSuccess && successToast){
+                toast.dismiss()
+                toast.success(successMessage)
             }
-
-            if(!isLoading && isSuccess && !isError){
-                if(successToast){
-                    toast.dismiss()
-                    toast.success(successMessage)
-                }
+            if(!isLoading){
+                toast.dismiss();
             }
-
         }
     },[isLoading,isUninitialized,isSuccess])
 }

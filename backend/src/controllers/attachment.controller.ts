@@ -78,7 +78,7 @@ const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest,res:Re
         reactions:[]
     }
 
-    emitEventToRoom(req,Events.MESSAGE,chatId,realtimeMessageResponse)
+    emitEventToRoom(req,Events.MESSAGE,chatId,{...realtimeMessageResponse,isNew:true})
 
     const otherMembers = getOtherMembers({members:isExistingChat.members.map(member=>member._id.toString()),user:req.user?._id.toString()!})
 
@@ -115,7 +115,7 @@ const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest,res:Re
 
     emitEventToRoom(req,Events.UNREAD_MESSAGE,chatId,unreadMessageData)
 
-    return res.status(201).json({})
+    return res.status(201)
 
 })
 
