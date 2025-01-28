@@ -10,9 +10,14 @@ export const useHandleRemoveSelectedAttachment = ({
   selectedAttachments,
 }: PropTypes) => {
   const handleRemoveSelectedAttachment = (indexToBeRemoved: number) => {
-    setSelectedAttachments(
-      selectedAttachments?.filter((_, index) => index !== indexToBeRemoved)
-    );
+    if(indexToBeRemoved==0){
+      setSelectedAttachments([]);
+    }
+    else{
+      setSelectedAttachments(
+        selectedAttachments?.filter((_, index) => index !== indexToBeRemoved)
+      );
+    }
   };
 
   return { handleRemoveSelectedAttachment };

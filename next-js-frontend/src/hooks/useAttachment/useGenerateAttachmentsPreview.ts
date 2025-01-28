@@ -9,10 +9,13 @@ export const useGenerateAttachmentsPreview = ({
   const [attachmentsPreview, setAttachmentsPreview] = useState<string[]>([]);
 
   useEffect(() => {
-    if (selectedAttachments.length) {
+    if (selectedAttachments.length>0){
       setAttachmentsPreview(
         selectedAttachments.map((attachment) => URL.createObjectURL(attachment))
       );
+    }
+    else{
+      setAttachmentsPreview([]);
     }
     return () => {
       attachmentsPreview.forEach((url) => URL.revokeObjectURL(url));

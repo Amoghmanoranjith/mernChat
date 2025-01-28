@@ -17,9 +17,7 @@ type PropTypes = {
 };
 export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
   const [selectedAttachments, setSelectedAttachments] = useState<Blob[]>([]);
-  const { attachmentsPreview } = useGenerateAttachmentsPreview({
-    selectedAttachments,
-  });
+  const { attachmentsPreview } = useGenerateAttachmentsPreview({selectedAttachments});
 
   const [attachmentsMenu, setAttachmentsMenu] = useState<boolean>(false);
   const [emojiForm, setEmojiForm] = useState<boolean>(false);

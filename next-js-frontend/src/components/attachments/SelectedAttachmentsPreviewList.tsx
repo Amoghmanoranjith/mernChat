@@ -14,6 +14,7 @@ export const SelectedAttachmentsPreviewList = ({
   setSelectedAttachments,
   selectedAttachments,
 }: PropTypes) => {
+  
   const { handleRemoveSelectedAttachment } = useHandleRemoveSelectedAttachment({
     selectedAttachments,
     setSelectedAttachments,
