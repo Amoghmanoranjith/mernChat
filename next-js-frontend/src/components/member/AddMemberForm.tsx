@@ -9,7 +9,7 @@ import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm
 import { Friend } from "@/interfaces/friends.interface"
 import { useGetFriendsQuery } from "@/services/api/friend.api"
 
-export const AddMemberForm = () => {
+const AddMemberForm = () => {
 
   const {data:friends} = useGetFriendsQuery()
   
@@ -72,3 +72,5 @@ export const AddMemberForm = () => {
     </div>
   )
 }
+
+export default AddMemberForm;

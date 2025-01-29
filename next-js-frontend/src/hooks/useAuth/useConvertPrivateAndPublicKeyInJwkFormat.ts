@@ -12,9 +12,16 @@ export const useConvertPrivateAndPublicKeyInJwkFormat = ({privateKey,publicKey}:
   const [publicKeyJWK, setPublicKeyJWK] = useState<JsonWebKey | null>(null);
 
   const handleConvertPrivateAndPublicKeyToJwk = async(privateKey:CryptoKey,publicKey:CryptoKey)=>{
-    const [privateKeyJWK,publicKeyJWK] = await Promise.all([convertCryptoKeyToJwk({cryptoKey:privateKey}),convertCryptoKeyToJwk({cryptoKey:publicKey})]);
-    setPrivateKeyJWK(privateKeyJWK);
-    setPublicKeyJWK(publicKeyJWK);
+    const convertedKeys = await Promise.all([convertCryptoKeyToJwk({cryptoKey:privateKey}),convertCryptoKeyToJwk({cryptoKey:publicKey})]);
+    if(convertedKeys){
+      const [privateKeyJWK,publicKeyJWK] = convertedKeys;
+      if(privateKeyJWK){
+        setPrivateKeyJWK(privateKeyJWK);
+      }
+      if(publicKeyJWK){
+        setPublicKeyJWK(publicKeyJWK);
+      }
+    }
   }
 
   useEffect(()=>{

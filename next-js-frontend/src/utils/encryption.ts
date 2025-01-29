@@ -1,9 +1,12 @@
 import { base64ToUint8Array, uint8ArrayToBase64 } from "./helpers";
 
-const crypto = window.crypto.subtle;
 
 // key pair generation
 const generateKeyPair = async () => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
+
   // The `async` function allows the use of `await` inside it.
   // We are awaiting the result of the `crypto.generateKey` function which is a promise-based method.
   
@@ -29,7 +32,8 @@ const generateKeyPair = async () => {
 }
 // message encryption function
 const encryptMessage = async ({sharedKey,message}:{sharedKey: CryptoKey, message: string}): Promise<string> => {
-  
+  if(typeof window==='undefined') return '';
+  const crypto = window.crypto.subtle;
   // Generate a random initialization vector (IV) for each encryption. AES-GCM requires a unique IV for every encryption operation.
   // This ensures the same message encrypted multiple times will produce different ciphertexts.
   const iv = window.crypto.getRandomValues(new Uint8Array(12)); // AES-GCM typically uses a 12-byte IV.
@@ -62,6 +66,9 @@ const encryptMessage = async ({sharedKey,message}:{sharedKey: CryptoKey, message
 
 // message decryption function
 const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string) => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
   
   // Convert the base64-encoded encrypted data (which includes both the IV and the ciphertext) back to a Uint8Array.
   // The helper function `base64ToUint8Array` decodes the base64 string into a binary array (Uint8Array).
@@ -91,6 +98,7 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
     return decryptedMessage;
 
   } catch (error) {
+    console.log(error);
     // If decryption fails (e.g., due to incorrect key or corrupted data), handle the error.
     // Here, instead of logging the error, the function returns `null` to indicate decryption failure.
     return null;
@@ -99,6 +107,10 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
 
 // Function to derive a shared secret key using ECDH and the provided private and public keys
 const deriveSharedSecretKey = async({privateKey,publicKey}:{privateKey: CryptoKey, publicKey: CryptoKey}) => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
+
   const sharedSecretKey = await crypto.deriveKey(
     {
       name: "ECDH",          // Key exchange algorithm: Elliptic Curve Diffie-Hellman (ECDH)
@@ -118,6 +130,10 @@ const deriveSharedSecretKey = async({privateKey,publicKey}:{privateKey: CryptoKe
 
 // Function to derive a key from password using PBKDF2
 const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
+
   try {
     // Step 1: Create a TextEncoder to convert the password string into a byte array
     // The TextEncoder converts the password (a string) into a Uint8Array which is the format needed for cryptographic operations.
@@ -125,7 +141,7 @@ const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
 
     // Step 2: Import the password as cryptographic key material
     // We import the password as raw key material that can be used for key derivation.
-    const keyMaterial = await window.crypto.subtle.importKey(
+    const keyMaterial = await crypto.importKey(
       'raw',  // The format of the key (raw means no special encoding)
       passwordBuffer,  // The encoded password in byte format
       { name: 'PBKDF2' },  // Specify the algorithm we're using (PBKDF2 for key derivation)
@@ -160,6 +176,9 @@ const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
 };
 
 const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
+
+  if(typeof window==='undefined') return;
+
   // Step 1: Generate a random salt of 16 bytes for PBKDF2
   // A salt is generated for key derivation to ensure the security of the password-based encryption.
   // The salt is a random value that ensures the derived key will be unique even if the same password is used.
@@ -169,6 +188,8 @@ const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
   // We use the password and the generated salt to derive a key using the PBKDF2 key derivation function.
   // This results in a secure encryption key that will be used to encrypt the private key.
   const key = await deriveKeyFromPassword(password, salt);
+
+  if(!key) return;
 
   // Step 3: Encode the private key to a JSON string and then to a byte array
   // The private key (in the form of a JsonWebKey) is converted to a string using JSON.stringify,
@@ -215,6 +236,9 @@ const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
 
 // Function to decrypt a Base64-encoded encrypted private key using a password
 const decryptPrivateKey = async (password: string, combinedBufferBase64: string) => {
+
+  if(typeof window==='undefined') return;
+
   // Step 1: Convert the Base64-encoded combined buffer back to a Uint8Array
   // `atob` decodes the Base64 string to a binary string, and `Uint8Array.from` converts each character
   // of the binary string to its corresponding char code (byte value) to create the Uint8Array.
@@ -231,6 +255,7 @@ const decryptPrivateKey = async (password: string, combinedBufferBase64: string)
   // The `deriveKeyFromPassword` function is used to generate a cryptographic key using the password and salt.
   // This ensures that the correct password and salt are required to decrypt the data.
   const key = await deriveKeyFromPassword(password, salt);
+  if(!key) return;
 
   try {
     // Step 4: Decrypt the encrypted message using AES-GCM with the derived key and IV
@@ -263,7 +288,11 @@ const decryptPrivateKey = async (password: string, combinedBufferBase64: string)
 // - jwk: The JsonWebKey object to be converted.
 // - isPrivate: A boolean indicating whether the key is private (used for key derivation) or not.
 // Returns: A promise that resolves to a CryptoKey object.
-const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkFormat: JsonWebKey, isPrivateKey: boolean}): Promise<CryptoKey> => {
+const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkFormat: JsonWebKey, isPrivateKey: boolean}): Promise<CryptoKey | undefined> => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
+
   try {
     let key; // Placeholder to store the resulting CryptoKey.
 
@@ -317,7 +346,11 @@ const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkForm
 //
 // Returns:
 // - A promise that resolves to a JsonWebKey (JWK) object.
-const convertCryptoKeyToJwk = async ({cryptoKey}:{cryptoKey: CryptoKey}): Promise<JsonWebKey> => {
+const convertCryptoKeyToJwk = async ({cryptoKey}:{cryptoKey: CryptoKey}): Promise<JsonWebKey | undefined> => {
+
+  if(typeof window==='undefined') return;
+  const crypto = window.crypto.subtle;
+
   // Step 1: Use the Web Crypto API's exportKey method to export the CryptoKey.
   // - The first parameter specifies the desired format ("jwk").
   // - The second parameter is the CryptoKey to export.

@@ -8,7 +8,7 @@ import { FormInput } from "../ui/FormInput"
 import { GroupChatSchemaType, groupChatSchema } from "@/schemas/chat.schema"
 import Image from "next/image"
 
-export const ChatUpdateForm = () => {
+const ChatUpdateForm = () => {
 
   const [selectedImage,setSelectedImage] = useState<Blob>()
   const [selectedImagePreview,setSelectedImagePreview] = useState<string>()
@@ -83,3 +83,5 @@ export const ChatUpdateForm = () => {
     
   )
 }
+
+export default ChatUpdateForm;

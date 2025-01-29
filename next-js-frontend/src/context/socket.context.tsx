@@ -16,7 +16,7 @@ type PropTypes = {
   children: React.ReactNode;
 };
 
-export const getSocket = () => useContext(socketContext);
+export const useSocket = () => useContext(socketContext);
 
 let socket: Socket | null = null; // Singleton instance
 

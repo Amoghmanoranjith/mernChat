@@ -1,12 +1,15 @@
-'use client';
-import Lottie from "lottie-react"
+"use client";
+import Lottie from "lottie-react";
+import { useEffect, useState } from "react";
 
 type PropTypes = {
-    animationData:unknown
-}
+  animationData: unknown;
+};
 
-export const LottieAnimation = ({animationData}:PropTypes) => {
-  return (
-    <Lottie loop={false} animationData={animationData}/>
-  )
-}
+export const LottieAnimation = ({ animationData }: PropTypes) => {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  return isClient && <Lottie loop={false} animationData={animationData} />;
+};

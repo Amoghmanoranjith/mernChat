@@ -3,7 +3,7 @@ import { generateKeyPair } from "@/utils/encryption";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
-  user: User | undefined | boolean
+  user: User | undefined | boolean;
 };
 
 export const useGenerateKeyPair = ({ user }: PropTypes) => {
@@ -11,9 +11,12 @@ export const useGenerateKeyPair = ({ user }: PropTypes) => {
   const [publicKey, setPublicKey] = useState<CryptoKey | null>(null);
 
   const generateKeyPairAndConvertItInJwkFormat = async () => {
-    const { privateKey, publicKey } = await generateKeyPair();
-    setPrivateKey(privateKey);
-    setPublicKey(publicKey);
+    const keys = await generateKeyPair();
+    if (keys) {
+      const { privateKey, publicKey } = keys;
+      setPrivateKey(privateKey);
+      setPublicKey(publicKey);
+    }
   };
 
   useEffect(() => {

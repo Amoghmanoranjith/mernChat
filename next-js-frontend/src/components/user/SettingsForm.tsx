@@ -6,7 +6,7 @@ import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 
 
-export const SettingsForm = () => {
+const SettingsForm = () => {
 
     const {updateFcmToken} = useUpdateFcmToken()
     const {updateNotificationsFlag} = useUpdateNotificationsFlag()
@@ -70,3 +70,5 @@ export const SettingsForm = () => {
     </div>
   )
 }
+
+export default SettingsForm;

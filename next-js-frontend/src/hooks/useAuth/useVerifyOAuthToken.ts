@@ -1,4 +1,3 @@
-'use client';
 import { useVerifyOAuthTokenMutation } from "@/services/api/auth.api";
 import { useToast } from "../useUI/useToast";
 

@@ -13,9 +13,10 @@ import { useCreateGroupChat } from "../../hooks/useChat/useCreateGroupChat";
 import { CrossIcon } from "../ui/icons/CrossIcon";
 import { SubmitButton } from "../ui/SubmitButton";
 import { FriendList } from "./FriendList";
+import Image from "next/image";
 
 
-export const GroupChatForm = () => {
+const GroupChatForm = () => {
 
   const [image,setImage] = useState<Blob>()
   const [preview,setPreview] = useState<string>()
@@ -23,10 +24,10 @@ export const GroupChatForm = () => {
   const [selectedMembers,setSelectedMembers] = useState<string[]>([])
 
   const [searchVal,setSearchVal] = useState<string>('')
-  const {filteredFriends,setFilteredFriends} = useFilteredFriends({searchVal});
+  const {filteredFriends} = useFilteredFriends({searchVal});
   
   const {data:friends} = useGetFriendsQuery()
-  const {isSuccess,isLoading} = useCreateGroupChat()
+  const {isLoading} = useCreateGroupChat()
   const { register, handleSubmit, watch, formState: { errors } } = useForm<GroupChatSchemaType>({resolver:zodResolver(groupChatSchema)});
   const {createGroupChatSubmitHandler} = useCreateGroupChatSubmit({image,selectedMembers});
 
@@ -68,7 +69,7 @@ export const GroupChatForm = () => {
             {/* avatar selection */}
             <div className="w-24 rounded-full relative overflow-hidden">
                 <input type="file" accept={ACCEPTED_IMAGE_TYPES.join("")} onChange={handleImageChange} className="absolute w-full h-full opacity-0 cursor-pointer"/>
-                <img src={preview?preview:DEFAULT_AVATAR} className="h-full w-full object-cover" alt="photo"/>
+                <Image width={100} height={100} src={preview?preview:DEFAULT_AVATAR} className="h-full w-full object-cover" alt="photo"/>
             </div>
             
             {/* name input */}
@@ -120,3 +121,5 @@ export const GroupChatForm = () => {
     </div>
   )
 }
+
+export default GroupChatForm

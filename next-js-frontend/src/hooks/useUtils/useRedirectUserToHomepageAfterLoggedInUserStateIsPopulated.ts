@@ -12,5 +12,5 @@ export const useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated = () => 
         if(loggedInUser){
             router.replace("/");
         }
-    },[loggedInUser]);
+    },[loggedInUser,router]);
 }

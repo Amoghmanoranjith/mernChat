@@ -1,6 +1,6 @@
 import { OtpVerification } from "@/components/auth/OtpVerification";
 
-const page = async() => {
+export default async function Page(){
   
   return (
     <div className="flex flex-col gap-y-6">
@@ -9,14 +9,11 @@ const page = async() => {
           Verify your email address
         </h4>
         <p className="text-lg text-fluid-p">
-          You'll receive an otp that will {" "}
-          {/* <span className="font-semibold">{user?.email}</span> that will */}
-          help us verify that this email is your's
+          You&apos;ll receive an otp that will {" "}
+          help us verify that this email is your&apos;s
         </p>
       </div>
       <OtpVerification/>
     </div>
   );
 };
-
-export default page;

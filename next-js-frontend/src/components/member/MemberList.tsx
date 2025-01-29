@@ -1,11 +1,11 @@
-import { IChatMember, IChatWithUnreadMessages } from "../../interfaces/chat"
-import { IFriend } from "../../interfaces/friends"
+import { ChatMember, ChatWithUnreadMessages } from "@/interfaces/chat.interface"
+import { Friend } from "@/interfaces/friends.interface"
 import { MemberCard } from "./MemberCard"
 
 type PropTypes = {
     selectable:boolean
-    existingMembers?:IChatWithUnreadMessages['members'] | []
-    members:Array<IChatMember> | Array<IFriend>
+    existingMembers?:ChatWithUnreadMessages['members'] | []
+    members:ChatMember[] | Friend[]
     selectedMembers:Array<string>
     toggleSelection: (memberId: string) => void
 }

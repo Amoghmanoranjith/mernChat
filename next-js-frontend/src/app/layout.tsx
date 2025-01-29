@@ -1,12 +1,12 @@
 import { InitializeIndexedDbWrapper } from "@/components/auth/InitializeIndexedDbWrapper";
 import { ModalWrapper } from "@/components/modal/ModalWrapper";
+import { ThemeInitializer } from "@/components/theme/ThemeInitializer";
 import { SocketProvider } from "@/context/socket.context";
 import StoreProvider from "@/services/redux/store/storeProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import { ThemeInitializer} from "@/components/theme/ThemeInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,12 +37,11 @@ export default function RootLayout({
         <div id="modal-root"></div>
         <StoreProvider>
           <SocketProvider>
-            <Toaster />
-            <InitializeIndexedDbWrapper>
-                <ThemeInitializer/>
-                {children}
-              <ModalWrapper />
-            </InitializeIndexedDbWrapper>
+            {children}
+            <Toaster/>
+            <InitializeIndexedDbWrapper/>
+            <ThemeInitializer/>
+            <ModalWrapper/>
           </SocketProvider>
         </StoreProvider>
       </body>

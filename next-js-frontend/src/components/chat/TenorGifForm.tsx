@@ -4,7 +4,7 @@ import { useToggleGif } from "../../hooks/useUI/useToggleGif";
 import { selectisDarkMode } from "../../services/redux/slices/uiSlice";
 import { useAppSelector } from "../../services/redux/store/hooks";
 
-export const TenorGifForm = () => {
+const TenorGifForm = () => {
   const { sendMessage } = useSendMessage();
   const isDarkMode = useAppSelector(selectisDarkMode);
   const { toggleGifForm } = useToggleGif();
@@ -32,3 +32,5 @@ export const TenorGifForm = () => {
     </div>
   );
 };
+
+export default TenorGifForm;

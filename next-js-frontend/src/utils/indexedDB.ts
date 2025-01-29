@@ -1,11 +1,9 @@
-import { convertCryptoKeyToJwk } from "./encryption";
 
 enum OBJECT_STORE {
   privateKeys = "privateKeys",
   sharedKeys = "sharedKeys",
 }
 
-const indexDb = window.indexedDB;
 
 // Define constants for IndexedDB configuration
 const DB_NAME = "Authentication"; // Name of the database
@@ -13,7 +11,9 @@ const VERSION = 1; // Database version
 
 // Function to initialize IndexedDB
 const initializeIndexDb = () => {
+  if(typeof window === 'undefined') return;
   // Check if the IndexedDB API is supported by the browser
+  const indexDb = window.indexedDB;
   if (!indexDb) {
     console.log("IndexedDB could not be found in this browser.");
     return; // Exit the function if IndexedDB is not supported
@@ -52,6 +52,7 @@ const initializeIndexDb = () => {
 
 // Function to store a user's private key in IndexedDB
 const storeUserPrivateKeyInIndexedDB = async ({userId,privateKey}:{userId: string, privateKey: JsonWebKey}) => {
+  if(typeof window === 'undefined') return;
 
   // Open (or create) the IndexedDB database
   const request = indexedDB.open(DB_NAME, VERSION);
@@ -88,6 +89,7 @@ const storeUserPrivateKeyInIndexedDB = async ({userId,privateKey}:{userId: strin
 
 // Function to retrieve a user's private key from IndexedDB by userId
 const getUserPrivateKeyFromIndexedDB = async ({userId}:{userId: string}): Promise<JsonWebKey | null> => {
+  if(typeof window === 'undefined') return null;
 
   // Return a Promise to handle asynchronous behavior
   return new Promise((resolve, reject) => {
@@ -139,7 +141,7 @@ const getUserPrivateKeyFromIndexedDB = async ({userId}:{userId: string}): Promis
 
 // Function to store a shared cryptographic key in IndexedDB
 const storeSharedKeyInIndexedDB = async ({userId1,userId2,sharedKeyJwk}:{userId1: string, userId2: string, sharedKeyJwk: JsonWebKey}) => {
-
+  if(typeof window === 'undefined') return;
 
   // Open the IndexedDB database (DB_NAME) and specify the version (VERSION)
   const request = indexedDB.open(DB_NAME, VERSION);
@@ -185,6 +187,8 @@ const storeSharedKeyInIndexedDB = async ({userId1,userId2,sharedKeyJwk}:{userId1
 
 // Function to retrieve a stored shared cryptographic key between two users from IndexedDB
 const getStoredSharedKeyFromIndexedDB = async ({userId1,userId2}:{userId1:string,userId2:string}):Promise<JsonWebKey | null> => {
+
+  if(typeof window === 'undefined') return null;
   // Return a promise that will resolve with the stored shared key or null if not found
   return new Promise((resolve, reject) => {
 
@@ -233,9 +237,5 @@ const getStoredSharedKeyFromIndexedDB = async ({userId1,userId2}:{userId1:string
 
 
 export {
-  getUserPrivateKeyFromIndexedDB,
-  getStoredSharedKeyFromIndexedDB,
-  initializeIndexDb,
-  storeUserPrivateKeyInIndexedDB,
-  storeSharedKeyInIndexedDB,
+  getStoredSharedKeyFromIndexedDB, getUserPrivateKeyFromIndexedDB, initializeIndexDb, storeSharedKeyInIndexedDB, storeUserPrivateKeyInIndexedDB
 };

@@ -1,8 +1,8 @@
-import { IChatWithUnreadMessages } from "../../interfaces/chat"
-import { Avatar } from "../ui/Avatar"
+import { ChatWithUnreadMessages } from "@/interfaces/chat.interface"
+import Image from "next/image"
 
 type PropTypes = {
-    members:IChatWithUnreadMessages['seenBy']
+    members:ChatWithUnreadMessages['seenBy']
 }
 
 export const SeenByList = ({members}:PropTypes) => {
@@ -10,10 +10,12 @@ export const SeenByList = ({members}:PropTypes) => {
     <div className="flex item-center flex-wrap self-end gap-x-1">
       {
         members.map(member=>(
-          <Avatar 
-            imgUrl={member.avatar} 
-            height={7} 
-            width={7} 
+          <Image 
+            key={member._id}
+            src={member.avatar} 
+            height={100} 
+            width={100}
+            className="size-7" 
             alt={member.username}
            />
         ))

@@ -12,7 +12,9 @@ export const useEncryptPrivateKeyWithUserPassword = ({password,privateKeyJWK}:Pr
 
     const handleEncryptPrivateKey = async(password:string,privateKeyJWK:JsonWebKey)=>{
         const encryptedPrivateKey =  await encryptPrivateKey(password,privateKeyJWK);
-        setEncryptedPrivateKey(encryptedPrivateKey);
+        if(encryptedPrivateKey){
+            setEncryptedPrivateKey(encryptedPrivateKey);
+        }
     }
 
     useEffect(()=>{

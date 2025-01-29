@@ -1,10 +1,10 @@
-import { IUser } from "../../interfaces/auth"
-import { IFriend } from "../../interfaces/friends"
+import { Friend } from "@/interfaces/friends.interface"
 import { UserItem } from "./UserItem"
+import { User } from "@/interfaces/auth.interface"
 
 type PropTypes = {
-    users:Array<Pick<IUser , "_id" | 'name' | "username" | 'avatar'>>
-    friends:Array<IFriend>
+    users:Array<Pick<User , "_id" | 'name' | "username" | 'avatar'>>
+    friends:Friend[]
     loggedInUserId: string
     sendFriendRequest:(receiverId:string)=>void
 }

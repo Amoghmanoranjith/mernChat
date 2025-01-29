@@ -9,10 +9,10 @@ import { MessageInputAreaWrapper } from "@/components/messages/MessageInputAreaW
 import { MessageListSkeletonWrapper } from "@/components/messages/MessageListSkeletonWrapper";
 import { ServerDownMessage } from "@/components/ui/ServerDownMessage";
 import {
-  fetchUserChats,
-  fetchUserFriendRequest,
-  fetchUserFriends,
-  getLoggedInUserFromHeaders,
+    fetchUserChats,
+    fetchUserFriendRequest,
+    fetchUserFriends,
+    getLoggedInUserFromHeaders,
 } from "@/utils/helpers";
 import { cookies, headers } from "next/headers";
 

@@ -1,8 +1,9 @@
+import { User } from '@/interfaces/auth.interface'
 import { motion } from 'framer-motion'
-import { IUser } from "../../interfaces/auth"
+import Image from 'next/image'
 
 type PropTypes = {
-    user:Pick<IUser , '_id' | 'name' | "username" | 'avatar'>
+    user:Pick<User , '_id' | 'name' | "username" | 'avatar'>
     sendFriendRequest:(receiverId:string)=>void
     isFriendAlready:boolean
     loggedInUserId: string
@@ -15,7 +16,7 @@ export const UserItem = ({user,isFriendAlready,loggedInUserId,sendFriendRequest}
     <div className="p-2 flex items-center justify-between">
 
         <div className="flex gap-x-2">
-            <img className="w-10 h-10 rounded-full object-cover" src={user.avatar} alt={`${user.username} avatar`} />
+            <Image width={100} height={100} className="w-10 h-10 rounded-full object-cover" src={user.avatar} alt={`${user.username} avatar`} />
             <div className="flex flex-col">
                 <div className='flex items-center gap-x-2'>
                     <h6>{user.username}</h6>

@@ -38,6 +38,7 @@ export const SignupForm = () => {
   useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
 
   const onSubmit: SubmitHandler<signupSchemaType> = (data) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...credentials } = data;
     signup(credentials);
   };

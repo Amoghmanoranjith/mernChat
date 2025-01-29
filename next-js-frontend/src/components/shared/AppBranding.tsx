@@ -1,6 +1,5 @@
-import { chatAnimation } from "@/assets";
-import { LottieAnimation } from "../ui/LottieAnimation";
-import { AppBrandingProfileImages } from "./AppBrandingProfileImages";
+import { APP_BRANDING_PROFILE_IMAGES } from "@/constants";
+import Image from "next/image";
 
 export const AppBranding = () => {
   return (
@@ -8,9 +7,6 @@ export const AppBranding = () => {
       <div className="flex flex-col gap-y-1">
         <div className="flex items-center gap-x-4">
           <h1 className="text-7xl font-bold">Mern Chat</h1>
-          <div className="w-20 h-20">
-            <LottieAnimation animationData={chatAnimation} />
-          </div>
         </div>
         <h2 className="text-2xl font-semibold">
           Discover your next conversation
@@ -21,7 +17,19 @@ export const AppBranding = () => {
         Join our vibrant community of more than 1lakh+ people and build
         connections that last forever
       </p>
-      <AppBrandingProfileImages/>
+      <div className="flex gap-x-1">
+        {APP_BRANDING_PROFILE_IMAGES.map((avatar, index) => (
+          <Image
+            key={index}
+            width={200}
+            height={200}
+            quality={100}
+            src={avatar}
+            className="size-16 rounded-full object-cover shrink-0"
+            alt="avatar"
+          />
+        ))}
+      </div>
     </div>
   );
 };

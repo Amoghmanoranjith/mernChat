@@ -3,7 +3,7 @@ import { selectAttachments } from "../../services/redux/slices/uiSlice"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import Image from "next/image"
 
-export const AttachmentPreview = () => {
+const AttachmentPreview = () => {
 
     const attachments = useAppSelector(selectAttachments)
 
@@ -32,7 +32,7 @@ export const AttachmentPreview = () => {
                 </svg>
             </button>
 
-            <img className="w-[25rem] h-[30rem] max-lg:w-[25rem] max-lg:h-[25rem] max-md:w-[20rem] max-md:h-[20rem] max-sm:w-[] max-sm:h-[] object-contain" src={attachments[currentAttachmentIndex]} alt="image" />
+            <Image width={200} height={200} className="w-[25rem] h-[30rem] max-lg:w-[25rem] max-lg:h-[25rem] max-md:w-[20rem] max-md:h-[20rem] max-sm:w-[] max-sm:h-[] object-contain" src={attachments[currentAttachmentIndex]} alt="image" />
             
             <button onClick={handleNextClick} className="max-sm:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -53,3 +53,5 @@ export const AttachmentPreview = () => {
     </div>
   )
 }
+
+export default AttachmentPreview;

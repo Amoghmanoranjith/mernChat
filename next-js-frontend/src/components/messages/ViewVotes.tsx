@@ -2,7 +2,7 @@ import Image from "next/image";
 import { selectVotesData } from "../../services/redux/slices/uiSlice";
 import { useAppSelector } from "../../services/redux/store/hooks";
 
-export const ViewVotes = () => {
+const ViewVotes = () => {
 
     const votesData = useAppSelector(selectVotesData)
 
@@ -48,3 +48,5 @@ export const ViewVotes = () => {
     </div>
   )
 }
+
+export default ViewVotes;

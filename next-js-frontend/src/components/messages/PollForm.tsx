@@ -10,7 +10,7 @@ import { SubmitButton } from "../ui/SubmitButton"
 import { ToggleSwitch } from "../ui/ToggleSwitch"
 import { PlusIconWithoutCircle } from "../ui/icons/PlusIconWithoutCircle"
 
-export const PollForm = () => {
+const PollForm = () => {
 
   const {sendMessage} = useSendMessage()
   const {togglePollForm} = useTogglePoolForm()
@@ -103,3 +103,5 @@ export const PollForm = () => {
     </form>
   )
 }
+
+export default PollForm;

@@ -4,7 +4,7 @@ import { FriendRequestList } from "./FriendRequestList"
 import { FriendRequest } from "@/interfaces/request.interface"
 
 
-export const FriendRequestForm = () => {
+const FriendRequestForm = () => {
 
     const {data:friendRequests} = useGetUserFriendRequestsQuery()
     const {handleFriendRequest} = useAcceptOrRejectFriendRequest()
@@ -23,3 +23,5 @@ export const FriendRequestForm = () => {
     </div>
   )
 }
+
+export default FriendRequestForm;

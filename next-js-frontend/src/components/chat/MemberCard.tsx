@@ -1,7 +1,9 @@
-import type { IChatMember } from "../../interfaces/chat"
+import { ChatMember } from "@/interfaces/chat.interface"
+import Image from "next/image"
+
 
 type PropTypes = {
-  member: IChatMember
+  member: ChatMember
   loggedInUserId:string
   chatAdminId?:string
   isRemovable?:boolean
@@ -12,7 +14,7 @@ type PropTypes = {
 export const MemberCard = ({member,loggedInUserId,chatAdminId,isRemovable=false,removeHandler,chatId,isGroupChat}:PropTypes) => {
   return (
     <div className="flex gap-x-2 items-center hover:bg-secondary-dark relative">
-        <img className="aspect-square object-cover w-[4rem] rounded" 
+        <Image width={100} height={100} className="aspect-square object-cover w-[4rem] rounded" 
         src={member.avatar} 
         alt={`${member.username} avatar`} />
         <div>

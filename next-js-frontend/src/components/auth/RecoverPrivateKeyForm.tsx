@@ -5,7 +5,7 @@ import { PrivateKeyRecoveryFromPrimaryInfo } from "./PrivateKeyRecoveryFromPrima
 import { RecoveryOptionsForManualSignedUpUser } from "./RecoveryOptionsForManualSignedUpUser";
 import { RecoveryOptionsForOAuthSignedUpUser } from "./RecoveryOptionsForOAuthSignedUpUser";
 
-export const RecoverPrivateKeyForm = () => {
+const RecoverPrivateKeyForm = () => {
   const loggedInUser = useAppSelector(selectLoggedInUser);
   const hasUserSignedUpViaOAuth = loggedInUser?.oAuthSignup;
 
@@ -22,3 +22,5 @@ export const RecoverPrivateKeyForm = () => {
     </div>
   );
 };
+
+export default RecoverPrivateKeyForm;

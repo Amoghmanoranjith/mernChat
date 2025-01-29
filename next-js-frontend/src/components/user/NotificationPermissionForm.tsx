@@ -1,4 +1,4 @@
-import { getToken } from "firebase/messaging"
+import { getMessaging, getToken } from "firebase/messaging"
 import { motion } from "framer-motion"
 import { useUpdateFcmToken } from "../../hooks/useAuth/useUpdateFcmToken"
 import { setNotificationPermissionForm } from "../../services/redux/slices/uiSlice"
@@ -6,9 +6,8 @@ import { useAppDispatch } from "../../services/redux/store/hooks"
 import { useEffect, useState } from "react"
 import { useUpdateNotificationsFlag } from "../../hooks/useUser/useUpdateNotificationsFlag"
 import toast from "react-hot-toast"
-import { messaging } from "@/config/firebase.config"
 
-export const NotificationPermissionForm = () => {
+const NotificationPermissionForm = () => {
 
     const dispatch = useAppDispatch()
 
@@ -52,7 +51,7 @@ export const NotificationPermissionForm = () => {
 
             if(process.env.VITE_FIREBASE_VAPID_KEY) {
                 try {
-                    const fcmToken = await getToken(messaging, { vapidKey: process.env.VITE_FIREBASE_VAPID_KEY });
+                    const fcmToken = await getToken(getMessaging(), { vapidKey: process.env.VITE_FIREBASE_VAPID_KEY });
                     setToken(fcmToken)
                 } 
                 catch (error) {
@@ -70,9 +69,9 @@ export const NotificationPermissionForm = () => {
     <div className="flex flex-col gap-y-7">
 
         <div className="flex flex-col gap-y-2">
-            <h4 className="text-xl">hmm 💭 seems like you haven't been receiving notifications</h4>
+            <h4 className="text-xl">hmm 💭 seems like you haven&apos;t been receiving notifications</h4>
             <div className="flex flex-col gap-y-1">
-                <p className="text-secondary-darker">Even after allowing notifications you'll have full control to toggle them via settings </p>
+                <p className="text-secondary-darker">Even after allowing notifications you&apos;ll have full control to toggle them via settings </p>
                 <p className="text-secondary-darker">Wanna allow notifications ? </p>
             </div>
         </div>
@@ -84,3 +83,5 @@ export const NotificationPermissionForm = () => {
     </div>
   )
 }
+
+export default NotificationPermissionForm;

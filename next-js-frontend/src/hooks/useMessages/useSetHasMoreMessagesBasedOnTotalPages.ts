@@ -10,6 +10,6 @@ export const useSetHasMoreMessagesBasedOnTotalPages = ({setHasMoreMessages,total
         // Set hasMoreMessages based on the total number of pages
         // If there's only 1 page, there are no more messages to load
         // Otherwise, set hasMoreMessages to true to indicate there are more messages
-        totalPages === 1 ? setHasMoreMessages(false) : setHasMoreMessages(true);
+        setHasMoreMessages(totalPages==1?false:true);
       }, [totalPages]);
 };

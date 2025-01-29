@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { selectLoggedInUser } from "../../services/redux/slices/authSlice"
 import { useToast } from "../../hooks/useUI/useToast"
-import { ACCEPTED_IMAGE_TYPES } from "../../constants"
+import { ACCEPTED_IMAGE_TYPES, DEFAULT_AVATAR } from "../../constants"
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { formatRelativeTime } from "../../utils/helpers"
 import { useUpdateProfileMutation } from "@/services/api/user.api"
+import Image from "next/image"
 
 export const ProfileForm = () => {
 
@@ -29,7 +30,7 @@ export const ProfileForm = () => {
         successToast:true
     })
 
-    const [preview,setPreview] = useState<string>(loggedInUser?.avatar!)
+    const [preview,setPreview] = useState<string>(loggedInUser?.avatar || DEFAULT_AVATAR)
     const [image,setImage] = useState<Blob>()
     const [editActive,setEditActive] = useState<boolean>(false)
 
@@ -66,7 +67,7 @@ export const ProfileForm = () => {
                         
                         <div className="w-40 h-40 rounded-full relative overflow-hidden">
                             <input accept={ACCEPTED_IMAGE_TYPES.join(", ")}  onChange={handleImageChange} className="absolute h-full w-full cursor-pointer opacity-0" type="file"/>
-                            <img className="w-full h-full object-cover rounded-full" src={preview} alt={`${loggedInUser?.name} avatar`} />
+                            <Image width={200} height={200} className="w-full h-full object-cover rounded-full" src={preview} alt={`${loggedInUser?.name} avatar`} />
                         </div>
 
                         <div className="flex flex-col items-center">
@@ -100,3 +101,5 @@ export const ProfileForm = () => {
     
   )
 }
+
+export default ProfileForm;

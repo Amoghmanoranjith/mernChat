@@ -7,7 +7,7 @@ import { useAppSelector } from "../../services/redux/store/hooks"
 import { UserListSkeleton } from "../ui/skeleton/UserListSkeleton"
 import { UserList } from "./UserList"
 
-export const AddFriendForm = () => {
+const AddFriendForm = () => {
 
     const [inputVal,setInputVal] = useState<string>("")
     const loggedInUserId = useAppSelector(selectLoggedInUser)?._id
@@ -31,7 +31,7 @@ export const AddFriendForm = () => {
             clearInterval(timeoutId)
         }
 
-    },[inputVal])
+    },[inputVal, searchUser])
 
     const hanldeSendFriendRequest = (receiverId:string)=>{
         sendFriendRequest({receiverId})
@@ -63,3 +63,5 @@ export const AddFriendForm = () => {
     </div>
   )
 }
+
+export default AddFriendForm;

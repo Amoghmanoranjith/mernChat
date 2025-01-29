@@ -15,5 +15,5 @@ export const useUpdateLoggedInUserState = ({ user, isSuccess }: PropTypes) => {
     if (isSuccess && user) {
       dispatch(updateLoggedInUser(user));
     }
-  }, [isSuccess]);
+  }, [dispatch, isSuccess, user]);
 };

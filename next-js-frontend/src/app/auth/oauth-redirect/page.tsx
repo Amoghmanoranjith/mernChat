@@ -10,16 +10,16 @@ import { useVerifyOAuthToken } from '@/hooks/useAuth/useVerifyOAuthToken';
 import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from '@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated';
 import { useSearchParams } from 'next/navigation';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-export default function Page(){
+function OAuthRedirectPageContent(){
 
   const searchParams = useSearchParams()
   const token = searchParams.get('token');
 
   useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
   
-  const {verifyOAuthToken,isTokenVerificationSucessfull,data,isLoading} = useVerifyOAuthToken()
+  const {verifyOAuthToken,isTokenVerificationSucessfull,data} = useVerifyOAuthToken()
   useUpdateLoggedInUserState({isSuccess:isTokenVerificationSucessfull,user:data?.user})
 
   const [isOAuthNewUser,setOAuthNewUser] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export default function Page(){
     if(token){
       verifyOAuthToken({token});
     }
-  },[token])
+  },[token, verifyOAuthToken])
 
   useEffect(()=>{
     if(data && isTokenVerificationSucessfull){
@@ -66,5 +66,13 @@ export default function Page(){
   
   return (
     <div className="bg-background w-full h-full text-text text-xl">Redirecting...</div>
+  )
+}
+
+export default function Page(){
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OAuthRedirectPageContent/>
+    </Suspense>
   )
 }

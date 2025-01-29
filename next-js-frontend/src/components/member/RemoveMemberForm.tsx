@@ -9,7 +9,7 @@ import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice
 import { useAppSelector } from "../../services/redux/store/hooks"
 import { MemberList } from "./MemberList"
 
-export const RemoveMemberForm = () => {
+const RemoveMemberForm = () => {
 
     const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
 
@@ -32,7 +32,7 @@ export const RemoveMemberForm = () => {
                 filteredMembers.filter(member=>member.username.toLowerCase().includes(searchVal.toLowerCase()))
             )
         }
-    },[searchVal,selectedChatDetails])
+    },[filteredMembers, loggedInUserId?._id, searchVal, selectedChatDetails])
 
     const {removeMember} = useRemoveMember()
 
@@ -105,3 +105,5 @@ export const RemoveMemberForm = () => {
     </div>
   )
 }
+
+export default RemoveMemberForm;

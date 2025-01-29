@@ -1,9 +1,9 @@
 "use client";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
-const page = () => {
+function ResetPasswordPageContent (){
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,4 +36,10 @@ const page = () => {
   );
 };
 
-export default page;
+export default function Page(){
+  return (
+    <Suspense fallback={<span>Loading...</span>}>
+      <ResetPasswordPageContent/>
+    </Suspense>
+  )
+};

@@ -13,7 +13,7 @@ export default function page() {
         <p>
           Congratulations! Your private key has been successfully recovered.
           Your private key is a critical part of your cryptographic identity.
-          Here's a brief overview of its role:
+          Here&apos;s a brief overview of its role:
         </p>
         <ul className="list-disc list-inside">
           <li>

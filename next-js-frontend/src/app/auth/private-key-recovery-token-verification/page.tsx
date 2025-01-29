@@ -2,8 +2,9 @@
 import useNavigateToRecoverySuccessfulPageOnPrivateKeyRestoration from "@/hooks/useAuth/useNavigateToRecoverySuccessfulPageOnPrivateKeyRestoration";
 import { useVerifyPrivateKeyRecoveryToken } from "@/hooks/useAuth/useVerifyPrivateKeyRecoveryToken";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function page() {
+function PrivateKeyRecoveryTokenVerificationPageContent() {
 
     const searchParams = useSearchParams()
     const token = searchParams.get('token');
@@ -14,5 +15,13 @@ export default function page() {
 
   return (
     <span>Verifying link....</span>
+  )
+}
+
+export default function Page(){
+  return (
+    <Suspense fallback={<span>Loading...</span>}>
+      <PrivateKeyRecoveryTokenVerificationPageContent/>
+    </Suspense>
   )
 }

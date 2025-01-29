@@ -1,6 +1,6 @@
 import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
 import { useAppSelector } from "@/services/redux/store/hooks";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 type PropTypes = {
   page: number;

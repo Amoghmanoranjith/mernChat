@@ -39,7 +39,6 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
       onSubmit={handleMessageSubmit}
       className="relative"
       autoComplete="off"
-      aria-autocomplete="none"
     >
       {attachmentsPreview.length > 0 && (
         <AttachmentPreviewListAndUploadButton

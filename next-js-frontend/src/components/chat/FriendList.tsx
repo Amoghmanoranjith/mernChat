@@ -1,8 +1,9 @@
-import { IFriend } from "../../interfaces/friends"
+import { Friend } from "@/interfaces/friends.interface"
 import { FriendCard } from "../friends/FriendCard"
 
+
 type PropTypes = {
-    friends:Array<IFriend>
+    friends:Friend[]
     handleAddOrRemoveMember:(newMember: string) => void
     selectedMembers:Array<string>
 }

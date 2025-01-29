@@ -26,125 +26,145 @@ import {
   setProfileForm,
   setRemoveMemberForm,
   setSettingsForm,
-  setViewVotes,
+  setViewVotes
 } from "@/services/redux/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
-import { ChatUpdateForm } from "../chat/ChatUpdateForm";
-import { GroupChatForm } from "../chat/GroupChatForm";
-import { TenorGifForm } from "../chat/TenorGifForm";
-import { AddFriendForm } from "../friends/AddFriendForm";
-import { FriendRequestForm } from "../friends/FriendRequestForm";
-import { AddMemberForm } from "../member/AddMemberForm";
-import { RemoveMemberForm } from "../member/RemoveMemberForm";
-import { PollForm } from "../messages/PollForm";
-import { ViewVotes } from "../messages/ViewVotes";
-import { AttachmentPreview } from "../ui/AttachmentPreview";
-import { NotificationPermissionForm } from "../user/NotificationPermissionForm";
-import { ProfileForm } from "../user/ProfileForm";
-import { SettingsForm } from "../user/SettingsForm";
+import dynamic from "next/dynamic";
 import { Modal } from "./Modal";
-import { RecoverPrivateKeyForm } from "../auth/RecoverPrivateKeyForm";
+const RecoverPrivateKeyForm = dynamic(() => import("../auth/RecoverPrivateKeyForm"), { ssr: false });
+const ChatUpdateForm = dynamic(() => import("../chat/ChatUpdateForm"), { ssr: false });
+const GroupChatForm = dynamic(() => import("../chat/GroupChatForm"), { ssr: false });
+const TenorGifForm = dynamic(() => import("../chat/TenorGifForm"), { ssr: false });
+const AddFriendForm = dynamic(() => import("../friends/AddFriendForm"), { ssr: false });
+const FriendRequestForm = dynamic(() => import("../friends/FriendRequestForm"), { ssr: false });
+const AddMemberForm = dynamic(() => import("../member/AddMemberForm"), { ssr: false });
+const RemoveMemberForm = dynamic(() => import("../member/RemoveMemberForm"), { ssr: false });
+const PollForm = dynamic(() => import("../messages/PollForm"), { ssr: false });
+const ViewVotes = dynamic(() => import("../messages/ViewVotes"), { ssr: false });
+const AttachmentPreview = dynamic(() => import("../ui/AttachmentPreview"), { ssr: false });
+const NotificationPermissionForm = dynamic(() => import("../user/NotificationPermissionForm"), { ssr: false });
+const ProfileForm = dynamic(() => import("../user/ProfileForm"), { ssr: false });
+const SettingsForm = dynamic(() => import("../user/SettingsForm"), { ssr: false });
 
 export const ModalWrapper = () => {
   const dispatch = useAppDispatch();
 
+  const isgroupChatFormOpen =  useAppSelector(selectGroupChatForm);
+  const isAddMemberFormOpen = useAppSelector(selectAddMemberForm);
+  const isAddFriendFormOpen = useAppSelector(selectAddFriendForm);
+  const isFriendRequestFormOpen = useAppSelector(selectFriendRequestForm);
+  const isProfileFormOpen = useAppSelector(selectProfileForm);
+  const isRemoveMemberFormOpen = useAppSelector(selectRemoveMemberForm);
+  const isGifFormOpen = useAppSelector(selectGifForm);
+  const isAttachmentsOpen = useAppSelector(selectAttachments).length > 0;
+  const isPollFormOpen = useAppSelector(selectPollForm);
+  const isViewVotesOpen = useAppSelector(selectViewVotes);
+  const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);
+  const isSettingsFormOpen = useAppSelector(selectSettingsForm);
+  const isNotificationPermissionFormOpen = useAppSelector(selectNotificationPermissionForm);
+  const isRecoverPrivateKeyFormOpen = useAppSelector(selectRecoverPrivateKeyForm);
+
+
+
   return (
     <>
       <Modal
-        isOpen={useAppSelector(selectGroupChatForm)}
+        isOpen={isgroupChatFormOpen}
         onClose={() => dispatch(setNewgroupChatForm(false))}
       >
         <GroupChatForm/>
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectAddMemberForm)}
+        isOpen={isAddMemberFormOpen}
         onClose={() => dispatch(setAddMemberForm(false))}
       >
-        <AddMemberForm/>
+        <AddMemberForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectAddFriendForm)}
+        isOpen={isAddFriendFormOpen}
         onClose={() => dispatch(setAddFriendForm(false))}
       >
-        <AddFriendForm />
+        <AddFriendForm/>
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectFriendRequestForm)}
+        isOpen={isFriendRequestFormOpen}
         onClose={() => dispatch(setFriendRequestForm(false))}
       >
         <FriendRequestForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectProfileForm)}
+        isOpen={isProfileFormOpen}
         onClose={() => dispatch(setProfileForm(false))}
       >
         <ProfileForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectRemoveMemberForm)}
+        isOpen={isRemoveMemberFormOpen}
         onClose={() => dispatch(setRemoveMemberForm(false))}
       >
         <RemoveMemberForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectGifForm)}
+        isOpen={isGifFormOpen}
         onClose={() => dispatch(setGifForm(false))}
       >
-        <TenorGifForm />
+        <TenorGifForm/>
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectAttachments).length > 0}
+        isOpen={isAttachmentsOpen}
         onClose={() => dispatch(resetAttachments())}
       >
         <AttachmentPreview />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectPollForm)}
+        isOpen={isPollFormOpen}
         onClose={() => dispatch(setPollForm(false))}
       >
         <PollForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectViewVotes)}
+        isOpen={isViewVotesOpen}
         onClose={() => dispatch(setViewVotes(false))}
       >
-        <ViewVotes />
+        <ViewVotes/>
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectChatUpdateForm)}
+        isOpen={isChatUpdateFormOpen}
         onClose={() => dispatch(setChatUpdateForm(false))}
       >
         <ChatUpdateForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectSettingsForm)}
+        isOpen={isSettingsFormOpen}
         onClose={() => dispatch(setSettingsForm(false))}
       >
         <SettingsForm />
       </Modal>
 
       <Modal
-        isOpen={useAppSelector(selectNotificationPermissionForm)}
+        isOpen={isNotificationPermissionFormOpen}
         onClose={() => dispatch(setNotificationPermissionForm(false))}
       >
-        <NotificationPermissionForm />
+        <NotificationPermissionForm/>
       </Modal>
 
-      <Modal isOpen={useAppSelector(selectRecoverPrivateKeyForm)} onClose={()=>""}>
-          <RecoverPrivateKeyForm/>
+      <Modal
+        isOpen={isRecoverPrivateKeyFormOpen}
+        onClose={() => ""}
+      >
+        <RecoverPrivateKeyForm />
       </Modal>
-
-    </>
+    </> 
   );
 };

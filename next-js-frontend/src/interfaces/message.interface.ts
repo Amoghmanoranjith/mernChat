@@ -113,5 +113,5 @@ export interface NewReactionEventPayloadData {
     reaction:string
 }
 
-export interface UserTypingEventPayloadData extends MessageSeenEventPayloadData {}
-export interface VoteOutEventPayloadData extends VoteInEventPayloadData {}
+export type UserTypingEventPayloadData = MessageSeenEventPayloadData
+export type VoteOutEventPayloadData = VoteInEventPayloadData
