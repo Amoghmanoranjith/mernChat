@@ -30,18 +30,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* Modal root for portals */}
         <div id="modal-root"></div>
         <StoreProvider>
           <SocketProvider>
-            {children}
             <Toaster/>
             <InitializeIndexedDbWrapper/>
             <ThemeInitializer/>
             <ModalWrapper/>
+            {children}
           </SocketProvider>
         </StoreProvider>
       </body>
