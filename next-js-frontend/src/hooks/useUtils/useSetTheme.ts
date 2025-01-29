@@ -17,6 +17,6 @@ export const useSetTheme = () => {
         else{
             updateTheme(systemPrefersDark ? 'dark' : 'light');
         }
-    },[])
+    },[updateTheme])
 
 }
