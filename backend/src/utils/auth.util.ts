@@ -8,7 +8,8 @@ import bcrypt from 'bcryptjs'
 import { PrivateKeyRecoveryToken } from '../models/private-key-recovery-token.model.js'
 
 export const cookieOptions:CookieOptions = {
-    maxAge:parseInt(env.JWT_TOKEN_EXPIRATION_DAYS) * 24 * 60 * 60 * 1000,
+    // maxAge:parseInt(env.JWT_TOKEN_EXPIRATION_DAYS) * 24 * 60 * 60,
+    maxAge:30 /*30 days*/ * 24 * 60 * 60 * 1000,
     httpOnly:true,
     path:"/",
     priority:"high",

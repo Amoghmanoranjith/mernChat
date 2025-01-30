@@ -1,90 +1,67 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { User } from './interfaces/auth.interface';
- 
-// This function can be marked `async` if using `await` inside
+
 export async function middleware(request: NextRequest) {
-
-  const token = request.cookies.get('token')?.value;
   const path = request.nextUrl.pathname;
+  const token = request.cookies.get('token')?.value; // Correct way to access cookies in middleware
 
-  if(!token && ['/auth/login','auth/signup'].includes(path)){
+  console.log('Token:', token);
+  console.log('Path:', path);
+
+  // Redirect unauthenticated users from protected routes
+  if (!token) {
+    if (path === '/') {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
     return NextResponse.next();
-  } 
-
-  if(!token && ['/'].includes(path)){
-    // if user is not logged in and trying to access home page, redirect to login page
-    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  if(token && ['/auth/login','/auth/signup'].includes(path)){
-    // if user is logged in and trying to access login or signup page, redirect to home page
-    return NextResponse.redirect(new URL('/', request.url))
+  // Redirect authenticated users from auth pages
+  if (['/auth/login', '/auth/signup'].includes(path)) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  if(token && ['/auth/verification'].includes(path)){
+  // Validate token for protected routes
+  if (path === '/' || path === '/auth/verification') {
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-token`, {
         headers: {
-          'Cookie':`token=${token}`
-        }
-      })
-      if(response.ok){
-        const userData: User = await response.json();
-        if(userData.verified){
-          return NextResponse.redirect(new URL('/', request.url));
-        }
+          Cookie: `token=${token}`, // Use the actual token value
+        },
+      });
+
+      if (!response.ok) throw new Error('Invalid token');
+
+      const userData: User = await response.json();
+      const responseHeaders = new Headers(request.headers);
+      responseHeaders.set('x-logged-in-user', JSON.stringify(userData));
+
+      if (path === '/auth/verification') {
+        return userData.verified 
+          ? NextResponse.redirect(new URL('/', request.url))
+          : NextResponse.next();
       }
-      else{
-        return NextResponse.redirect(new URL('/auth/login', request.url));
-      }
+
+      return userData.verified
+        ? NextResponse.next({ headers: responseHeaders })
+        : NextResponse.redirect(new URL('/auth/verification', request.url));
     } catch (error) {
-      console.log(error);
+      console.error('Token verification failed:', error);
+      const response = NextResponse.redirect(new URL('/auth/login', request.url));
+      response.cookies.delete('token'); // Clear invalid token
+      return response;
     }
   }
-
-  if(token && ['/'].includes(path)){
-    // if user is logged in and trying to access home-page
-    // then verify the token and redirect to login page if token is invalid
-
-    try {
-      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/auth/verify-token',{
-        headers: {
-          'Cookie':`token=${token}`
-        }
-      })
-  
-      if(response.ok){
-        // if the token is valid
-        // then get the user data and set it in the header
-        // so that it can be used in page components ahead
-        const userData: User = await response.json();
-  
-        if(userData.verified){
-          const nextResponse = NextResponse.next();
-          nextResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
-          return nextResponse;
-        }
-        else{
-          const redirectResponse = NextResponse.redirect(new URL('/auth/verification', request.url));
-          redirectResponse.headers.set('x-logged-in-user', JSON.stringify(userData));
-          return redirectResponse;
-        }
-      }
-      else{
-        // if token is invalid, redirect to login page
-        return NextResponse.redirect(new URL('/auth/login', request.url))
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
 
   return NextResponse.next();
 }
- 
-// See "Matching Paths" below to learn more
+
 export const config = {
-  matcher: ['/','/auth/verification','/auth/login']
-}
+  matcher: [
+    '/',
+    '/auth/verification',
+    '/auth/login',
+    '/auth/signup',
+  ],
+};

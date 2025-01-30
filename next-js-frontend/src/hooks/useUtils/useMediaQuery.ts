@@ -8,7 +8,7 @@ export const useMediaQuery = (number: number) => {
   const query = `(max-width:${number - 1}px)`;
 
   // Initialize state to store whether the media query matches (true or false)
-  const [isMatches, setIsMatches] = useState<boolean>(() => window.matchMedia(query).matches);
+  const [isMatches, setIsMatches] = useState<boolean>(() => window.matchMedia(query).matches ? true : false);
 
   useEffect(() => {
     // Create a MediaQueryList object that listens to changes in the media query match

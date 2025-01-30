@@ -30,9 +30,6 @@ export const useToast = ({error,isError,isLoading,isSuccess,isUninitialized,load
                 toast.dismiss()
                 toast.success(successMessage)
             }
-            if(!isLoading){
-                toast.dismiss();
-            }
         }
     },[isLoading,isUninitialized,isSuccess])
 }
