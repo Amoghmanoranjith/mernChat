@@ -1,5 +1,6 @@
 # MERN CHAT E2EE 🗨️
 
+## **Note** 🟢: I know currently there is an issue going on that we are not able to get logged-in, i am working on that and will fix that asap!! and congratulations we have crossed 250+ users on mern-chat
 
 Mern-chat is a modern real-time chat application designed to facilitate seamless communication between users. With Baatchit, users can engage in conversations, share files, see when others are typing, and more, all in real-time.
 
