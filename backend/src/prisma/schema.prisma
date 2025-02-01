@@ -92,8 +92,7 @@ model Message {
   updatedAt          DateTime         @updatedAt
   pollId             String?
   UnreadMessages     UnreadMessages[]
-
-  Chat Chat[] @relation("latestMessage")
+  Chat               Chat[]           @relation("latestMessage")
 }
 
 model Otp {
