@@ -1,13 +1,14 @@
 import { Request } from "express";
 import { Socket } from "socket.io";
 import { Types } from "mongoose";
+import { Prisma } from "@prisma/client";
 
 export interface AuthenticatedRequest extends Request {
-    user?:IUser
+    user:Prisma.UserCreateInput
 }
 
 export interface OAuthAuthenticatedRequest extends Request {
-    user?:IUser & {newUser:boolean,googleId:string}
+    user?:Prisma.UserCreateInput & {newUser:boolean,googleId:string}
 }
 
 export interface AuthenticatedSocket extends Socket {

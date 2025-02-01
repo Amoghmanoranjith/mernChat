@@ -1,10 +1,9 @@
 import { NextFunction, Response } from "express"
 import jwt from 'jsonwebtoken'
 import type { AuthenticatedRequest } from "../interfaces/auth/auth.interface.js"
-import { User } from "../models/user.model.js"
+import { prisma } from "../lib/prisma.lib.js"
 import { env } from "../schemas/env.schema.js"
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js"
-import type { IUser } from "../interfaces/auth/auth.interface.js"
 
 export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
@@ -14,18 +13,21 @@ export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Re
             return next(new CustomError("Token missing, please login again",401))
         }
 
-        const decodedInfo=jwt.verify(token,env.JWT_SECRET) as IUser['_id']
+        const decodedInfo=jwt.verify(token,env.JWT_SECRET) as {id:string}
 
-        if(!decodedInfo || !decodedInfo._id){
+        if(!decodedInfo || !decodedInfo.id){
             return next(new CustomError("Invalid token please login again",401))
         }
 
-        const existingUser = await User.findOne({_id:decodedInfo._id}).select('+password')
+        const user = await prisma.user.findUnique({
+            where:{
+                id:decodedInfo.id
+            }
+        })
 
-        if(!existingUser){
+        if(!user){
             return next(new CustomError('Invalid Token, please login again',401))
         }
-
-        req.user=existingUser
+        req.user=user
         next()
 })

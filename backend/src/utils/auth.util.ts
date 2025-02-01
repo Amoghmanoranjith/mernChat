@@ -1,11 +1,8 @@
+import { v2 as cloudinary } from 'cloudinary'
 import { CookieOptions, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import type { ISecureInfo, IUser } from '../interfaces/auth/auth.interface.js'
 import { env } from '../schemas/env.schema.js'
-import {v2 as cloudinary} from 'cloudinary'
-import { config } from '../config/env.config.js'
-import bcrypt from 'bcryptjs'
-import { PrivateKeyRecoveryToken } from '../models/private-key-recovery-token.model.js'
 
 export const cookieOptions:CookieOptions = {
     // maxAge:parseInt(env.JWT_TOKEN_EXPIRATION_DAYS) * 24 * 60 * 60,
@@ -70,22 +67,9 @@ export const deleteFilesFromCloudinary = async(publicIds:Array<string>)=>{
     return uploadResult
 }
 
-export const generatePrivateKeyRecoveryToken = async(userId:string)=>{
-
-    const token = jwt.sign({user:userId},env.JWT_SECRET)
-    const hashedToken = await bcrypt.hash(token,10)
-
-    await PrivateKeyRecoveryToken.deleteMany({user:userId}),
-    await PrivateKeyRecoveryToken.create({user:userId,hashedToken})
-    
-    const verificationUrl = `${config.clientUrl}/auth/private-key-recovery-token-verification?token=${token}`
-
-    return {verificationUrl}
-}
-
-export const getSecureUserInfo = (user:IUser):ISecureInfo=>{
+export const getSecureUserInfo = (user:any):any=>{
     return {
-        _id:user._id,
+        id:user._id,
         name:user.name,
         username:user.username,
         avatar:user.avatar?.secureUrl,

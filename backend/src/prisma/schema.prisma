@@ -151,6 +151,7 @@ model UnreadMessages {
 
 model User {
   id                       String    @id @default(cuid())
+  name                     String
   username                 String    @unique
   avatar                   String    @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
   avatarCloudinaryPublicId String?
@@ -185,4 +186,7 @@ model User {
 
   friendsAsUser1 Friends[] @relation("UserAsFriend1")
   friendsAsUser2 Friends[] @relation("UserAsFriend2")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
