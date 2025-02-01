@@ -22,12 +22,13 @@ model Chat {
   avatarCloudinaryPublicId String?
   admin                    User?            @relation(fields: [adminId], references: [id])
   adminId                  String?
-  messages                 Message[]        @relation("chatMessages")
-  latestMessage            Message?         @relation("latestMessage", fields: [messageId], references: [id])
+  latestMessage            Message?         @relation("latestMessage", fields: [latestMessageId], references: [id])
+  latestMessageId          String?
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
+
+  messages                 Message[]
   UnreadMessages           UnreadMessages[]
-  messageId                String?
 }
 
 model Friends {
@@ -51,9 +52,9 @@ model Vote {
   id          String @id @default(cuid())
   user        User   @relation(fields: [userId], references: [id])
   userId      String
+  optionIndex Int
   poll        Poll   @relation(fields: [pollId], references: [id])
   pollId      String
-  optionIndex Int
 }
 
 model Poll {
@@ -69,30 +70,33 @@ model Reactions {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
+  reaction  String
   message   Message  @relation(fields: [messageId], references: [id])
   messageId String
-  reaction  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Message {
-  id                 String           @id @default(cuid())
-  isTextMessage      Boolean          @default(true)
+  id                 String       @id @default(cuid())
+  isTextMessage      Boolean      @default(true)
   textMessageContent String?
-  sender             User             @relation(fields: [senderId], references: [id])
+  sender             User         @relation(fields: [senderId], references: [id])
   senderId           String
-  chat               Chat[]           @relation("chatMessages")
+  chat               Chat         @relation(fields: [chatId], references: [id])
+  chatId             String
   attachments        Attachment[]
   url                String?
-  poll               Poll?            @relation(fields: [pollId], references: [id])
-  reactions          Reactions[]
-  isEdited           Boolean          @default(false)
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  poll               Poll?        @relation(fields: [pollId], references: [id])
   pollId             String?
-  UnreadMessages     UnreadMessages[]
-  Chat               Chat[]           @relation("latestMessage")
+  isPollMessage      Boolean      @default(false)
+  reactions          Reactions[]
+  isEdited           Boolean      @default(false)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  UnreadMessages UnreadMessages[]
+  Chat           Chat[]           @relation("latestMessage")
 }
 
 model Otp {
@@ -135,10 +139,10 @@ model ResetPasswordToken {
 
 model UnreadMessages {
   id        String    @id @default(cuid())
-  chat      Chat      @relation(fields: [chatId], references: [id])
-  chatId    String
   user      User      @relation("UnreadMessagesUser", fields: [userId], references: [id])
   userId    String
+  chat      Chat      @relation(fields: [chatId], references: [id])
+  chatId    String
   sender    User      @relation("UnreadMessagesSender", fields: [senderId], references: [id])
   senderId  String
   message   Message   @relation(fields: [messageId], references: [id])
@@ -167,7 +171,10 @@ model User {
   verificationBadge        Boolean   @default(false)
   googleId                 String?
   oAuthSignup              Boolean   @default(false)
-  chats                    Chat[]    @relation("userChats")
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  chats Chat[] @relation("userChats")
 
   Chat                    Chat[]
   Vote                    Vote[]
@@ -186,7 +193,4 @@ model User {
 
   friendsAsUser1 Friends[] @relation("UserAsFriend1")
   friendsAsUser2 Friends[] @relation("UserAsFriend2")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
