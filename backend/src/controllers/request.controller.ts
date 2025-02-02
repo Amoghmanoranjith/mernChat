@@ -1,198 +1,325 @@
 import { NextFunction, Response } from "express";
-import type { AuthenticatedRequest, IUser } from "../interfaces/auth/auth.interface.js";
-import { Request } from "../models/request.model.js";
-import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
-import type { createRequestSchemaType, handleRequestSchemaType } from "../schemas/request.schema.js";
-import { User } from "../models/user.model.js";
-import { Chat } from "../models/chat.model.js";
-import { emitEvent, emitEventToRoom } from "../utils/socket.util.js";
+import { Server } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
-import { addUnreadMessagesAndSpectatorStage, populateMembersStage } from "./chat.controller.js";
-import { Friend } from "../models/friend.model.js";
-import { userSocketIds } from "../index.js";
+import type { AuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
+import { prisma } from "../lib/prisma.lib.js";
+import type { createRequestSchemaType, handleRequestSchemaType } from "../schemas/request.schema.js";
+import { joinMembersInChatRoom } from "../utils/chat.util.js";
+import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 import { sendPushNotification } from "../utils/generic.js";
+import { emitEvent, emitEventToRoom } from "../utils/socket.util.js";
 
 
-const requestPipeline = [
-  {
-      $project:{
-          receiver:0,
-          updatedAt:0
-      }
-  },
-  {
-    $lookup: {
-      from: "users",
-      localField: "sender",
-      foreignField: "_id",
-      as: "sender",
-      pipeline:[
-        {
-          $addFields:{
-            avatar:"$avatar.secureUrl"
-          }
-        },
-        {
-          $project:{
-            username:1,
-            avatar:1
-          }
-        },
-      ]
-    }
-  },
-  {
-    $addFields: {
-      "sender": {
-        $arrayElemAt:["$sender",0]
-      }
-    }
-  }
-]
+export const getUserRequests = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
-const getUserRequests = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const requests = await Request.aggregate([
-        {
-          $match:{
-            receiver: req.user?._id
+    const friendRequests = await prisma.friendRequest.findMany({
+      where:{
+        receiverId:req.user.id
+      },
+      include:{
+        sender:{
+          select:{
+            id:true,
+            username:true,
+            avatar:true,
+            isOnline:true,
+            publicKey:true,
+            lastSeen:true,
+            verificationBadge:true
           }
         }
-        ,...requestPipeline
-      ])
-
-    return res.status(200).json(requests)
+      },
+      omit:{
+        receiverId:true,
+        updatedAt:true,
+      }
+    })
+    
+    return res.status(200).json(friendRequests)
 })
 
-const createRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
+export const createRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     const {receiver}:createRequestSchemaType = req.body
 
-    const isValidReceiverId = await User.findById(receiver)
+    const isValidReceiverId = await prisma.user.findUnique({where:{id:receiver}})
 
     if(!isValidReceiverId){
         return next(new CustomError("Receiver not found",404))
     }
 
-    if(req.user?._id.toString() === receiver){
+    if(req.user.id === receiver){
         return next(new CustomError("You cannot send a request to yourself",400))
     }
 
-    const isAlreadyCreated = await Request.findOne({receiver,sender:req.user?._id})
+    const requestAlreadyExists = await prisma.friendRequest.findFirst({
+      where:{
+        AND:[
+          {
+            receiverId:receiver,
+          },
+          {
+            senderId:req.user.id
+          }
+        ]
+      }
+    })
 
-    if(isAlreadyCreated){
+    if(requestAlreadyExists){
         return next(new CustomError("Request is already sent",400))
     }
 
-    const doesRequestExistsFromReceiver = await Request.findOne({receiver:req.user?._id,sender:receiver})
+
+    const doesRequestExistsFromReceiver = await prisma.friendRequest.findFirst({
+      where:{
+        AND:[
+          {
+            senderId:receiver,
+          },
+          {
+            receiverId:req.user.id
+          }
+        ]
+      } 
+    })
 
     if(doesRequestExistsFromReceiver){
-      return next(new CustomError("They have already sent you a request",400))
+      return next(new CustomError("They have already sent you a friend request",400))
     }
 
-    const areAlreadyFriends = await Friend.findOne({user:req.user?._id,friend:receiver})
+    const areAlreadyFriends = await prisma.friends.findFirst({
+      where:{
+        OR:[
+          {
+            user1Id:req.user.id,
+            user2Id:receiver
+          },
+          {
+            user1Id:receiver,
+            user2Id:req.user.id
+          }
+        ]
+      }
+    })
 
     if(areAlreadyFriends){
-      return next(new CustomError("You are already friends"))
+      return next(new CustomError("You are already friends",400));
     }
 
-    const newRequest = await Request.create({receiver,sender:req.user?._id})
-
-    if(!isValidReceiverId.isActive && isValidReceiverId?.fcmToken && isValidReceiverId.notificationsEnabled){
-      sendPushNotification({fcmToken:isValidReceiverId.fcmToken,body:`${req.user?.username} sent you a friend request`})
-    }
-
-    const transformedRequest = await Request.aggregate([
-
-      {
-        $match:{
-          _id:newRequest._id
+    // const newRequest = await Request.create({receiver,sender:req.user?._id})
+    const newRequest = await prisma.friendRequest.create({
+      data:{
+        senderId:req.user.id,
+        receiverId:receiver
+      },
+      include:{
+        sender:{
+          select:{
+            id:true,
+            username:true,
+            avatar:true,
+            isOnline:true,
+            publicKey:true,
+            lastSeen:true,
+            verificationBadge:true
+          }
         }
       },
-      ...requestPipeline
-    ])
+      omit:{
+        receiverId:true,
+        updatedAt:true,
+        senderId:true,
+      }
+    })
 
-    emitEvent(req,Events.NEW_FRIEND_REQUEST,[receiver],transformedRequest[0])
+    if(!isValidReceiverId.isOnline && isValidReceiverId.fcmToken && isValidReceiverId.notificationsEnabled){
+      sendPushNotification({fcmToken:isValidReceiverId.fcmToken,body:`${req.user.username} sent you a friend request`})
+    }
 
-    return res.status(201).json()
+    const io:Server = req.app.get('io');
+    emitEvent({io,event:Events.NEW_FRIEND_REQUEST,data:newRequest,users:[receiver]})
 
+    return res.status(201)
 })
 
-const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
+export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     const {id}=req.params
     const {action}:handleRequestSchemaType = req.body
 
-    const isExistingRequest = await Request.findById(id).populate<{sender:Pick<IUser,'_id' | 'fcmToken' | 'isActive' | 'notificationsEnabled'>}>("sender",{fcmToken:1,isActive:1,notificationsEnabled:1})
+    const isExistingRequest = await prisma.friendRequest.findFirst({
+      where:{
+        id,
+      }
+    })
 
     if(!isExistingRequest){
         return next(new CustomError("Request not found",404))
     }
 
-    if(isExistingRequest.receiver._id.toString() !== req.user?._id.toString()){
+    if(isExistingRequest.receiverId !== req.user.id){
         return next(new CustomError("Only the receiver of this request can accept or reject it",401))
     }
 
     if(action==='accept'){
 
-        const members = [isExistingRequest.sender,isExistingRequest.receiver]
-        const newChat = await Chat.create({members})
-
-        await Friend.insertMany([
-          {user:isExistingRequest.receiver,friend:isExistingRequest.sender},
-          {user:isExistingRequest.sender,friend:isExistingRequest.receiver}
-        ])
-
-        if(isExistingRequest.sender.notificationsEnabled && !isExistingRequest.sender.isActive && isExistingRequest.sender?.fcmToken){
-          sendPushNotification({fcmToken:isExistingRequest.sender.fcmToken,body:`${req.user.username} has accepted your friend request 😃`})
-        }
-
-        const transformedChat =  await Chat.aggregate([
-          {
-            $match:{
-              _id:newChat._id
+        const newChat = await prisma.chat.create({
+          data:{
+            members:{
+              connect:[
+                {
+                id:isExistingRequest.senderId
+                },
+                {
+                  id:isExistingRequest.receiverId
+                }
+              ]
             }
           },
-          populateMembersStage,
-          addUnreadMessagesAndSpectatorStage
-        ])
+          omit:{
+            avatarCloudinaryPublicId:true,
+          },
+          include:{
+            UnreadMessages:{
+              select:{
+                count:true,
+                message:{
+                  select:{
+                    isTextMessage:true,
+                    url:true,
+                    attachments:{
+                      select:{
+                        secureUrl:true,
+                      }
+                    },
+                    isPollMessage:true,
+                    createdAt:true,
+                  }
+                },
+                sender:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey:true,
+                    lastSeen:true,
+                    verificationBadge:true
+                  }
+                },
+              }
+            },
+            members:{
+              select:{
+                id:true,
+                username:true,
+                avatar:true,
+                isOnline:true,
+                publicKey:true,
+                lastSeen:true,
+                verificationBadge:true
+              }
+            },
+            latestMessage:{
+              include:{
+                sender:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                  }
+                },
+                attachments:{
+                  select:{
+                    secureUrl:true
+                  }
+                },
+                poll:true,
+                reactions:{
+                  include:{
+                    user:{
+                      select:{
+                        id:true,
+                        username:true,
+                        avatar:true
+                      }
+                    }
+                  },
+                  select:{
+                    reaction:true,
+                  }
+                },
+              }
+            }
+          }
+        })
+        
+        const newFriendEntry =  await prisma.friends.create({
+          data:{
+            user1:{
+              connect:{
+                id:isExistingRequest.senderId
+              }
+            },
+            user2:{
+              connect:{
+                id:isExistingRequest.receiverId
+              }
+            }
+          },
+          include:{
+            user1:true,
+            user2:true,
+          }
+        })
 
-        // now will use the two members id, that are part of this chat
-        // and will use their _id to get their socketId from the userSocketIds object (Map)
-        // and will join them to the chat room i.e their created chat._id
-        // so that they can listen to the events
-        // that are broadcasted to this chat room
-        const member1SocketId = userSocketIds.get(isExistingRequest.sender._id.toString());
-        const member2SocketId = userSocketIds.get(isExistingRequest.receiver._id.toString());
-        const chatId = newChat._id.toString();
-        const io = req.app.get('io');
+        let sender = newFriendEntry.user1
 
-        if (member1SocketId) {
-          const member1Socket = io.sockets.sockets.get(member1SocketId);
-          if (member1Socket) member1Socket.join(chatId);
+        if(sender.id!=isExistingRequest.senderId){
+          sender = newFriendEntry.user2
         }
-        if (member2SocketId) {
-            const member2Socket = io.sockets.sockets.get(member2SocketId);
-            if (member2Socket)  member2Socket.join(chatId);
+
+        if(sender.notificationsEnabled && !sender.isOnline && sender.fcmToken){
+          sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has accepted your friend request 😃`})
         }
-;
 
-        await isExistingRequest.deleteOne()
-        emitEventToRoom(req,Events.NEW_CHAT,chatId,transformedChat[0]);
-
-        return res.status(200).json(isExistingRequest._id)
+        const io:Server = req.app.get('io');
+        joinMembersInChatRoom({io,memberIds:[isExistingRequest.senderId,isExistingRequest.receiverId],roomToJoin:newChat.id});
+        
+        await prisma.friendRequest.delete({
+          where:{
+            id,
+          }
+        })
+        
+        emitEventToRoom({data:newChat,event:Events.NEW_CHAT,io,room:newChat.id})
+        return res.status(200)
     }
 
     else if(action==='reject'){
-        await isExistingRequest.deleteOne()
 
-        if(!isExistingRequest.sender.isActive && isExistingRequest.sender?.fcmToken && isExistingRequest.sender.notificationsEnabled){
-          sendPushNotification({fcmToken:isExistingRequest.sender.fcmToken,body:`${req.user.username} has rejected your friend request ☹️`})
+        const deletedRequest = await prisma.friendRequest.delete({
+          where:{
+            id,
+          },
+          include:{
+            sender:{
+              select:{
+                isOnline:true,
+                fcmToken:true,
+                notificationsEnabled:true,
+              }
+            }
+          }
+        })
+
+        const sender = deletedRequest.sender
+
+        if(!sender.isOnline && sender.fcmToken && sender.notificationsEnabled){
+          sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has rejected your friend request ☹️`})
         }
-
-        return res.status(200).json(isExistingRequest._id)
+        return res.status(200)
     }
     
 })
 
-export {getUserRequests,createRequest,handleRequest}
