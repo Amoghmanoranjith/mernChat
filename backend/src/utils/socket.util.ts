@@ -1,17 +1,12 @@
 import { Server } from "socket.io";
-import type { AuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 
-export const emitEvent = (req:AuthenticatedRequest,event:Events,users:Array<string>,data:unknown)=>{
-    const io:Server = req.app.get("io")
+export const emitEvent = ({data,event,io,users}:{io:Server,event:Events,users:Array<string>,data:unknown})=>{
     io.to(getMemberSockets(users)).emit(event,data)
 }
 
-
-export const emitEventToRoom = (req:AuthenticatedRequest,event:Events,room:string,data:unknown)=>{
-    const io:Server = req.app.get("io")
-    console.log(`emitting ${event} to room ${room} with data ${data}`);
+export const emitEventToRoom = ({data,event,io,room}:{io:Server,event:Events,room:string,data:unknown})=>{
     io.to(room).emit(event,data)
 }
 

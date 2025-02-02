@@ -175,12 +175,12 @@ const sendOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,ne
     const hashedOtp = await bcrypt.hash(otp,10)
     await prisma.otp.create({
         data:{
-            userId:req.user.id!.toString(),
+            userId:req.user.id,
             hashedOtp,
             expiresAt:new Date(Date.now()+env.OTP_EXPIRATION_MINUTES),
         }
     })
-    await sendMail(req.user?.email!,req.user?.username!,'OTP',undefined,otp,undefined)
+    await sendMail(req.user.email,req.user.username,'OTP',undefined,otp,undefined)
     return res.status(201).json({message:`We have sent the otp on ${req.user?.email}`})
 })
 
@@ -190,7 +190,7 @@ const verifyOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
 
     const otpExists = await prisma.otp.findFirst({
         where:{
-            userId:req.user?.id!.toString()
+            userId:req.user.id
         }
     })
     if(!otpExists){
@@ -206,7 +206,7 @@ const verifyOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
 
     const user =  await prisma.user.update({
         where:{
-            id:req.user?.id!
+            id:req.user.id
         },
         data:{
             emailVerified:true
@@ -253,7 +253,7 @@ const updateFcmToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Resp
 
     const user =  await prisma.user.update({
         where:{
-            id:req.user?.id
+            id:req.user.id
         },
         data:{
             fcmToken
@@ -278,7 +278,7 @@ const verifyPassword = asyncErrorHandler(async(req:AuthenticatedRequest,res:Resp
         })
         await prisma.privateKeyRecoveryToken.create({
             data:{
-                userId:req.user.id!,
+                userId:req.user.id,
                 hashedToken,
                 expiresAt:new Date(Date.now()+env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
             }
@@ -296,7 +296,7 @@ const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,r
 
     const recoveryTokenExists =  await prisma.privateKeyRecoveryToken.findFirst({
         where:{
-            userId:req.user?.id
+            userId:req.user.id
         }
     })
     if(!recoveryTokenExists){
@@ -312,7 +312,7 @@ const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,r
 
     const decodedData = jwt.verify(recoveryToken,env.JWT_SECRET) as {user:string}
 
-    if(decodedData.user !== req.user?.id!.toString()){
+    if(decodedData.user !== req.user.id!.toString()){
         return next(new CustomError('Verification link is not valid',400))
     }
 
@@ -328,7 +328,7 @@ const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,r
 const sendPrivateKeyRecoveryEmail = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     if(req.user){
-        const privateKeyRecoveryToken =  jwt.sign({user:req.user.id!.toString()},env.JWT_SECRET);
+        const privateKeyRecoveryToken =  jwt.sign({user:req.user.id},env.JWT_SECRET);
         const privateKeyRecoveryHashedToken = await bcrypt.hash(privateKeyRecoveryToken,10);
 
         await prisma.privateKeyRecoveryToken.deleteMany({
@@ -339,7 +339,7 @@ const sendPrivateKeyRecoveryEmail = asyncErrorHandler(async(req:AuthenticatedReq
 
         await prisma.privateKeyRecoveryToken.create({
             data:{
-                userId:req.user.id!.toString(),
+                userId:req.user.id,
                 hashedToken:privateKeyRecoveryHashedToken,
                 expiresAt:new Date(Date.now()+env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
             }
@@ -402,7 +402,7 @@ const checkAuth = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
 const redirectHandler = asyncErrorHandler(async(req:OAuthAuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     if(req.user){
-        const tempToken =  jwt.sign({user:req.user.id!.toString(),oAuthNewUser:req.user.newUser},env.JWT_SECRET,{expiresIn:"5m"})
+        const tempToken =  jwt.sign({user:req.user.id,oAuthNewUser:req.user.newUser},env.JWT_SECRET,{expiresIn:"5m"})
         return res.redirect(307,`${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`)
     }
     else{

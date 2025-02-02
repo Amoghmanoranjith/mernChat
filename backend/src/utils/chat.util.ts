@@ -3,6 +3,8 @@ import { IChat } from "../interfaces/chat/chat.interface.js";
 import { Message } from "../models/message.model.js";
 import { UnreadMessage } from "../models/unread-message.model.js";
 import { deleteFilesFromCloudinary } from "./auth.util.js";
+import { userSocketIds } from "../index.js";
+import { Server } from "socket.io";
 
 
 export const deleteChat = async(isExistingChat: Document<unknown, {}, IChat> & IChat & Required<{_id: Types.ObjectId}>)=>{
@@ -28,8 +30,34 @@ export const deleteChat = async(isExistingChat: Document<unknown, {}, IChat> & I
           isExistingChat.deleteOne(),
           Message.deleteMany({chat:isExistingChat._id}),
           UnreadMessage.deleteMany({chat:isExistingChat._id}),
-          deleteFilesFromCloudinary(publicIdsToBeDestroyed)
+          deleteFilesFromCloudinary({publicIds:publicIdsToBeDestroyed})
         ]
 
         await Promise.all(chatDeletePromise)
+}
+
+export const joinMembersInChatRoom = ({memberIds,roomToJoin,io}:{memberIds:string[],roomToJoin:string,io:Server})=>{
+
+    for(const memberId of memberIds){
+      const memberSocketId = userSocketIds.get(memberId);
+      if(memberSocketId){
+        const memberSocket = io.sockets.sockets.get(memberSocketId);
+        if(memberSocket){
+          memberSocket.join(roomToJoin);
+        }
+      }
+    }
+}
+
+export const disconnectMembersFromChatRoom = ({memberIds,roomToLeave,io}:{memberIds:string[],roomToLeave:string,io:Server})=>{
+
+    for(const memberId of memberIds){
+      const memberSocketId = userSocketIds.get(memberId);
+      if(memberSocketId){
+        const memberSocket = io.sockets.sockets.get(memberSocketId);
+        if(memberSocket){
+          memberSocket.leave(roomToLeave);
+        }
+      }
+    }
 }

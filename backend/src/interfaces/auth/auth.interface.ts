@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import { Prisma } from "@prisma/client";
 
 export interface AuthenticatedRequest extends Request {
-    user:Prisma.UserCreateInput
+    user:Omit<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'> & Required<Pick<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'>>
 }
 
 export interface OAuthAuthenticatedRequest extends Request {

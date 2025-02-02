@@ -1,12 +1,14 @@
-import { v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
 import { CookieOptions, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import type { ISecureInfo, IUser } from '../interfaces/auth/auth.interface.js'
 import { env } from '../schemas/env.schema.js'
 
+
+const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+
 export const cookieOptions:CookieOptions = {
-    // maxAge:parseInt(env.JWT_TOKEN_EXPIRATION_DAYS) * 24 * 60 * 60,
-    maxAge:30 /*30 days*/ * 24 * 60 * 60 * 1000,
+    maxAge:thirtyDaysInMilliseconds,
     httpOnly:true,
     path:"/",
     priority:"high",
@@ -17,11 +19,8 @@ export const cookieOptions:CookieOptions = {
 }
 
 export const sendToken = (res:Response,payload:IUser['_id'],statusCode:number,data:ISecureInfo,oAuth:boolean=false,oAuthNewUser:boolean=false,googleId?:string)=>{
-
     if(oAuth){
-        
         let responsePayload:{combinedSecret?:string,user:ISecureInfo} = {user:data}
-
         const token=jwt.sign({_id:payload.toString()},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`})
         res.cookie('token',token,cookieOptions)
 
@@ -35,7 +34,6 @@ export const sendToken = (res:Response,payload:IUser['_id'],statusCode:number,da
         }
         return res.status(statusCode).json(responsePayload)
     }
-        
     else{
         const token=jwt.sign({_id:payload.toString()},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`})
         return res.cookie("token",token,cookieOptions).status(statusCode).json(data)
@@ -44,27 +42,32 @@ export const sendToken = (res:Response,payload:IUser['_id'],statusCode:number,da
 }
 
 export const generateOtp=():string=>{
-
     let OTP=""
-
-    for(let i= 0 ; i<4 ; i++){
-        OTP+=Math.floor(Math.random()*10)
-    }
-
+    for(let i= 0 ; i<4 ; i++) OTP+=Math.floor(Math.random()*10)
     return OTP
-
 }
 
-export const uploadFilesToCloudinary = async(files:Array<Express.Multer.File>)=>{
-    const uploadPromises = files.map(file=>cloudinary.uploader.upload(file.path))
-    const result = await Promise.all(uploadPromises)
-    return result
+export const uploadFilesToCloudinary = async({files}:{files:Express.Multer.File[]})=>{
+    try {
+        const uploadPromises = files.map(file=>cloudinary.uploader.upload(file.path))
+        const result = await Promise.all(uploadPromises)
+        return result
+    } catch (error) {
+        console.log('Error uploading files to cloudinary');
+        console.log(error);
+    }
 }
 
-export const deleteFilesFromCloudinary = async(publicIds:Array<string>)=>{
-    const deletePromises = publicIds.map(publicId=>cloudinary.uploader.destroy(publicId))
-    const uploadResult = await Promise.all(deletePromises)
-    return uploadResult
+export const deleteFilesFromCloudinary = async({publicIds}:{publicIds:string[]}):Promise<any[] | undefined>=>{
+    try {
+        await cloudinary.uploader.destroy(publicIds[0])
+        const deletePromises = publicIds.map(publicId=>cloudinary.uploader.destroy(publicId))
+        const uploadResult = await Promise.all(deletePromises)
+        return uploadResult
+    } catch (error) {
+        console.log('Error deleting files from cloudinary');
+        console.log(error);
+    }
 }
 
 export const getSecureUserInfo = (user:any):any=>{

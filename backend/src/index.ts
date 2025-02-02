@@ -62,14 +62,12 @@ app.get("/",(_:Request,res:Response)=>{
     res.status(200).json({running:true})
 })
 
-
 // error middleware
 app.use(errorMiddleware)
 
 // Register Socket.IO event handlers
 registerSocketHandlers(io);
 
-    
 server.listen(env.PORT,()=>{
     console.log(`server [STARTED] ~ http://localhost:${env.PORT}`);
     if(env.NODE_ENV==='PRODUCTION'){

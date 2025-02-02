@@ -1,4 +1,4 @@
-import {Request,Response,NextFunction} from 'express'
+import { NextFunction, Request, Response } from 'express'
 import type { AuthenticatedRequest } from '../interfaces/auth/auth.interface.js'
 
 export class CustomError extends Error {
