@@ -38,6 +38,8 @@ model Friends {
   user2     User     @relation("UserAsFriend2", fields: [user2Id], references: [id])
   user2Id   String
   createdAt DateTime @default(now())
+
+  @@unique([user1Id, user2Id])
 }
 
 model Attachment {
@@ -126,6 +128,8 @@ model FriendRequest {
   status     String   @default("pending")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@unique([senderId, receiverId])
 }
 
 model ResetPasswordToken {
