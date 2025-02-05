@@ -1,4 +1,3 @@
-import { Types } from "mongoose"
 import { IMemberDetails } from "../chat/chat.interface.js"
 
 export interface IAttachment {
@@ -7,16 +6,16 @@ export interface IAttachment {
 }
 
 export interface IMessage {
-    _id:Types.ObjectId
+    id:string
     content?:string
-    sender:Types.ObjectId
-    chat:Types.ObjectId
+    sender:string
+    chat:string
     url?:string
     attachments?:Array<IAttachment>
     isPoll?:boolean
     pollQuestion?:string
     pollOptions?:[]
-    reactions?:Array<{user:Types.ObjectId,emoji:string}>
+    reactions?:Array<{user:string,emoji:string}>
     isMultipleAnswers?:boolean
     isEdited?:boolean
     createdAt:Date

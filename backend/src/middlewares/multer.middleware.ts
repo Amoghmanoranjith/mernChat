@@ -8,7 +8,7 @@ export const upload = multer({
 
     storage:multer.diskStorage({
         filename:(req:AuthenticatedRequest,file,cb)=>{
-            const userId=req.user?._id
+            const userId=req.user.id
             const uniqueMiddleName = uuidV4()
             const newFileName = `${userId}-${uniqueMiddleName}-${file.originalname}`
             cb(null,newFileName)

@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { Request } from "express";
-import { Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
     user:Omit<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'> & Required<Pick<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'>>
@@ -10,52 +9,9 @@ export interface OAuthAuthenticatedRequest extends Request {
     user?:Prisma.UserCreateInput & {newUser:boolean,googleId:string}
 }
 
-export interface IOtp {
-    hashedOtp:string
-    user:Types.ObjectId
-    expiresAt?:Date
-}
-
 export interface IAvatar {
     secureUrl:string,
     publicId:string
-}
-
-export interface IUser {
-    _id:Types.ObjectId
-    name:string
-    username:string
-    avatar?:IAvatar
-    email:string
-    isActive:boolean
-    publicKey:string
-    privateKey:string
-    password:string
-    verified?:boolean,
-    createdAt?:Date
-    updatedAt?:Date
-    fcmToken?:string
-    verificationBadge:boolean
-    notificationsEnabled?:boolean
-    lastSeen:Date
-    oAuthSignup:boolean
-    googleId:string
-}
-
-export interface ISecureInfo {
-    _id: Types.ObjectId;
-    name: string;
-    username: string;
-    avatar: string | undefined;
-    email: string;
-    createdAt: Date | undefined;
-    updatedAt: Date | undefined;
-    verified: boolean | undefined;
-    publicKey: string;
-    notificationsEnabled: boolean | undefined;
-    verificationBadge: boolean;
-    fcmTokenExists: boolean;
-    oAuthSignup:boolean
 }
 
 export interface IGithub {
@@ -64,17 +20,4 @@ export interface IGithub {
     username:string
     photos:Array<{value:string}>
     _json:{email:string}
-}
-
-
-export interface IResetPassword {
-    user:Types.ObjectId,
-    hashedToken:string,
-    expiresAt?:Date
-}
-
-export interface IPrivateKeyRecoveryToken {
-    user:Types.ObjectId
-    hashedToken:string
-    expiresAt:Date
 }

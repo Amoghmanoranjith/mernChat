@@ -1,15 +1,14 @@
 import { NextFunction } from "connect";
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
-import type { AuthenticatedSocket, IUser } from "../interfaces/auth/auth.interface.js";
-import { User } from "../models/user.model.js";
 import { env } from "../schemas/env.schema.js";
 import { CustomError } from "../utils/error.utils.js";
+import { Socket } from "socket.io";
+import { prisma } from "../lib/prisma.lib.js";
 
-export const socketAuthenticatorMiddleware = async(socket:AuthenticatedSocket,next:NextFunction)=>{
+export const socketAuthenticatorMiddleware = async(socket:Socket,next:NextFunction)=>{
 
     try {
-
             const cookies = socket.handshake.headers.cookie;
 
             if (!cookies) {
@@ -23,13 +22,13 @@ export const socketAuthenticatorMiddleware = async(socket:AuthenticatedSocket,ne
                 return next(new CustomError("Token missing, please login again",401))
             }
         
-            const decodedInfo=jwt.verify(token,env.JWT_SECRET) as IUser['_id']
+            const decodedInfo=jwt.verify(token,env.JWT_SECRET) as {id:string}
         
-            if(!decodedInfo || !decodedInfo._id){
+            if(!decodedInfo || !decodedInfo.id){
                 return next(new CustomError("Invalid token please login again",401))
             }
         
-            const existingUser = await User.findOne({_id:decodedInfo._id})
+            const existingUser = await prisma.user.findUnique({where:{id:decodedInfo.id}})
         
             if(!existingUser){
                 return next(new CustomError('Invalid Token, please login again',401))

@@ -135,7 +135,7 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
             createdAt:newMessage.createdAt
         },
         sender:{
-            _id:newMessage.sender.id,
+            id:newMessage.sender.id,
             avatar:newMessage.sender.avatar,
             username:newMessage.sender.avatar
         }

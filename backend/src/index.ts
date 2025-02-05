@@ -6,10 +6,8 @@ import morgan from 'morgan'
 import passport from 'passport'
 import { Server } from 'socket.io'
 import './config/cloudinary.config.js'
-import { connectDB } from './config/db.config.js'
 import { config } from './config/env.config.js'
 import { errorMiddleware } from './middlewares/error.middleware.js'
-import './passport/github.strategy.js'
 import './passport/google.strategy.js'
 import { env } from './schemas/env.schema.js'
 
@@ -28,9 +26,6 @@ import registerSocketHandlers from './socket/socket.js'
 const app=express()
 const server=createServer(app)
 const io=new Server(server,{cors:{credentials:true,origin:config.clientUrl}})
-
-// database connection
-connectDB()
 
 // global
 app.set("io",io)

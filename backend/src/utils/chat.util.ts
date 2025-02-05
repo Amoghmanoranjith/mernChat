@@ -1,40 +1,35 @@
-import { Document, Types } from "mongoose";
-import { IChat } from "../interfaces/chat/chat.interface.js";
-import { Message } from "../models/message.model.js";
-import { UnreadMessage } from "../models/unread-message.model.js";
-import { deleteFilesFromCloudinary } from "./auth.util.js";
-import { userSocketIds } from "../index.js";
 import { Server } from "socket.io";
+import { userSocketIds } from "../index.js";
 
 
-export const deleteChat = async(isExistingChat: Document<unknown, {}, IChat> & IChat & Required<{_id: Types.ObjectId}>)=>{
+// export const deleteChat = async(isExistingChat: Document<unknown, {}, IChat> & IChat & Required<{_id: Types.ObjectId}>)=>{
 
-        const publicIdsToBeDestroyed:Array<string> = []
+//         const publicIdsToBeDestroyed:Array<string> = []
 
-        if(isExistingChat.avatar?.publicId){
-          publicIdsToBeDestroyed.push(isExistingChat.avatar.publicId)
-        }
+//         if(isExistingChat.avatar?.publicId){
+//           publicIdsToBeDestroyed.push(isExistingChat.avatar.publicId)
+//         }
 
-        const messageWithAttachements = await Message.find({chat:isExistingChat._id,attachments:{$ne:[]}})
+//         const messageWithAttachements = await Message.find({chat:isExistingChat._id,attachments:{$ne:[]}})
         
-        messageWithAttachements.forEach(message=>{
+//         messageWithAttachements.forEach(message=>{
 
-         if(message.attachments?.length){
-           const attachmentsPublicId = message.attachments.map(attachment=>attachment.publicId)
-           publicIdsToBeDestroyed.push(...attachmentsPublicId)
-         }
+//          if(message.attachments?.length){
+//            const attachmentsPublicId = message.attachments.map(attachment=>attachment.publicId)
+//            publicIdsToBeDestroyed.push(...attachmentsPublicId)
+//          }
 
-        })
+//         })
 
-        const chatDeletePromise:Array<Promise<any>> = [
-          isExistingChat.deleteOne(),
-          Message.deleteMany({chat:isExistingChat._id}),
-          UnreadMessage.deleteMany({chat:isExistingChat._id}),
-          deleteFilesFromCloudinary({publicIds:publicIdsToBeDestroyed})
-        ]
+//         const chatDeletePromise:Array<Promise<any>> = [
+//           isExistingChat.deleteOne(),
+//           Message.deleteMany({chat:isExistingChat._id}),
+//           UnreadMessage.deleteMany({chat:isExistingChat._id}),
+//           deleteFilesFromCloudinary({publicIds:publicIdsToBeDestroyed})
+//         ]
 
-        await Promise.all(chatDeletePromise)
-}
+//         await Promise.all(chatDeletePromise)
+// }
 
 export const joinMembersInChatRoom = ({memberIds,roomToJoin,io}:{memberIds:string[],roomToJoin:string,io:Server})=>{
 
