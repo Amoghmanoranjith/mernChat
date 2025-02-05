@@ -12,6 +12,7 @@ declare namespace NodeJS {
         NEXT_PUBLIC_FIREBASE_VAPID_KEY: string;
         NEXT_PUBLIC_BASE_URL: string;
         NEXT_PUBLIC_ABSOLUTE_BASE_URL: string;
+        NEXT_PUBLIC_SESSION_SECRET:string;
         CLIENT_URL: string;
     }
 }

@@ -2,105 +2,13 @@ import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
-import { DEFAULT_AVATAR } from "../constants/file.constant.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, loginSchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType, verifyPasswordSchemaType, verifyPrivateKeyTokenSchemaType } from "../schemas/auth.schema.js";
-import { type signupSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType, verifyPasswordSchemaType, verifyPrivateKeyTokenSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
-
-const signup = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-
-    const {username,password,email,name}:signupSchemaType=req.body
-    
-
-    const user = await prisma.user.findUnique({
-        where:{
-            email
-        }
-    })
-
-    if(user){
-        return next(new CustomError("User already exists",400))
-    }
-
-    const existingUsername = await prisma.user.findUnique({
-        where:{
-            username
-        }
-    })
-
-    if(existingUsername){
-        return next(new CustomError("Username is already taken",400))
-    }
-
-    const hashedPassword = await bcrypt.hash(password,10)
-
-    const newUser = await prisma.user.create({
-        data:{
-            email,
-            hashedPassword,
-            username,
-            avatar:DEFAULT_AVATAR,
-            name
-        },
-        select:{
-            id:true,
-            name:true,
-            username:true,
-            avatar:true,
-            email:true,
-            createdAt:true,
-            updatedAt:true,
-            emailVerified:true,
-            publicKey:true,
-            notificationsEnabled:true,
-            verificationBadge:true,
-            fcmToken:true,
-            oAuthSignup:true,
-        }
-    })
-
-    const token = jwt.sign({id:newUser.id},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`})
-    return res.cookie("token",token,cookieOptions).status(201).json(newUser)
-}) 
-
-const login = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-
-    const {email,password}:loginSchemaType=req.body
-
-    const user =  await prisma.user.findUnique({
-        where:{
-            email
-        }
-    })
-
-    if(user && await bcrypt.compare(password,user.hashedPassword)){
-
-        const secureUserInfo = {
-            id:user.id,
-            name:user.name,
-            username:user.username,
-            avatar:user.avatar,
-            email:user.email,
-            createdAt:user.createdAt,
-            updatedAt:user.updatedAt,
-            emailVerified:user.emailVerified,
-            publicKey:user.publicKey,
-            notificationsEnabled:user.notificationsEnabled,
-            verificationBadge:user.verificationBadge,
-            fcmToken:user.fcmToken,
-            oAuthSignup:user.oAuthSignup
-        }
-
-        const token = jwt.sign({id:user.id},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`})
-        return res.cookie("token",token,cookieOptions).status(200).json(secureUserInfo)
-    }
-    return next(new CustomError("Invalid Credentials",404))
-})
 
 const forgotPassword = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
@@ -417,10 +325,9 @@ const logout = asyncErrorHandler(async(req:Request,res:Response,next:NextFunctio
 export {
     checkAuth,
     forgotPassword,
-    login,
     logout,
     redirectHandler,
-    resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, signup, updateFcmToken, updateUserKeys,
+    resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, updateFcmToken, updateUserKeys,
     verifyOtp,
     verifyPassword,
     verifyPrivateKeyToken

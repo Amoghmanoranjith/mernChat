@@ -1,17 +1,16 @@
 export interface User {
-  _id: string;
   name: string;
-  username: string;
+  id: string;
   avatar: string;
-  email: string;
-  publicKey?: JsonWebKey;
   createdAt: Date;
   updatedAt: Date;
-  verified?: boolean;
+  username: string;
+  email: string;
+  fcmToken: string | null;
   notificationsEnabled: boolean;
+  publicKey: string | null;
+  emailVerified: boolean;
   verificationBadge: boolean;
-  lastSeen: Date;
-  fcmTokenExists: boolean;
   oAuthSignup: boolean;
 }
 

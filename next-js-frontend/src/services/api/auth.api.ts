@@ -8,20 +8,6 @@ export const authApi = createApi({
         credentials:"include"
     }),
     endpoints:(builder)=>({
-        login:builder.mutation<User,Pick<User,'email'> & {password:string}>({
-            query:(credentials)=>({
-                url:"/login",
-                method:"POST",
-                body:credentials
-            })
-        }),
-        signup:builder.mutation<User,Pick<User, 'name' | 'username' | "email"> & {password:string}>({
-            query:(credentials)=>({
-                url:"/signup",
-                method:"POST",
-                body:credentials
-            })
-        }),
         forgotPassword:builder.mutation<void,Pick<User , 'email'>>({
             query:(credentials)=>({
                 url:"/forgot-password",
@@ -94,8 +80,6 @@ export const authApi = createApi({
 })
 
 export const {
-    useLoginMutation,
-    useSignupMutation,
     useForgotPasswordMutation,
     useResetPasswordMutation,
     useVerifyOtpMutation,

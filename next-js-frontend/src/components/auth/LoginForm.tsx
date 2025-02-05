@@ -1,62 +1,81 @@
 "use client";
-import { useUpdateLoggedInUserState } from "@/hooks/useAuth/useUpdateLoggedInUserState";
-import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from "@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated";
-import type { loginSchemaType } from "@/schemas/auth.schema";
-import { loginSchema } from "@/schemas/auth.schema";
+import { login } from "@/actions/auth.actions";
+import { loginSchema, loginSchemaType } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useLogin } from "../../hooks/useAuth/useLogin";
-import { FormInput } from "../ui/FormInput";
-import { SubmitButton } from "../ui/SubmitButton";
+import { startTransition, useActionState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { CircleLoading } from "../shared/CircleLoading";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const LoginForm = () => {
-  const { login, data, isLoading, isSuccess } = useLogin();
-  useUpdateLoggedInUserState({isSuccess,user:data});
-  useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
+  const [state, loginAction] = useActionState(login, undefined);
+
+  useEffect(() => {
+    if (state?.errors.message) {
+      toast.error(state.errors.message);
+    }
+  }, [state]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    
   } = useForm<loginSchemaType>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<loginSchemaType> = (data) => login(data);
+  const onSubmit = (data: loginSchemaType) => {
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+
+    startTransition(() => {
+      loginAction(formData);
+    });
+  }
 
   return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            autoComplete="email webauthn"
+          <input
+            {...register("email")}
+            name="email"
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Email"
-            register={register("email")}
-            error={errors.email?.message}
           />
+          {errors.email?.message && (
+            <p className="text-red-500 text-sm">{errors.email?.message}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-y-1">
-          <FormInput
+          <input
+            {...register("password")}
+            name="password"
             type="password"
-            autoComplete="current-password webauthn"
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Password"
-            register={register("password")}
-            error={errors.password?.message}
           />
+          {errors.password?.message && (
+            <p className="text-red-500 text-sm">{errors.password?.message}</p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <SubmitButton isLoading={isLoading} btnText="Login" />
+          {/* <SubmitButton btnText="Login"/> */}
+          {SubmitButton()}
         </div>
 
         <div className="flex justify-between items-center flex-wrap gap-1">
           <AuthRedirectLink
             pageName="Signup"
-            text="Already a member?"
+            text="Create new account?"
             to="auth/signup"
           />
           <AuthRedirectLink
@@ -69,3 +88,18 @@ export const LoginForm = () => {
     </form>
   );
 };
+
+function SubmitButton(){
+  const {pending} = useFormStatus();
+  return (
+        <button
+          disabled={pending}
+          type="submit"
+          className={`w-full ${
+            pending ? "bg-background" : "bg-primary"
+          } text-white px-6 py-3 rounded shadow-lg font-medium text-center flex justify-center`}
+        >
+          {pending ? <CircleLoading size="6" /> : "Login"}
+        </button>
+  )
+}

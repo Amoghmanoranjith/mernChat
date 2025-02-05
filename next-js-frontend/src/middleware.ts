@@ -1,67 +1,53 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { User } from './interfaces/auth.interface';
+import { NextResponse } from 'next/server';
+import { decrypt } from './lib/session';
 
-export async function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-  const token = request.cookies.get('token')?.value; // Correct way to access cookies in middleware
 
-  console.log('Token:', token);
-  console.log('Path:', path);
+const publicRoutes = ['/auth/login','/auth/signup','/auth/forgot-password','/auth/reset-password'];
+const protectedRoutes = ['/'];
 
-  // Redirect unauthenticated users from protected routes
-  if (!token) {
-    if (path === '/') {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+export async function middleware(req: NextRequest) {
+
+  const path = req.nextUrl.pathname;
+
+  const isProtectedRoute = protectedRoutes.includes(path);
+  const isPublicRoute = publicRoutes.includes(path);
+
+  const cookie = req.cookies.get("token")?.value;
+
+  if(!cookie){
+    if(isProtectedRoute){
+      return NextResponse.redirect(new URL('/auth/login', req.url));
     }
-    return NextResponse.next();
+    else{
+      return NextResponse.next();
+    }
   }
 
-  // Redirect authenticated users from auth pages
-  if (['/auth/login', '/auth/signup'].includes(path)) {
-    return NextResponse.redirect(new URL('/', request.url));
+  const session = await decrypt(cookie);
+
+  if(!session){
+    if(isProtectedRoute){
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+    else{
+      return NextResponse.next();
+    }
   }
 
-  // Validate token for protected routes
-  if (path === '/' || path === '/auth/verification') {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-token`, {
-        headers: {
-          Cookie: `token=${token}`, // Use the actual token value
-        },
-      });
+  // const {userId} = session;
+  
+  // if(!user.emailVerified && path!='/auth/verification'){
+  //   return NextResponse.redirect(new URL('/auth/verification', req.url));
+  // }
 
-      if (!response.ok) throw new Error('Invalid token');
+  if(isProtectedRoute && !session.userId){
+    return NextResponse.redirect(new URL('/auth/login', req.url));
+  }
 
-      const userData: User = await response.json();
-      const responseHeaders = new Headers(request.headers);
-      responseHeaders.set('x-logged-in-user', JSON.stringify(userData));
-
-      if (path === '/auth/verification') {
-        return userData.verified 
-          ? NextResponse.redirect(new URL('/', request.url))
-          : NextResponse.next();
-      }
-
-      return userData.verified
-        ? NextResponse.next({ headers: responseHeaders })
-        : NextResponse.redirect(new URL('/auth/verification', request.url));
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      const response = NextResponse.redirect(new URL('/auth/login', request.url));
-      response.cookies.delete('token'); // Clear invalid token
-      return response;
-    }
+  if (isPublicRoute && session.userId) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: [
-    '/',
-    '/auth/verification',
-    '/auth/login',
-    '/auth/signup',
-  ],
-};

@@ -14,5 +14,5 @@ export const useUpdateLoggedInUserPublicKeyInState = ({publicKey}:PropTypes) => 
         if(publicKey){
             disptach(updateLoggedInUserPublicKey({publicKey:JSON.parse(publicKey)}))
         }
-    },[publicKey]);
+    },[disptach, publicKey]);
 }

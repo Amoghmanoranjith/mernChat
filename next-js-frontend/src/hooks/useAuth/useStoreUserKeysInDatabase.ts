@@ -13,7 +13,7 @@ export const useStoreUserKeysInDatabase = ({encryptedPrivateKey,publicKeyJWK}:Pr
         if(encryptedPrivateKey && publicKeyJWK){
             updateKeysInDatabase({privateKey:encryptedPrivateKey,publicKey:JSON.stringify(publicKeyJWK)});
         }
-    },[encryptedPrivateKey,publicKeyJWK]);
+    },[encryptedPrivateKey, publicKeyJWK, updateKeysInDatabase]);
 
     return {
         publicKeyReturnedFromServerAfterBeingStored,

@@ -1,15 +1,13 @@
 import { Router } from "express";
 import passport from 'passport';
 import { config } from "../config/env.config.js";
-import { checkAuth, forgotPassword, login, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, signup, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword, verifyPrivateKeyToken } from "../controllers/auth.controller.js";
+import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword, verifyPrivateKeyToken } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyToken } from "../middlewares/verify-token.middleware.js";
-import { fcmTokenSchema, forgotPasswordSchema, keySchema, loginSchema, resetPasswordSchema, setAuthCookieSchema, signupSchema, verifyOtpSchema, verifyPasswordSchema, verifyPrivateKeyTokenSchema } from "../schemas/auth.schema.js";
+import { fcmTokenSchema, forgotPasswordSchema, keySchema, resetPasswordSchema, setAuthCookieSchema, verifyOtpSchema, verifyPasswordSchema, verifyPrivateKeyTokenSchema } from "../schemas/auth.schema.js";
 
 export default Router()
 
-.post("/signup",validate(signupSchema),signup)
-.post("/login",validate(loginSchema),login)
 .post("/forgot-password",validate(forgotPasswordSchema),forgotPassword)
 .post("/reset-password",validate(resetPasswordSchema),resetPassword)
 .get("/send-otp",verifyToken,sendOtp)

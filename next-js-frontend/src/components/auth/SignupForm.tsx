@@ -1,25 +1,23 @@
-'use client';
+"use client";
+import { signup } from "@/actions/auth.actions";
 import { useConvertPrivateAndPublicKeyInJwkFormat } from "@/hooks/useAuth/useConvertPrivateAndPublicKeyInJwkFormat";
 import { useEncryptPrivateKeyWithUserPassword } from "@/hooks/useAuth/useEncryptPrivateKeyWithUserPassword";
 import { useGenerateKeyPair } from "@/hooks/useAuth/useGenerateKeyPair";
 import { useStoreUserKeysInDatabase } from "@/hooks/useAuth/useStoreUserKeysInDatabase";
 import { useStoreUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useStoreUserPrivateKeyInIndexedDB";
 import { useUpdateLoggedInUserPublicKeyInState } from "@/hooks/useAuth/useUpdateLoggedInUserPublicKeyInState";
-import { useUpdateLoggedInUserState } from "@/hooks/useAuth/useUpdateLoggedInUserState";
-import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from "@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated";
 import type { signupSchemaType } from "@/schemas/auth.schema";
 import { signupSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { startTransition, useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useSignup } from "../../hooks/useAuth/useSignup";
-import { FormInput } from "../ui/FormInput";
-import { SubmitButton } from "../ui/SubmitButton";
+import { CircleLoading } from "../shared/CircleLoading";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const SignupForm = () => {
-  const { signup, isSuccess, data:user, isLoading } = useSignup();
-  useUpdateLoggedInUserState({user,isSuccess});
-  useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
+
+  const [state, signupAction] = useActionState(signup, undefined);
 
   const {
     register,
@@ -30,76 +28,89 @@ export const SignupForm = () => {
 
   const password = watch("password");
 
-  const {privateKey,publicKey} = useGenerateKeyPair({user});
-  const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
-  const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
-  const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:user?._id});
-  useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
+  const { privateKey, publicKey } = useGenerateKeyPair({user:state?.data});
+  const { privateKeyJWK, publicKeyJWK } = useConvertPrivateAndPublicKeyInJwkFormat({ privateKey, publicKey });
+  const { encryptedPrivateKey } = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
+  const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({ encryptedPrivateKey, publicKeyJWK });
+  useStoreUserPrivateKeyInIndexedDB({privateKey: privateKeyJWK,userKeysStoredInDatabaseSuccess,userId: state?.data?.id});
+  useUpdateLoggedInUserPublicKeyInState({publicKey: publicKeyReturnedFromServerAfterBeingStored});
 
   const onSubmit: SubmitHandler<signupSchemaType> = (data) => {
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...credentials } = data;
-    signup(credentials);
+    const formData = new FormData();
+
+    formData.append("name", credentials.name);
+    formData.append("username", credentials.username);
+    formData.append("email", credentials.email);
+    formData.append("password", credentials.password);
+    
+    startTransition(()=>{
+      signupAction(formData);
+    })
   };
 
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            name="name"
-            autoComplete="name webauthn"
+          <input
+            {...register("name")}
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Name"
-            register={register("name")}
-            error={errors.name?.message}
           />
+          {errors.name?.message && (
+            <p className="text-red-500 text-sm">{errors.name?.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            name="username"
-            autoComplete="username"
+          <input
+            {...register("username")}
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Username"
-            register={register("username")}
-            error={errors.username?.message}
           />
+          {errors.username?.message && (
+            <p className="text-red-500 text-sm">{errors.username?.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            name="email"
-            autoComplete="email"
+          <input
+            {...register("email")}
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Email"
-            register={register("email")}
-            error={errors.email?.message}
           />
+          {errors.email?.message && (
+            <p className="text-red-500 text-sm">{errors.email?.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            name="password"
-            type="password"
+          <input
+            {...register("password")}
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Password"
-            register={register("password")}
-            error={errors.password?.message}
           />
+          {errors.password?.message && (
+            <p className="text-red-500 text-sm">{errors.password?.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-1">
-          <FormInput
-            name="confirmPassword"
-            type="password"
+          <input
+            {...register("confirmPassword")}
+            className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Confirm Password"
-            register={register("confirmPassword")}
-            error={errors.confirmPassword?.message}
           />
+          {errors.confirmPassword?.message && (
+            <p className="text-red-500 text-sm">
+              {errors.confirmPassword?.message}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <SubmitButton btnText="Signup" isLoading={isLoading}/>
-          <p className="text-gray-400 font-light">
-            By creating this account, you agree that you have read and accepted
-            our Terms of Use and Privacy Policy.
-          </p>
+          <SubmitButton />
         </div>
         <AuthRedirectLink
           pageName="Login"
@@ -110,3 +121,18 @@ export const SignupForm = () => {
     </form>
   );
 };
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      disabled={pending}
+      type="submit"
+      className={`w-full ${
+        pending ? "bg-background" : "bg-primary"
+      } text-white px-6 py-3 rounded shadow-lg font-medium text-center flex justify-center`}
+    >
+      {pending ? <CircleLoading size="6" /> : "Signup"}
+    </button>
+  );
+}

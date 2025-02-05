@@ -3,7 +3,7 @@ import { generateKeyPair } from "@/utils/encryption";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
-  user: User | undefined | boolean;
+  user: User | undefined | boolean | null;
 };
 
 export const useGenerateKeyPair = ({ user }: PropTypes) => {
