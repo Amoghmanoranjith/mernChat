@@ -15,7 +15,7 @@ export interface IMessage {
     attachments?:Array<IAttachment>
     isPoll?:boolean
     pollQuestion?:string
-    pollOptions?:Array<{option:string,votes:Array<Types.ObjectId>}>
+    pollOptions?:[]
     reactions?:Array<{user:Types.ObjectId,emoji:string}>
     isMultipleAnswers?:boolean
     isEdited?:boolean

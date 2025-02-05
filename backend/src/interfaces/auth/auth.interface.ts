@@ -1,7 +1,6 @@
-import { Request } from "express";
-import { Socket } from "socket.io";
-import { Types } from "mongoose";
 import { Prisma } from "@prisma/client";
+import { Request } from "express";
+import { Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
     user:Omit<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'> & Required<Pick<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'>>
@@ -9,10 +8,6 @@ export interface AuthenticatedRequest extends Request {
 
 export interface OAuthAuthenticatedRequest extends Request {
     user?:Prisma.UserCreateInput & {newUser:boolean,googleId:string}
-}
-
-export interface AuthenticatedSocket extends Socket {
-    user?:IUser
 }
 
 export interface IOtp {

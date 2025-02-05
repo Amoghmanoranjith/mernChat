@@ -13,14 +13,14 @@ export interface IUnreadMessage {
 export interface IUnreadMessageEventPayload {
     chatId:string,
     message?:{
-        content?:string
-        url?:boolean
+        content?:string | undefined | null
+        url?:boolean | undefined | null
         attachments?:boolean
         poll?:boolean
         createdAt:Date
     },
     sender:{
-        _id:string,
+        id:string,
         avatar:string,
         username:string
     }

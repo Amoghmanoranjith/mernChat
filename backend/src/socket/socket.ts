@@ -1,329 +1,420 @@
-import { Types } from "mongoose";
-import { Server } from "socket.io";
+import { Prisma } from "@prisma/client";
+import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
-import { AuthenticatedSocket, IUser } from "../interfaces/auth/auth.interface.js";
-import { IDeleteReactionEventPayloadData, IMessage, INewReactionEventPayloadData } from "../interfaces/message/message.interface.js";
+import { IDeleteReactionEventPayloadData, IMessage } from "../interfaces/message/message.interface.js";
 import { IUnreadMessageEventPayload } from "../interfaces/unread-message/unread-message.interface.js";
-import { Chat } from "../models/chat.model.js";
-import { Message } from "../models/message.model.js";
-import { UnreadMessage } from "../models/unread-message.model.js";
-import { User } from "../models/user.model.js";
+import { prisma } from "../lib/prisma.lib.js";
 import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 
 
-const registerSocketHandlers = (io:Server)=>{io.on("connection",async(socket:AuthenticatedSocket)=>{
-
-    await User.findByIdAndUpdate(socket.user?._id,{isActive:true})
-
-    userSocketIds.set(socket.user?._id.toString(),socket.id)
-
-    socket.broadcast.emit(Events.ONLINE,socket.user?._id)
-
-    const onlineUserIds = Array.from(userSocketIds.keys());
-    socket.emit(Events.ONLINE_USERS, onlineUserIds);
-
-    const userChats = await Chat.find({"members":socket.user?._id},{"_id":1})
-    const chatIds = userChats.map(userChat=>userChat._id.toString())
-    socket.join(chatIds)
-
-
-    socket.on(Events.MESSAGE,async({chat,content,url,isPoll,pollQuestion,pollOptions,isMultipleAnswers}:Omit<IMessage , "sender" | "chat" | "attachments"> & {chat:string})=>{
-
-        // save to db
-        const newMessage = await Message.create({chat,content,sender:socket.user?._id,url,isPoll,pollQuestion,pollOptions,isMultipleAnswers})
-        await Chat.findByIdAndUpdate(chat,{latestMessage:newMessage._id})
-        
-        const transformedMessage  = await Message.aggregate([
-            {
-                $match:{
-                    chat:new Types.ObjectId(chat),
-                    _id:newMessage._id
-                }
-            },
-            {
-                $lookup: {
-                from: "users",
-                localField: "sender",
-                foreignField: "_id",
-                as: "sender",
-                pipeline: [
-                    {
-                    $addFields: {
-                        avatar: "$avatar.secureUrl",
-                    },
-                    },
-                    {
-                    $project: {
-                        username: 1,
-                        avatar: 1,
-                    },
-                    },
-                ],
-                },
-            },
-            {
-                $addFields: {
-                    sender: {
-                        $arrayElemAt: ["$sender", 0],
-                    },
-                },
-            },
-            {
-                $addFields: {
-                    "attachments":"$attachments.secureUrl"
-                },
-            },
-            {
-                $unwind:{
-                    path:"$pollOptions",
-                    preserveNullAndEmptyArrays:true,
-                }
-            },
-            {
-                $lookup:{
-                    from:"users",
-                    localField:"pollOptions.votes",
-                    foreignField:"_id",
-                    as:"pollOptions.votes",
-                    pipeline:[
-                        {
-                            $project:{
-                                username:1,
-                                avatar:"$avatar.secureUrl"
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                $group: {
-                  _id: "$_id",  // Group by the original message _id
-                  sender: { $first: "$sender" },  // Keep the first sender object
-                  chat: { $first: "$chat" },  // Keep the first chat ID
-                  isPoll: { $first: "$isPoll" },  // Keep the first isPoll flag
-                  content:{$first:'$content'},
-                  url:{$first:'$url'},
-                  pollQuestion: { $first: "$pollQuestion" }, // Keep the first pollQuestion
-                  pollOptions: {
-                    $push: "$pollOptions"  // Push each unwound pollOption into the array
-                  },
-                  isMultipleAnswers: { $first: "$isMultipleAnswers" },
+const registerSocketHandlers = (io:Server)=>{
     
-                  attachments: { $first: "$attachments" },  // Keep the first attachments array (optional)
-                  createdAt: { $first: "$createdAt" },  // Keep the first createdAt timestamp
-                  updatedAt: { $first: "$updatedAt" },  // Keep the first updatedAt timestamp
-                }
-            },
-            {
-                $sort:{
-                    'createdAt':1
-                }
-            }
-        ])
+    io.on("connection",async(socket:Socket)=>{
 
-        io.to(chat).emit(Events.MESSAGE,{...transformedMessage[0],isNew:true,reactions:[]})
+        prisma.user.update({
+            where:{id:socket.user.id},
+            data:{isOnline:true}
+        })
 
-        // Handle unread messages for receivers
-        const currentChat = await Chat.findById(chat,{members:1,_id:1}).populate<{members:Array<IUser>}>('members')
+        userSocketIds.set(socket.user.id,socket.id)
         
-        if(currentChat){
-            const currentChatMembers = currentChat.members.filter(member=>member._id.toString()!==socket.user?._id.toString())
+        // telling everyone that user is online
+        socket.broadcast.emit(Events.ONLINE,socket.user.id)
+        
+        // getting all other online users
+        const onlineUserIds = Array.from(userSocketIds.keys());
+
+        // sending the online users to the user who just connected
+        socket.emit(Events.ONLINE_USERS, onlineUserIds);
+
+        // getting all chats of the user
+        const userChats = await prisma.chat.findMany({
+            where:{members:{some:{id:socket.user.id}}},
+            select:{id:true}
+        })
+        
+        // joining the user to all of its chats via chatIds (i.e rooms)
+        const chatIds = userChats.map(({id})=>id);
+        socket.join(chatIds)
+
+        socket.on(Events.MESSAGE,async({chat,content,url,isPoll,pollQuestion,pollOptions,isMultipleAnswers}:Omit<IMessage , "sender" | "chat" | "attachments"> & {chat:string})=>{
             
-            const updateOrCreateUnreadMessagePromise = currentChatMembers.map(async(member)=>{
+            let newMessage:Partial<Prisma.MessageCreateInput>
+            
+            if(isPoll && pollQuestion && pollOptions && pollOptions?.length){
+                const newPoll =  await prisma.poll.create({
+                    data:{
+                        question:pollQuestion,
+                        options:pollOptions,
+                        multipleAnswers:isMultipleAnswers ? isMultipleAnswers : false
+                    }
+                })
 
-                if(!member.isActive && member.notificationsEnabled && member.fcmToken){
-                    sendPushNotification({fcmToken:member.fcmToken,body:`New message from ${socket.user?.username}`})
+                newMessage = await prisma.message.create({
+                    data:{
+                        senderId:socket.user.id,
+                        chatId:chat,
+                        pollId:newPoll.id,
+                        isPollMessage:true,
+                        isTextMessage:false,
+                    },
+                })
+            }
+            else if(url){
+                newMessage = await prisma.message.create({
+                    data:{
+                        senderId:socket.user.id,
+                        chatId:chat,
+                        url,
+                        isPollMessage:false,
+                        isTextMessage:false,
+                    },
+                })
+            }
+            else{
+                newMessage =  await prisma.message.create({
+                    data:{
+                        senderId:socket.user.id,
+                        chatId:chat,
+                        isPollMessage:false,
+                        isTextMessage:true,
+                        textMessageContent:content,
+                    },
+                })
+            }
+
+            const currentChat =  await prisma.chat.update({
+                where:{
+                    id:chat
+                },
+                data:{
+                    latestMessageId:newMessage.id
+                },
+                include:{
+                    members:{
+                        select:{
+                            id:true,
+                            isOnline:true,
+                            notificationsEnabled:true,
+                            fcmToken:true,
+                        }
+                    }
+                }
+            })
+
+            const message = await prisma.message.findUnique({
+                where:{
+                chatId:chat,
+                id:newMessage.id
+                },
+                include:{
+                sender:{
+                    select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    }
+                },
+                attachments:{
+                    select:{
+                    secureUrl:true,
+                    }
+                },
+                poll:{
+                    omit:{
+                    id:true,
+                    }
+                },
+                reactions:{
+                    select:{
+                    user:{
+                        select:{
+                        id:true,
+                        username:true,
+                        avatar:true
+                        }
+                    },
+                    reaction:true,
+                    }
+                },
+                },
+                omit:{
+                senderId:false,
+                },
+            })
+            
+            io.to(chat).emit(Events.MESSAGE,{...message,isNew:true,reactions:[]})
+
+
+            const currentChatMembers = currentChat.members.filter(({id})=>id!=socket.user.id)
+            
+            const updateOrCreateUnreadMessagePromises = currentChatMembers.map(async(member)=>{
+
+                if(!member.isOnline && member.notificationsEnabled && member.fcmToken){
+                    sendPushNotification({fcmToken:member.fcmToken,body:`New message from ${socket.user.username}`})
                 }
     
-                const isExistingUnreadMessage = await UnreadMessage.findOne({chat,user:member._id})
+                const isExistingUnreadMessage = await prisma.unreadMessages.findUnique({
+                    where:{
+                        userId_chatId:{
+                            userId:member.id,
+                            chatId:chat
+                        }
+                    }
+                })
     
                 if(isExistingUnreadMessage){
-                    isExistingUnreadMessage.count+=1
-                    isExistingUnreadMessage.message = newMessage._id
-                    isExistingUnreadMessage.save()
-                    return isExistingUnreadMessage
+                    return prisma.unreadMessages.update({
+                        where:{
+                            userId_chatId:{
+                                userId:member.id,
+                                chatId:chat
+                            }
+                        },
+                        data:{
+                            count:{
+                                increment:1
+                            },
+                            messageId:newMessage.id
+                        }
+                    })
                 }
-    
-               return UnreadMessage.create({chat,user:member._id,sender:socket.user?._id,message:newMessage._id})
+                else{
+                    return prisma.unreadMessages.create({
+                        data:{
+                            userId:member.id,
+                            chatId:chat,
+                            count:1,
+                            senderId:socket.user.id,
+                            messageId:newMessage.id!
+                        }
+                    })
+                }
     
             })
 
-            await Promise.all(updateOrCreateUnreadMessagePromise)
+            await Promise.all(updateOrCreateUnreadMessagePromises)
     
-            const messageData:IUnreadMessageEventPayload['message'] = {createdAt:newMessage.createdAt}
-
-    
-            if(newMessage.isPoll){
-                messageData.poll=true
-            }
-            
-            if(newMessage.url){
-                messageData.url=true
-            }
-    
-            if(newMessage.content?.length){
-                messageData.content=newMessage.content
-            }
-
-            const unreadMessageData:IUnreadMessageEventPayload = {
+            const unreadMessagePayload:IUnreadMessageEventPayload = {
                 chatId:chat,
-                message:messageData,
-                sender:transformedMessage[0].sender
+                message:{
+                    content:newMessage.isTextMessage ? newMessage.textMessageContent : undefined,
+                    url:newMessage.url ? true : false,
+                    attachments:false,
+                    poll:newMessage.isPollMessage ? true : false,
+                    createdAt:newMessage.createdAt as Date
+                },
+                sender:{
+                    id:socket.user.id,
+                    avatar:socket.user.avatar!,
+                    username:socket.user.username
+                }
             }
     
-            io.to(chat).emit(Events.UNREAD_MESSAGE,unreadMessageData)
-        }
-
-    })
-
-    socket.on(Events.MESSAGE_SEEN,async({chatId}:{chatId:string})=>{
-
-        const areUnreadMessages = await UnreadMessage.findOne({chat:chatId,user:socket.user?._id})   
-
-        if(areUnreadMessages){
-            areUnreadMessages.count=0
-            areUnreadMessages.readAt=new Date()
-            await areUnreadMessages.save()
-        }
-
-        io.to(chatId).emit(Events.MESSAGE_SEEN,{
-            user:{
-                _id:socket.user?._id,
-                username:socket.user?.username,
-                avatar:socket.user?.avatar?.secureUrl
-            },
-            chat:chatId,
-            readAt:areUnreadMessages?.readAt,
+            io.to(chat).emit(Events.UNREAD_MESSAGE,unreadMessagePayload)
         })
 
-    })
+        socket.on(Events.MESSAGE_SEEN,async({chatId}:{chatId:string})=>{
+            
+            const unreadMessageData = await prisma.unreadMessages.update({
+                where:{
+                    userId_chatId:{
+                        userId:socket.user.id,
+                        chatId,
+                    }
+                },
+                data:{
+                    count:0,
+                    readAt:new Date
+                }
+            })
 
-    socket.on(Events.MESSAGE_EDIT,async({messageId,updatedContent,chatId}:{messageId:string,updatedContent:string,chatId:string})=>{
-        
-        const updatedMessage = await Message.findByIdAndUpdate(
-            messageId,
-            {isEdited:true,content:updatedContent},
-            {new:true,projection:['chat','content','isEdited']}
-        )
-
-        io.to(chatId).emit(Events.MESSAGE_EDIT,updatedMessage)
-    })
-
-    socket.on(Events.MESSAGE_DELETE,async({messageId}:{messageId:string})=>{
-
-        const deletedMessage = await Message.findByIdAndDelete(messageId)
-
-        if(deletedMessage?.attachments?.length) {
-            await deleteFilesFromCloudinary(deletedMessage.attachments.map(attachment=>attachment.publicId))
-        }
-
-        if(deletedMessage){
-            io.to(deletedMessage.chat._id.toString()).emit(Events.MESSAGE_DELETE,{messageId,chatId:deletedMessage.chat._id.toString()})
-        }
-    })
-    
-    socket.on(Events.NEW_REACTION,async({chatId,messageId,reaction}:{chatId:string,messageId:string,reaction:string})=>{
-        
-        await Message.findOneAndUpdate(
-            {_id:messageId,chat:chatId},
-            {$addToSet:{reactions:{user:socket.user?._id,emoji:reaction}}},
-        )
-        
-        const payload:INewReactionEventPayloadData = {
-            chatId,
-            messageId,
-            user:{
-                _id:socket.user?._id.toString()!,
-                username:socket.user?.username!,
-                avatar:socket.user?.avatar?.secureUrl!
-            },
-            emoji:reaction,
-        }
-
-        io.to(chatId).emit(Events.NEW_REACTION,payload)
-
-    })
-
-    socket.on(Events.DELETE_REACTION,async({chatId,messageId}:{chatId:string,messageId:string})=>{
-
-        await Message.findOneAndUpdate(
-            {_id:messageId,chat:chatId},
-            {$pull:{reactions:{user:socket.user?._id}}},
-        )
-
-        const paylaod:IDeleteReactionEventPayloadData = {
-            chatId,
-            messageId,
-            userId:socket.user?._id.toString()! 
-        }
-
-        io.to(chatId).emit(Events.DELETE_REACTION,paylaod)
-    })
-
-    socket.on(Events.USER_TYPING,({chatId}:{chatId:string})=>{
-        socket.broadcast.to(chatId).emit(Events.USER_TYPING,{
-            user:{
-                _id:socket.user?._id.toString(),
-                username:socket.user?.username,
-                avatar:socket.user?.avatar?.secureUrl
-            },
-            chatId:chatId
+            const payload = {
+                user:{
+                    id:socket.user.id,
+                    username:socket.user.username,
+                    avatar:socket.user.avatar
+                },
+                chatId,
+                readAt:unreadMessageData.readAt,
+            }
+            io.to(chatId).emit(Events.MESSAGE_SEEN,payload)
         })
-    })
 
-    socket.on(Events.VOTE_IN,async({chatId,messageId,optionIndex}:{chatId:string,messageId:string,optionIndex:number})=>{
+        socket.on(Events.MESSAGE_EDIT,async({messageId,updatedContent,chatId}:{messageId:string,updatedContent:string,chatId:string})=>{
+            
+            const message =  await prisma.message.update({
+                where:{
+                    chatId,
+                    id:messageId
+                },
+                data:{
+                    textMessageContent:updatedContent,
+                    isEdited:true,
+                }
+            })
+
+            io.to(chatId).emit(Events.MESSAGE_EDIT,message.textMessageContent)
+        })
+
+        socket.on(Events.MESSAGE_DELETE,async({messageId,chatId}:{messageId:string,chatId:string})=>{
+
+            const deletedMessage =  await prisma.message.delete({
+                where:{
+                    chatId:chatId,
+                    id:messageId
+                },
+                select:{
+                    id:true,
+                    attachments:true,
+                }
+            })
+
+            if(deletedMessage.attachments.length) {
+                const attachmentPublicIds = deletedMessage.attachments.map(({cloudinaryPublicId})=>cloudinaryPublicId);
+                await deleteFilesFromCloudinary({publicIds:attachmentPublicIds})                
+            }
+
+            if(deletedMessage.id){
+                io.to(chatId).emit(Events.MESSAGE_DELETE,{messageId:deletedMessage.id,chatId:chatId})
+            }
+        })
         
-        const message = await Message.findOneAndUpdate(
-            { chat: chatId, _id: messageId },
-            {"$addToSet":{[`pollOptions.${optionIndex}.votes`]:socket.user?._id}},
-            { new: true ,projection:["chat","_id"]}
-        )
-        
-        const userInfo = {
-            _id:socket.user?._id,
-            avatar:socket.user?.avatar?.secureUrl,
-            username:socket.user?.username
-        }
-        
-        const payload = {
-            _id:message?._id,
-            optionIndex,
-            user:userInfo
-        }
+        socket.on(Events.NEW_REACTION,async({chatId,messageId,reaction}:{chatId:string,messageId:string,reaction:string})=>{
+            
+            await prisma.reactions.create({
+                data:{
+                    reaction,
+                    userId:socket.user.id,
+                    messageId,
+                }
+            })
 
-        io.to(chatId).emit(Events.VOTE_IN,payload)
+            const payload = {
+                chatId,
+                messageId,
+                user:{
+                    id:socket.user.id,
+                    username:socket.user.username,
+                    avatar:socket.user.avatar
+                },
+                emoji:reaction,
+            }
 
-    })
+            io.to(chatId).emit(Events.NEW_REACTION,payload)
 
-    socket.on(Events.VOTE_OUT,async({chatId,messageId,optionIndex}:{chatId:string,messageId:string,optionIndex:number})=>{
-        
-        const message = await Message.findOneAndUpdate(
-            { chat: chatId, _id: messageId },
-            {"$pull":{[`pollOptions.${optionIndex}.votes`]:socket.user?._id}},
-            { new: true ,projection:["chat","_id"]}
-        )
-        
-        const userInfo = {
-            _id:socket.user?._id,
-        }
-        
-        const payload = {
-            _id:message?._id,
-            optionIndex,
-            user:userInfo
-        }
+        })
 
-        io.to(chatId).emit(Events.VOTE_OUT,payload)
+        socket.on(Events.DELETE_REACTION,async({chatId,messageId}:{chatId:string,messageId:string})=>{
 
-    })
+            await prisma.reactions.delete({
+                where:{
+                    userId_messageId:{
+                        userId:socket.user.id,
+                        messageId
+                    }
+                }
+            })
+            const payload:IDeleteReactionEventPayloadData = {
+                chatId,
+                messageId,
+                userId:socket.user.id 
+            }
+            io.to(chatId).emit(Events.DELETE_REACTION,payload)
+        })
 
-    socket.on("disconnect",async()=>{
-        await User.findByIdAndUpdate(socket.user?._id,{isActive:false,lastSeen:new Date})
-        userSocketIds.delete(socket.user?._id);
-        socket.broadcast.emit(Events.OFFLINE,socket.user?._id)
-    })
+        socket.on(Events.USER_TYPING,({chatId}:{chatId:string})=>{
+            const payload = {
+                user:{
+                    id:socket.user.id,
+                    username:socket.user.username,
+                    avatar:socket.user.avatar
+                },
+                chatId:chatId
+            }
+            socket.broadcast.to(chatId).emit(Events.USER_TYPING,payload)
+        })
+
+        socket.on(Events.VOTE_IN,async({chatId,messageId,optionIndex}:{chatId:string,messageId:string,optionIndex:number})=>{
+            
+            const isValidPoll = await prisma.message.findFirst({
+                where:{AND:[{chatId},{id:messageId}]},
+                include:{
+                    poll:{
+                        select:{
+                            id:true
+                        }
+                    }
+                }
+            })
+
+            if(!isValidPoll?.poll?.id) return 
+            
+            await prisma.vote.create({
+                data:{
+                    pollId:isValidPoll.poll.id,
+                    userId:socket.user.id,
+                    optionIndex
+                }
+            })
+            
+            const userInfo = {
+                _id:socket.user.id,
+                avatar:socket.user.avatar,
+                username:socket.user.username
+            }
+
+            const payload = {
+                _id:messageId,
+                optionIndex,
+                user:userInfo
+            }
+            io.to(chatId).emit(Events.VOTE_IN,payload)
+        })
+
+        socket.on(Events.VOTE_OUT,async({chatId,messageId,optionIndex}:{chatId:string,messageId:string,optionIndex:number})=>{
+            
+            const isValidPoll = await prisma.message.findFirst({
+                where:{AND:[{chatId},{id:messageId}]},
+                include:{
+                    poll:{
+                        select:{
+                            id:true
+                        }
+                    }
+                },
+            })
+            if(!isValidPoll?.poll?.id) return
+            await prisma.vote.deleteMany({
+                where: {
+                    userId: socket.user.id,
+                    pollId: isValidPoll.poll.id
+                }
+            });         
+            const payload = {
+                _id:messageId,
+                optionIndex,
+                user:socket.user.id
+            }
+            io.to(chatId).emit(Events.VOTE_OUT,payload)
+        })
+
+        socket.on("disconnect",async()=>{
+
+            await prisma.user.update({
+                where:{
+                    id:socket.user.id
+                },
+                data:{
+                    isOnline:false,
+                    lastSeen:new Date
+                }
+            })
+            userSocketIds.delete(socket.user.id);
+            socket.broadcast.emit(Events.OFFLINE,socket.user.id)
+        })
 })
 }
 
