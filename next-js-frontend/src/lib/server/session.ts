@@ -23,7 +23,7 @@ export async function createSession(userId: string) {
 }
 
 export async function deleteSession() {
-  (await cookies()).delete("token");
+  (await cookies()).delete("token").delete("loggedInUserId");
 }
 
 export async function encrypt(payload: SessionPayload) {

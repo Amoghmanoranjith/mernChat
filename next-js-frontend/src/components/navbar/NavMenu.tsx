@@ -1,4 +1,3 @@
-import { useLogout } from "@/hooks/useAuth/useLogout";
 import { useCloseNavMenu } from "@/hooks/useUI/useCloseNavMenu";
 import { useOpenAddFriendForm } from "@/hooks/useUI/useOpenAddFriendForm";
 import { useOpenGroupChatForm } from "@/hooks/useUI/useOpenGroupChatForm";
@@ -12,13 +11,13 @@ import { LogoutIcon } from "../ui/icons/LogoutIcon";
 import { PlusIcon } from "../ui/icons/PlusIcon";
 import { SettingIcon } from "../ui/icons/SettingIcon";
 import { UserIcon } from "../ui/icons/UserIcon";
+import { logout } from "@/actions/auth.actions";
 
 export const NavMenu = () => {
   const { openProfileForm } = useOpenProfileForm();
   const { openAddFriendForm } = useOpenAddFriendForm();
   const { openGroupChatForm } = useOpenGroupChatForm();
   const { openSettingsForm } = useOpenSettingsForm();
-  const { logoutUser } = useLogout();
 
   const { closeNavMenu } = useCloseNavMenu();
 
@@ -66,7 +65,7 @@ export const NavMenu = () => {
           <p>Settings</p>
         </li>
         <li
-          onClick={logoutUser}
+          onClick={logout}
           className="cursor-pointer flex items-center gap-x-2 hover:bg-secondary-dark p-2 rounded"
         >
           <LogoutIcon />

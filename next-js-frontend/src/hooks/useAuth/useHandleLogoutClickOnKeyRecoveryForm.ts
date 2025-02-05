@@ -1,13 +1,13 @@
+import { logout } from "@/actions/auth.actions";
 import { useToggleRecoverPrivateKeyForm } from "../useUI/useToggleRecoverPrivateKeyForm";
-import { useLogout } from "./useLogout";
+
 
 export const useHandleLogoutClickOnKeyRecoveryForm = () => {
-  const { logoutUser } = useLogout();
   const { toggleRecoverPrivateKeyForm } = useToggleRecoverPrivateKeyForm();
 
   const handleLogoutClick = () => {
     toggleRecoverPrivateKeyForm();
-    logoutUser();
+    logout();
   };
 
   return { handleLogoutClick };
