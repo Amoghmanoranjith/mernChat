@@ -14,21 +14,21 @@ datasource db {
 }
 
 model Chat {
-  id                       String           @id @default(cuid())
+  id                       String   @id @default(cuid())
   name                     String?
-  isGroupChat              Boolean          @default(false)
-  members                  User[]           @relation("userChats")
-  avatar                   String           @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
+  isGroupChat              Boolean  @default(false)
+  members                  User[]   @relation("userChats")
+  avatar                   String   @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
   avatarCloudinaryPublicId String?
-  admin                    User?            @relation(fields: [adminId], references: [id])
+  admin                    User?    @relation(fields: [adminId], references: [id])
   adminId                  String?
-  latestMessage            Message?         @relation("latestMessage", fields: [latestMessageId], references: [id])
+  latestMessage            Message? @relation("latestMessage", fields: [latestMessageId], references: [id])
   latestMessageId          String?
-  createdAt                DateTime         @default(now())
-  updatedAt                DateTime         @updatedAt
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
-  messages                 Message[]
-  UnreadMessages           UnreadMessages[]
+  messages       Message[]
+  UnreadMessages UnreadMessages[]
 }
 
 model Friends {
@@ -155,6 +155,8 @@ model UnreadMessages {
   readAt    DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@unique([userId, chatId])
 }
 
 model User {
