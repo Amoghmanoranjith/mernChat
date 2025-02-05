@@ -14,7 +14,6 @@ type SessionPayload = {
 export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
         const {token} = req.cookies
-        console.log('token is',token || 'undefined');
 
         const secretKey = "helloWorld@123";
         const encodedKey = new TextEncoder().encode(secretKey);
@@ -32,6 +31,21 @@ export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Re
         const user = await prisma.user.findUnique({
             where:{
                 id:decodedInfo.userId
+            },
+            select:{
+                id:true,
+                name:true,
+                username:true,
+                avatar:true,
+                email:true,
+                createdAt:true,
+                updatedAt:true,
+                emailVerified:true,
+                publicKey:true,
+                notificationsEnabled:true,
+                verificationBadge:true,
+                fcmToken:true,
+                oAuthSignup:true,
             }
         })
 

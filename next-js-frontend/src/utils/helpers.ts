@@ -10,7 +10,6 @@ import {
   differenceInSeconds,
   differenceInYears,
 } from "date-fns";
-import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 
 const isFetchBaseQueryError = (
   error: unknown
@@ -122,66 +121,9 @@ const formatRelativeTime = (stringDate: string | Date) => {
   }
 };
 
-const addHeaders = (token: string) => {
-  return {
-    headers: {
-      Cookie: `token=${token}`,
-    },
-  };
-};
-
-const fetchUserFriends = async (token: string) => {
-  try {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/friend",
-      addHeaders(token)
-    );
-    if (response.ok) {
-      const friends = await response.json();
-      return friends;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const fetchUserChats = async (token: string) => {
-  try {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/chat",
-      addHeaders(token)
-    );
-    if (response.ok) {
-      const chats = await response.json();
-      return chats;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const fetchUserFriendRequest = async (token: string) => {
-  try {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/request",
-      addHeaders(token)
-    );
-    if (response.ok) {
-      const friendRequest = await response.json();
-      return friendRequest;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getLoggedInUserFromHeaders = (headers: ReadonlyHeaders): User => {
-  return JSON.parse(headers.get("x-logged-in-user") as string);
-};
-
 const getChatName = (
   selectedChatDetails: ChatWithUnreadMessages | null,
-  loggedInUserId: User["_id"] | undefined | null
+  loggedInUserId: User["id"] | undefined | null
 ) => {
   let chatName = "N/A";
   if(selectedChatDetails && selectedChatDetails?.isGroupChat){
@@ -195,7 +137,7 @@ const getChatName = (
 
 const getChatAvatar = (
   selectedChatDetails: ChatWithUnreadMessages | null,
-  loggedInUserId: User["_id"] | null | undefined
+  loggedInUserId: User["id"] | null | undefined
 ) => {
   return selectedChatDetails?.isGroupChat
     ? selectedChatDetails.avatar
@@ -310,9 +252,6 @@ const haveUserVotedThisOption = (option:PollOption,loggedInUserId:string)=>{
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
-  fetchUserChats,
-  fetchUserFriendRequest,
-  fetchUserFriends,
   formatRelativeTime,
   getAppropriateLastLatestMessageForGroupChats,
   getAppropriateLastLatestMessageForPrivateChats,
@@ -320,7 +259,6 @@ export {
   getAppropriateUnreadMessageForPrivateChats,
   getChatAvatar,
   getChatName,
-  getLoggedInUserFromHeaders,
   getOtherMemberOfPrivateChat,
   getOtherMembersOfGroupChatThatAreActive, haveUserVotedThisOption, isErrorWithMessage,
   isFetchBaseQueryError,

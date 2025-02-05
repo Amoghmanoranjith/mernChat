@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Friend } from "../../interfaces/friends.interface";
+import { fetchUserFriendsResponse } from "@/lib/server/services/userService";
 
 export const friendApi = createApi({
     reducerPath:"friendApi",
@@ -9,7 +10,7 @@ export const friendApi = createApi({
     }),
 
     endpoints:(builder)=>({
-        getFriends:builder.query<Friend[],void>({
+        getFriends:builder.query<fetchUserFriendsResponse[],void>({
             query:()=>"/"
         })
     })

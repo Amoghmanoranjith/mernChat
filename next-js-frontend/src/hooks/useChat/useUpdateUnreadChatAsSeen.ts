@@ -16,5 +16,5 @@ export const useUpdateUnreadMessagesAsSeenOnChatSelect = () => {
       };
       socket?.emit(Event.MESSAGE_SEEN, payload);
     }
-  }, [selectedChatDetails]);
+  }, [selectedChatDetails, socket]);
 };

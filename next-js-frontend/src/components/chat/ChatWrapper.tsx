@@ -5,26 +5,18 @@ import { useUpdateUnreadMessagesAsSeenOnChatSelect } from "@/hooks/useChat/useUp
 import { useClearExtraPreviousMessagesOnChatChange } from "@/hooks/useMessages/useClearExtraPreviousMessagesOnChatChange";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
-import { User } from "@/interfaces/auth.interface";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { Friend } from "@/interfaces/friends.interface";
-import { FriendRequest } from "@/interfaces/request.interface";
+import { fetchUserChatsResponse, fetchUserFriendRequestResponse, fetchUserFriendsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
+
 
 type PropTypes = {
   children: React.ReactNode;
-  user: User;
-  friends: Friend[];
-  chats: ChatWithUnreadMessages[];
-  friendRequest: FriendRequest[];
+  user: FetchUserInfoResponse;
+  friends: fetchUserFriendsResponse[];
+  chats: fetchUserChatsResponse[];
+  friendRequest: fetchUserFriendRequestResponse[];
 };
 
-export const ChatWrapper = ({
-  children,
-  chats,
-  friendRequest,
-  friends,
-  user,
-}: PropTypes) => {
+export const ChatWrapper = ({children,chats,friendRequest,friends,user}: PropTypes) => {
 
   // client side state hydration
   usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});

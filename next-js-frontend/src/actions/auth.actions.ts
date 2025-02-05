@@ -1,9 +1,8 @@
 "use server";
 import { DEFAULT_AVATAR } from "@/constants";
-import { prisma } from "@/lib/prisma";
-import { createSession } from "@/lib/session";
+import { prisma } from "@/lib/server/prisma";
+import { createSession } from "@/lib/server/session";
 import bcrypt from "bcryptjs";
-
 
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
@@ -32,8 +31,7 @@ export async function login(prevState: any, formData: FormData) {
 
     if (await bcrypt.compare(password, user.hashedPassword)) {
       await createSession(user.id);
-    } 
-    else {
+    } else {
       return {
         errors: {
           message: "Invalid Credentials",
@@ -46,7 +44,6 @@ export async function login(prevState: any, formData: FormData) {
 }
 
 export async function signup(prevState: any, formData: FormData) {
-  
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
   const email = formData.get("email") as string;

@@ -14,7 +14,6 @@ import { env } from './schemas/env.schema.js'
 import attachmentRoutes from './routes/attachment.router.js'
 import authRoutes from './routes/auth.router.js'
 import chatRoutes from './routes/chat.router.js'
-import friendRoutes from './routes/friend.router.js'
 import messageRoutes from './routes/message.router.js'
 import requestRoutes from './routes/request.router.js'
 import userRoutes from './routes/user.router.js'
@@ -47,7 +46,6 @@ app.use("/api/v1/chat",chatRoutes)
 app.use("/api/v1/user",userRoutes)
 app.use("/api/v1/request",requestRoutes)
 app.use("/api/v1/message",messageRoutes)
-app.use("/api/v1/friend",friendRoutes)
 app.use("/api/v1/attachment",attachmentRoutes)
 
 io.use(socketAuthenticatorMiddleware)

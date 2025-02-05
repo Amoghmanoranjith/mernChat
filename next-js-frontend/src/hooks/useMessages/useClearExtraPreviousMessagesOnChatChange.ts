@@ -1,7 +1,7 @@
 import { messageApi } from "@/services/api/message.api";
 import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 /**
  * Hook: useClearExtraPreviousMessagesOnChatChange
@@ -41,7 +41,7 @@ export const useClearExtraPreviousMessagesOnChatChange = () => {
    *
    * @param chatId - The ID of the chat for which messages should be pruned
    */
-  const pruneMessagesOnChatChange = (chatId: string) => {
+  const pruneMessagesOnChatChange = useCallback((chatId: string) => {
     dispatch(
       messageApi.util.updateQueryData(
         "getMessagesByChatId", // Query key to identify the query
@@ -73,7 +73,7 @@ export const useClearExtraPreviousMessagesOnChatChange = () => {
         }
       )
     );
-  };
+  },[dispatch]);
 
   // Effect to clean up messages when the selected chat changes
   useEffect(() => {
@@ -83,5 +83,5 @@ export const useClearExtraPreviousMessagesOnChatChange = () => {
         pruneMessagesOnChatChange(selectedChatId);
       }
     };
-  }, [selectedChatId]); // Re-run the effect when the selected chat ID
+  }, [pruneMessagesOnChatChange, selectedChatId]); // Re-run the effect when the selected chat ID
 };

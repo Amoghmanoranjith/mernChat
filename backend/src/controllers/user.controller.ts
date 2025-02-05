@@ -7,10 +7,6 @@ import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/aut
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 
-export const getUserDetails = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-    return res.status(200).json(req.user)
-})
-
 export const getUserByUsername = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     const {username} = req.query

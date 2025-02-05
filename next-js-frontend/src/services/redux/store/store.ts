@@ -26,7 +26,7 @@ export const makeStore = () => {
       [attachmentApi.reducerPath]: attachmentApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
+      getDefaultMiddleware({serializableCheck:false})
         .concat(authApi.middleware)
         .concat(chatApi.middleware)
         .concat(messageApi.middleware)

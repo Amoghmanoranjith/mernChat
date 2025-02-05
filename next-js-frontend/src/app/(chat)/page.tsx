@@ -8,30 +8,22 @@ import { ChatWrapper } from "@/components/chat/ChatWrapper";
 import { MessageInputAreaWrapper } from "@/components/messages/MessageInputAreaWrapper";
 import { MessageListSkeletonWrapper } from "@/components/messages/MessageListSkeletonWrapper";
 import { ServerDownMessage } from "@/components/ui/ServerDownMessage";
-import {
-    fetchUserChats,
-    fetchUserFriendRequest,
-    fetchUserFriends,
-    getLoggedInUserFromHeaders,
-} from "@/utils/helpers";
-import { cookies, headers } from "next/headers";
+import { fetchUserChats, fetchUserFriendRequest, fetchUserFriends, fetchUserInfo } from "@/lib/server/services/userService";
+import { cookies } from "next/headers";
 
 export default async function ChatPage() {
-  const [headerList, cookieList] = await Promise.all([
-    await headers(),
-    await cookies(),
-  ]);
-  const user = getLoggedInUserFromHeaders(headerList);
-  const token = cookieList.get("token")?.value as string;
 
-  const [friends, chats, friendRequest] = await Promise.all([
-    fetchUserFriends(token),
-    fetchUserChats(token),
-    fetchUserFriendRequest(token),
+  const loggedInUserId = (await cookies()).get("loggedInUserId")?.value as string || '';
+
+  const [user,friends,friendRequest,chats] = await Promise.all([
+    fetchUserInfo({loggedInUserId}),
+    fetchUserFriends({loggedInUserId}),
+    fetchUserFriendRequest({loggedInUserId}),
+    fetchUserChats({loggedInUserId}),
   ]);
 
   return (
-    (friends && chats && friendRequest) ? (
+    (friends && chats && friendRequest && user) ? (
     <ChatWrapper
       chats={chats}
       friendRequest={friendRequest}
@@ -46,7 +38,7 @@ export default async function ChatPage() {
         <ChatAreaWrapper>
           <div className="flex flex-col gap-y-3 h-full justify-between relative">
             <ChatHeaderWrapper />
-            <MessageListSkeletonWrapper loggedInUserId={user._id} />
+            <MessageListSkeletonWrapper loggedInUserId={user.id} />
             <MessageInputAreaWrapper />
           </div>
         </ChatAreaWrapper>

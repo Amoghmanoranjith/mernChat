@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { ChatWithUnreadMessages } from "../../interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 export const chatApi = createApi({
     reducerPath:"chatApi",
@@ -8,7 +9,7 @@ export const chatApi = createApi({
         credentials:"include"
     }),
     endpoints:(builder)=>({
-        getChats:builder.query<ChatWithUnreadMessages[],void>({
+        getChats:builder.query<fetchUserChatsResponse[],void>({
             query:()=>"/chat"
         }),
         createChat:builder.mutation<void,Required<Pick<ChatWithUnreadMessages,'name'> & {members:string[],isGroupChat:string}> & {avatar?:Blob}>({

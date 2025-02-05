@@ -222,10 +222,14 @@ const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respon
                     username:true,
                     avatar:true
                   }
-                }
+                },
               },
-              select:{
-                reaction:true,
+              omit:{
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                userId: true,
+                messageId: true
               }
             },
           }

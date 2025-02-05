@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { FriendRequest } from '../../interfaces/request.interface'
 import { setFriendRequestForm } from '../redux/slices/uiSlice'
+import { fetchUserFriendRequestResponse } from '@/lib/server/services/userService'
 
 export const requestApi = createApi({
     reducerPath:"requestApi",
@@ -16,7 +17,7 @@ export const requestApi = createApi({
                 body:{receiver:receiverId}
             })
         }),
-        getUserFriendRequests:builder.query<FriendRequest[],void>({
+        getUserFriendRequests:builder.query<fetchUserFriendRequestResponse[],void>({
             query:()=>"/"
         }),
         handleFriendRequest:builder.mutation<FriendRequest['_id'],{requestId:FriendRequest['_id'],action: "accept" | "reject"}>({
@@ -30,7 +31,7 @@ export const requestApi = createApi({
                   const { data: handledRequestId } = await queryFulfilled
                   dispatch(
                     requestApi.util.updateQueryData('getUserFriendRequests', undefined , (draft) => {
-                      const friendRequestIndexToBeRemoved = draft.findIndex(draft=>draft._id===handledRequestId)
+                      const friendRequestIndexToBeRemoved = draft.findIndex(draft=>draft.id===handledRequestId)
                       if(draft.length===1) dispatch(setFriendRequestForm(false))
                       if(friendRequestIndexToBeRemoved!==-1) draft.splice(friendRequestIndexToBeRemoved,1)
                     })
