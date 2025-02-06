@@ -17,7 +17,7 @@ type PropTypes = {
 export const ChatListItem = ({ chat }: PropTypes) => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
   const { handleChatListItemClick } = useChatListItemClick();
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
   return (
     <div
@@ -39,7 +39,7 @@ export const ChatListItem = ({ chat }: PropTypes) => {
           <ChatListItemBasicInfo chat={chat} />
         </div>
         <div className="flex justify-between items-center shrink-0">
-          <ChatListItemSecondaryInfo key={chat._id} chat={chat} />
+          <ChatListItemSecondaryInfo key={chat.id} chat={chat} />
         </div>
       </div>
     </div>

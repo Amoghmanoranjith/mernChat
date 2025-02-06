@@ -1,6 +1,6 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import {
   formatRelativeTime,
   getChatName,
@@ -11,7 +11,7 @@ import { ActiveDot } from "../ui/ActiveDot";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
 type PropTypes = {
-  chat: ChatWithUnreadMessages;
+  chat: fetchUserChatsResponse;
 };
 
 export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
@@ -19,10 +19,7 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
 
   const renderOnlineStatus = () => {
     if (chat.isGroupChat) {
-      const otherActiveMembers = getOtherMembersOfGroupChatThatAreActive(
-        chat,
-        loggedInUserId
-      );
+      const otherActiveMembers = getOtherMembersOfGroupChatThatAreActive(chat,loggedInUserId);
       if (otherActiveMembers?.length) {
         return (
           <div className="text-sm text-secondary-darker flex items-center gap-x-1 ml-1">
@@ -33,29 +30,26 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
       }
     } else {
       const otherMember = getOtherMemberOfPrivateChat(chat, loggedInUserId);
-      return otherMember?.isActive ? <ActiveDot /> : null;
+      return otherMember.user.isOnline ? <ActiveDot /> : null;
     }
   };
 
   const time = formatRelativeTime(
     JSON.stringify(
-      chat.unreadMessages.message?.createdAt ||
+      chat.UnreadMessages[0]?.message?.createdAt ||
         chat.latestMessage?.createdAt ||
         chat.createdAt
     )
   );
 
-  // const chatName = getChatName(chat, loggedInUserId) as string;
-  const chatName = "demo-name";
+  const chatName = getChatName(chat, loggedInUserId) as string;
 
   return (
     <>
       <div className="flex items-center gap-x-1">
         <p className="font-medium break-words">{chatName}</p>
         <span>
-          {!chat.isGroupChat &&
-            getOtherMemberOfPrivateChat(chat, loggedInUserId)
-              ?.verificationBadge && <VerificationBadgeIcon />}
+          {!chat.isGroupChat && getOtherMemberOfPrivateChat(chat, loggedInUserId).user.verificationBadge && <VerificationBadgeIcon />}
         </span>
         <div>{renderOnlineStatus()}</div>
       </div>

@@ -120,6 +120,7 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
                   },
                   isPollMessage:true,
                   createdAt:true,
+                  textMessageContent:true,
                 }
               },
               sender:{
@@ -282,6 +283,7 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
             },
             isPollMessage:true,
             createdAt:true,
+            textMessageContent:true,
           }
         },
         sender:{
@@ -333,7 +335,7 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
       }
     }
   }
-}>
+}> & {typingUsers: BasicUserInfo[]}
 
 type fetchUserFriendRequestResponse = Prisma.FriendRequestGetPayload<{
     include:{
