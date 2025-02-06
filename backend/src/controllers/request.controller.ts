@@ -165,14 +165,10 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
 
         const newChat = await prisma.chat.create({
           data:{
-            members:{
-              connect:[
-                {
-                id:isExistingRequest.senderId
-                },
-                {
-                  id:isExistingRequest.receiverId
-                }
+            ChatMembers:{
+              create:[
+                {user:{connect:{id:isExistingRequest.senderId}}},
+                {user:{connect:{id:isExistingRequest.receiverId}}}
               ]
             }
           },
@@ -245,8 +241,12 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                       }
                     }
                   },
-                  select:{
-                    reaction:true,
+                  omit:{
+                    id: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    userId: true,
+                    messageId: true
                   }
                 },
               }

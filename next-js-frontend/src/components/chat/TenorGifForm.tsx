@@ -1,8 +1,8 @@
 import GifPicker, { TenorImage, Theme } from "gif-picker-react";
 import { useSendMessage } from "../../hooks/useMessages/useSendMessage";
 import { useToggleGif } from "../../hooks/useUI/useToggleGif";
-import { selectisDarkMode } from "../../services/redux/slices/uiSlice";
-import { useAppSelector } from "../../services/redux/store/hooks";
+import { selectisDarkMode } from "../../lib/client/slices/uiSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
 
 const TenorGifForm = () => {
   const { sendMessage } = useSendMessage();

@@ -1,7 +1,7 @@
 "use client";
 import { useFetchInitialMessagesOnChatSelect } from "@/hooks/useMessages/useFetchInitialMessagesOnChatSelect";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { MessageListSkeleton } from "../ui/skeleton/MessageListSkeleton";
 import { MessageList } from "./MessageList";
 
@@ -10,14 +10,13 @@ type PropTypes = {
 };
 
 export const MessageListSkeletonWrapper = ({ loggedInUserId }: PropTypes) => {
-
-  const selectedChatDetails =  useAppSelector(selectSelectedChatDetails);
-  const {currentData,isLoading} = useFetchInitialMessagesOnChatSelect();
+  const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
+  const { currentData, isLoading } = useFetchInitialMessagesOnChatSelect();
 
   if (isLoading) return <MessageListSkeleton />;
   if (!currentData) return null;
-  if(!selectedChatDetails) return null;
-  
+  if (!selectedChatDetails) return null;
+
   return (
     <MessageList
       messages={currentData.messages}
@@ -25,5 +24,5 @@ export const MessageListSkeletonWrapper = ({ loggedInUserId }: PropTypes) => {
       totalPages={currentData.totalPages}
       loggedInUserId={loggedInUserId}
     />
-  )
+  );
 };

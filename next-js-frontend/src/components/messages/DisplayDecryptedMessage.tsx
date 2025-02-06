@@ -1,8 +1,8 @@
 "use client";
 import { useDecryptMessage } from "@/hooks/useUtils/useDecryptMessage";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 
 type PropTypes = {
   cipherText: string;
@@ -18,5 +18,11 @@ export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
     selectedChatDetails: chat,
   });
 
-  return <span>{decryptedMessage.length > 16 ? decryptedMessage.substring(0,20)+"...":decryptedMessage}</span>;
+  return (
+    <span>
+      {decryptedMessage.length > 16
+        ? decryptedMessage.substring(0, 20) + "..."
+        : decryptedMessage}
+    </span>
+  );
 };

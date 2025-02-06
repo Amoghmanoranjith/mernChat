@@ -1,38 +1,41 @@
-import { base64ToUint8Array, uint8ArrayToBase64 } from "./helpers";
-
+import { base64ToUint8Array, uint8ArrayToBase64 } from "../shared/helpers";
 
 // key pair generation
 const generateKeyPair = async () => {
-
-  if(typeof window==='undefined') return;
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
 
   // The `async` function allows the use of `await` inside it.
   // We are awaiting the result of the `crypto.generateKey` function which is a promise-based method.
-  
-  const keyPair =  await crypto.generateKey(
+
+  const keyPair = await crypto.generateKey(
     {
       // Specifies the algorithm to be used for key pair generation.
       name: "ECDH", // Elliptic Curve Diffie-Hellman (ECDH) is a key exchange algorithm that allows two parties to securely share a secret key over an insecure channel.
-      
-      // Defines the elliptic curve to be used in the ECDH algorithm. 
-      // "P-384" is a recommended elliptic curve with a 384-bit key size, providing a good balance of security and performance.
-      namedCurve: "P-384",  // This determines which elliptic curve is used for key generation.
 
+      // Defines the elliptic curve to be used in the ECDH algorithm.
+      // "P-384" is a recommended elliptic curve with a 384-bit key size, providing a good balance of security and performance.
+      namedCurve: "P-384", // This determines which elliptic curve is used for key generation.
     },
-    true,   // The `extractable` flag determines whether the generated key can be exported. 
-            // If `true`, you can export the key later (for example, to send it to another party or save it locally).
-            // If `false`, the key can only be used within the current context (e.g., within the browser).
-    
+    true, // The `extractable` flag determines whether the generated key can be exported.
+    // If `true`, you can export the key later (for example, to send it to another party or save it locally).
+    // If `false`, the key can only be used within the current context (e.g., within the browser).
+
     // The keyUsages defines what the key is used for. The array here indicates that this key will be used for `deriveKey`.
     // `deriveKey` means that this key will be used for deriving shared secret keys in ECDH key exchange.
     ["deriveKey"]
-  )
+  );
   return keyPair;
-}
+};
 // message encryption function
-const encryptMessage = async ({sharedKey,message}:{sharedKey: CryptoKey, message: string}): Promise<string> => {
-  if(typeof window==='undefined') return '';
+const encryptMessage = async ({
+  sharedKey,
+  message,
+}: {
+  sharedKey: CryptoKey;
+  message: string;
+}): Promise<string> => {
+  if (typeof window === "undefined") return "";
   const crypto = window.crypto.subtle;
   // Generate a random initialization vector (IV) for each encryption. AES-GCM requires a unique IV for every encryption operation.
   // This ensures the same message encrypted multiple times will produce different ciphertexts.
@@ -65,16 +68,18 @@ const encryptMessage = async ({sharedKey,message}:{sharedKey: CryptoKey, message
 };
 
 // message decryption function
-const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string) => {
-
-  if(typeof window==='undefined') return;
+const decryptMessage = async (
+  sharedKey: CryptoKey,
+  encryptedDataWithIv: string
+) => {
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
-  
+
   // Convert the base64-encoded encrypted data (which includes both the IV and the ciphertext) back to a Uint8Array.
   // The helper function `base64ToUint8Array` decodes the base64 string into a binary array (Uint8Array).
   const encryptedDataWithIvUint8Array = base64ToUint8Array(encryptedDataWithIv);
 
-  // Extract the IV (Initialization Vector) from the encrypted data. 
+  // Extract the IV (Initialization Vector) from the encrypted data.
   // AES-GCM typically uses a 12-byte IV, which is extracted from the first 12 bytes of the combined data.
   const iv = encryptedDataWithIvUint8Array.slice(0, 12); // Slice the first 12 bytes for the IV.
 
@@ -85,9 +90,9 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
     // Decrypt the encrypted message using the AES-GCM algorithm with the provided shared key and the extracted IV.
     // The `crypto.decrypt` method is used to decrypt the encrypted message with the specified configuration.
     const decryptedArrayBuffer = await crypto.decrypt(
-      { name: "AES-GCM", iv },  // Specify the AES-GCM algorithm with the IV used for encryption.
-      sharedKey,  // The shared key that was used during encryption.
-      encryptedMessage  // The actual encrypted message (ciphertext) to be decrypted.
+      { name: "AES-GCM", iv }, // Specify the AES-GCM algorithm with the IV used for encryption.
+      sharedKey, // The shared key that was used during encryption.
+      encryptedMessage // The actual encrypted message (ciphertext) to be decrypted.
     );
 
     // Convert the decrypted data (ArrayBuffer) back into a readable string using TextDecoder.
@@ -96,7 +101,6 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
 
     // Return the decrypted message as a string.
     return decryptedMessage;
-
   } catch (error) {
     console.log(error);
     // If decryption fails (e.g., due to incorrect key or corrupted data), handle the error.
@@ -106,32 +110,36 @@ const decryptMessage = async (sharedKey: CryptoKey, encryptedDataWithIv: string)
 };
 
 // Function to derive a shared secret key using ECDH and the provided private and public keys
-const deriveSharedSecretKey = async({privateKey,publicKey}:{privateKey: CryptoKey, publicKey: CryptoKey}) => {
-
-  if(typeof window==='undefined') return;
+const deriveSharedSecretKey = async ({
+  privateKey,
+  publicKey,
+}: {
+  privateKey: CryptoKey;
+  publicKey: CryptoKey;
+}) => {
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
 
   const sharedSecretKey = await crypto.deriveKey(
     {
-      name: "ECDH",          // Key exchange algorithm: Elliptic Curve Diffie-Hellman (ECDH)
-      public: publicKey,     // The public key of the other party in the exchange
+      name: "ECDH", // Key exchange algorithm: Elliptic Curve Diffie-Hellman (ECDH)
+      public: publicKey, // The public key of the other party in the exchange
     },
-    privateKey,              // The private key of the local party
+    privateKey, // The private key of the local party
     {
-      name: "AES-GCM",       // The algorithm that will use the derived shared key: AES-GCM
-      length: 256,           // The length of the derived key (in bits)
+      name: "AES-GCM", // The algorithm that will use the derived shared key: AES-GCM
+      length: 256, // The length of the derived key (in bits)
     },
-    true,                    // The derived key will be exportable
-    ["encrypt", "decrypt"],  // The derived key will be used for encryption and decryption
+    true, // The derived key will be exportable
+    ["encrypt", "decrypt"] // The derived key will be used for encryption and decryption
   );
-  
+
   return sharedSecretKey;
 };
 
 // Function to derive a key from password using PBKDF2
 const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
-
-  if(typeof window==='undefined') return;
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
 
   try {
@@ -142,26 +150,26 @@ const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
     // Step 2: Import the password as cryptographic key material
     // We import the password as raw key material that can be used for key derivation.
     const keyMaterial = await crypto.importKey(
-      'raw',  // The format of the key (raw means no special encoding)
-      passwordBuffer,  // The encoded password in byte format
-      { name: 'PBKDF2' },  // Specify the algorithm we're using (PBKDF2 for key derivation)
-      false,  // The key is not extractable, meaning it cannot be retrieved from the browser's cryptographic module
-      ['deriveBits', 'deriveKey']  // Specify the operations allowed for the key (deriving bits or keys)
+      "raw", // The format of the key (raw means no special encoding)
+      passwordBuffer, // The encoded password in byte format
+      { name: "PBKDF2" }, // Specify the algorithm we're using (PBKDF2 for key derivation)
+      false, // The key is not extractable, meaning it cannot be retrieved from the browser's cryptographic module
+      ["deriveBits", "deriveKey"] // Specify the operations allowed for the key (deriving bits or keys)
     );
 
     // Step 3: Derive a key from the key material using PBKDF2 with the provided salt
     // PBKDF2 is a secure key derivation function that transforms the password (key material) into a key.
     const key = await window.crypto.subtle.deriveKey(
       {
-        name: 'PBKDF2',  // Specify the key derivation algorithm
-        salt: salt,  // The salt is a random value added to the password to prevent rainbow table attacks
-        iterations: 100000,  // Set the number of iterations (100,000 makes it computationally expensive to brute-force)
-        hash: 'SHA-256'  // Specify the hash function (SHA-256 is used for secure key derivation)
+        name: "PBKDF2", // Specify the key derivation algorithm
+        salt: salt, // The salt is a random value added to the password to prevent rainbow table attacks
+        iterations: 100000, // Set the number of iterations (100,000 makes it computationally expensive to brute-force)
+        hash: "SHA-256", // Specify the hash function (SHA-256 is used for secure key derivation)
       },
-      keyMaterial,  // The material we imported earlier (password transformed to a key)
-      { name: 'AES-GCM', length: 256 },  // Output the key for AES-GCM with a 256-bit length (used for encryption/decryption)
-      true,  // The key is **extractable**, meaning it can be used by the browser's crypto module
-      ['encrypt', 'decrypt']  // The key will be used for both encryption and decryption
+      keyMaterial, // The material we imported earlier (password transformed to a key)
+      { name: "AES-GCM", length: 256 }, // Output the key for AES-GCM with a 256-bit length (used for encryption/decryption)
+      true, // The key is **extractable**, meaning it can be used by the browser's crypto module
+      ["encrypt", "decrypt"] // The key will be used for both encryption and decryption
     );
 
     // Step 4: Return the derived key
@@ -170,14 +178,13 @@ const deriveKeyFromPassword = async (password: string, salt: Uint8Array) => {
   } catch (error) {
     // Step 5: Handle any errors that might occur during key derivation
     // If something goes wrong, log the error and rethrow it for further handling.
-    console.error('Error generating key:', error);
-    throw error;  // Rethrow the error to be handled by the caller
+    console.error("Error generating key:", error);
+    throw error; // Rethrow the error to be handled by the caller
   }
 };
 
 const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
-
-  if(typeof window==='undefined') return;
+  if (typeof window === "undefined") return;
 
   // Step 1: Generate a random salt of 16 bytes for PBKDF2
   // A salt is generated for key derivation to ensure the security of the password-based encryption.
@@ -189,7 +196,7 @@ const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
   // This results in a secure encryption key that will be used to encrypt the private key.
   const key = await deriveKeyFromPassword(password, salt);
 
-  if(!key) return;
+  if (!key) return;
 
   // Step 3: Encode the private key to a JSON string and then to a byte array
   // The private key (in the form of a JsonWebKey) is converted to a string using JSON.stringify,
@@ -205,16 +212,18 @@ const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
   // The private key (now in a byte array format) is encrypted using the derived key and the generated IV.
   // The AES-GCM mode is a widely used encryption algorithm that provides both confidentiality and integrity.
   const encryptedData = await window.crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: iv },  // The encryption algorithm and IV used
-    key,  // The derived encryption key from password
-    dataBuffer  // The private key data to be encrypted
+    { name: "AES-GCM", iv: iv }, // The encryption algorithm and IV used
+    key, // The derived encryption key from password
+    dataBuffer // The private key data to be encrypted
   );
 
   // Step 6: Combine the salt, IV, and the encrypted data into one ArrayBuffer
   // Once the data is encrypted, we need to store the salt, IV, and the encrypted private key together
   // to allow decryption later. The combined buffer will be stored in the database.
-  const combinedBuffer = new Uint8Array(salt.length + iv.length + encryptedData.byteLength);
-  
+  const combinedBuffer = new Uint8Array(
+    salt.length + iv.length + encryptedData.byteLength
+  );
+
   // Set the salt at the beginning of the buffer
   combinedBuffer.set(salt, 0);
 
@@ -235,14 +244,18 @@ const encryptPrivateKey = async (password: string, privateKey: JsonWebKey) => {
 };
 
 // Function to decrypt a Base64-encoded encrypted private key using a password
-const decryptPrivateKey = async (password: string, combinedBufferBase64: string) => {
-
-  if(typeof window==='undefined') return;
+const decryptPrivateKey = async (
+  password: string,
+  combinedBufferBase64: string
+) => {
+  if (typeof window === "undefined") return;
 
   // Step 1: Convert the Base64-encoded combined buffer back to a Uint8Array
   // `atob` decodes the Base64 string to a binary string, and `Uint8Array.from` converts each character
   // of the binary string to its corresponding char code (byte value) to create the Uint8Array.
-  const combinedBuffer = Uint8Array.from(atob(combinedBufferBase64), c => c.charCodeAt(0));
+  const combinedBuffer = Uint8Array.from(atob(combinedBufferBase64), (c) =>
+    c.charCodeAt(0)
+  );
 
   // Step 2: Extract the salt (first 16 bytes), IV (next 12 bytes), and the encrypted message
   // The combined buffer is structured as follows:
@@ -255,14 +268,14 @@ const decryptPrivateKey = async (password: string, combinedBufferBase64: string)
   // The `deriveKeyFromPassword` function is used to generate a cryptographic key using the password and salt.
   // This ensures that the correct password and salt are required to decrypt the data.
   const key = await deriveKeyFromPassword(password, salt);
-  if(!key) return;
+  if (!key) return;
 
   try {
     // Step 4: Decrypt the encrypted message using AES-GCM with the derived key and IV
     // `window.crypto.subtle.decrypt` performs the decryption process.
     // If the password, salt, or IV is incorrect, or if the encrypted data is tampered with, this will throw an error.
     const decryptedArrayBuffer = await window.crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv }, // Decryption algorithm and the extracted IV
+      { name: "AES-GCM", iv: iv }, // Decryption algorithm and the extracted IV
       key, // Derived key
       encryptedMessage // The encrypted data to decrypt
     );
@@ -288,9 +301,14 @@ const decryptPrivateKey = async (password: string, combinedBufferBase64: string)
 // - jwk: The JsonWebKey object to be converted.
 // - isPrivate: A boolean indicating whether the key is private (used for key derivation) or not.
 // Returns: A promise that resolves to a CryptoKey object.
-const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkFormat: JsonWebKey, isPrivateKey: boolean}): Promise<CryptoKey | undefined> => {
-
-  if(typeof window==='undefined') return;
+const convertJwkToCryptoKey = async ({
+  KeyInJwkFormat,
+  isPrivateKey,
+}: {
+  KeyInJwkFormat: JsonWebKey;
+  isPrivateKey: boolean;
+}): Promise<CryptoKey | undefined> => {
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
 
   try {
@@ -302,25 +320,25 @@ const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkForm
       // This is typically used for key agreement or key exchange.
       key = await crypto.importKey(
         "jwk", // Input format: The key is in JWK format.
-        KeyInJwkFormat,   // The actual JWK object to import.
+        KeyInJwkFormat, // The actual JWK object to import.
         {
-          name: "ECDH",        // The algorithm name: Elliptic Curve Diffie-Hellman.
+          name: "ECDH", // The algorithm name: Elliptic Curve Diffie-Hellman.
           namedCurve: "P-384", // The curve to use: P-384 is a standard elliptic curve.
         },
-        true,                  // Extractable: Indicates whether the key can be exported (true) or not (false).
-        isPrivateKey ? ['deriveKey'] : [] 
+        true, // Extractable: Indicates whether the key can be exported (true) or not (false).
+        isPrivateKey ? ["deriveKey"] : []
         // Key usages: If it's a private key, it will be used for key derivation. Public keys will have an empty usage.
       );
     } else if (KeyInJwkFormat.kty === "oct") {
       // If the key type is "oct" (Octet sequence), assume it's a symmetric key for AES-GCM encryption.
       key = await crypto.importKey(
         "jwk", // Input format: The key is in JWK format.
-        KeyInJwkFormat,   // The actual JWK object to import.
+        KeyInJwkFormat, // The actual JWK object to import.
         {
           name: "AES-GCM", // The algorithm name: AES-GCM (Authenticated Encryption with Galois/Counter Mode).
         },
-        true,              // Extractable: Indicates whether the key can be exported.
-        ['encrypt', 'decrypt'] 
+        true, // Extractable: Indicates whether the key can be exported.
+        ["encrypt", "decrypt"]
         // Key usages: The symmetric key will be used for encryption and decryption.
       );
     } else {
@@ -338,7 +356,7 @@ const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkForm
 };
 
 // Utility function to convert a CryptoKey object into a JsonWebKey (JWK) format.
-// This is the reverse operation of importing a JWK into a CryptoKey, allowing 
+// This is the reverse operation of importing a JWK into a CryptoKey, allowing
 // for easier storage or transfer of the key in a standard, portable format.
 //
 // Parameters:
@@ -346,9 +364,12 @@ const convertJwkToCryptoKey = async ({KeyInJwkFormat,isPrivateKey}:{KeyInJwkForm
 //
 // Returns:
 // - A promise that resolves to a JsonWebKey (JWK) object.
-const convertCryptoKeyToJwk = async ({cryptoKey}:{cryptoKey: CryptoKey}): Promise<JsonWebKey | undefined> => {
-
-  if(typeof window==='undefined') return;
+const convertCryptoKeyToJwk = async ({
+  cryptoKey,
+}: {
+  cryptoKey: CryptoKey;
+}): Promise<JsonWebKey | undefined> => {
+  if (typeof window === "undefined") return;
   const crypto = window.crypto.subtle;
 
   // Step 1: Use the Web Crypto API's exportKey method to export the CryptoKey.
@@ -357,13 +378,19 @@ const convertCryptoKeyToJwk = async ({cryptoKey}:{cryptoKey: CryptoKey}): Promis
   const jwk = await crypto.exportKey("jwk", cryptoKey);
 
   // Step 2: Return the resulting JWK object.
-  // - This is a plain JavaScript object that conforms to the JWK standard, 
-  //   containing properties such as "kty" (key type), "alg" (algorithm), 
+  // - This is a plain JavaScript object that conforms to the JWK standard,
+  //   containing properties such as "kty" (key type), "alg" (algorithm),
   //   and other relevant attributes depending on the key type.
   return jwk;
 };
 
 export {
-  convertCryptoKeyToJwk, convertJwkToCryptoKey, decryptMessage, decryptPrivateKey, deriveSharedSecretKey, encryptMessage, encryptPrivateKey, generateKeyPair
+  convertCryptoKeyToJwk,
+  convertJwkToCryptoKey,
+  decryptMessage,
+  decryptPrivateKey,
+  deriveSharedSecretKey,
+  encryptMessage,
+  encryptPrivateKey,
+  generateKeyPair,
 };
-

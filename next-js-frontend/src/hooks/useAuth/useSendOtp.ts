@@ -1,14 +1,23 @@
-import { useLazySendOtpQuery } from "@/services/api/auth.api"
-import { useToast } from "../useUI/useToast"
+import { useLazySendOtpQuery } from "@/lib/client/rtk-query/auth.api";
+import { useToast } from "../useUI/useToast";
 
 export const useSendOtp = () => {
+  const [sendOtp, { error, isError, isFetching, isSuccess, isUninitialized }] =
+    useLazySendOtpQuery();
+  useToast({
+    error,
+    isError,
+    isLoading: isFetching,
+    isSuccess,
+    isUninitialized,
+    loaderToast: true,
+    successMessage: "We have sent an OTP",
+    successToast: true,
+  });
 
-    const [sendOtp,{error,isError,isFetching,isSuccess,isUninitialized}] = useLazySendOtpQuery()
-    useToast({error,isError,isLoading:isFetching,isSuccess,isUninitialized,loaderToast:true,successMessage:"We have sent an OTP",successToast:true})
-
-    return {
-        sendOtp,
-        isLoading:isFetching,
-        isSuccess
-    }
-}
+  return {
+    sendOtp,
+    isLoading: isFetching,
+    isSuccess,
+  };
+};

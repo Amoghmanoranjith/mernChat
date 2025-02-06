@@ -5,8 +5,8 @@ import { useSwipe } from "@/hooks/useUtils/useSwipe";
 import {
   selectChatDetailsBar,
   setChatDetailsBar,
-} from "@/services/redux/slices/uiSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
+} from "@/lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { motion } from "framer-motion";
 
 type PropTypes = {

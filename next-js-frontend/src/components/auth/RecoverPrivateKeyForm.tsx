@@ -1,6 +1,6 @@
 "use client";
-import { selectLoggedInUser } from "../../services/redux/slices/authSlice";
-import { useAppSelector } from "../../services/redux/store/hooks";
+import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
 import { PrivateKeyRecoveryFromPrimaryInfo } from "./PrivateKeyRecoveryFromPrimaryInfo";
 import { RecoveryOptionsForManualSignedUpUser } from "./RecoveryOptionsForManualSignedUpUser";
 import { RecoveryOptionsForOAuthSignedUpUser } from "./RecoveryOptionsForOAuthSignedUpUser";
@@ -15,7 +15,7 @@ const RecoverPrivateKeyForm = () => {
         hasUserSignedUpViaOAuth={hasUserSignedUpViaOAuth}
       />
       {hasUserSignedUpViaOAuth ? (
-        <RecoveryOptionsForOAuthSignedUpUser loggedInUser={loggedInUser}/>
+        <RecoveryOptionsForOAuthSignedUpUser loggedInUser={loggedInUser} />
       ) : (
         <RecoveryOptionsForManualSignedUpUser loggedInUser={loggedInUser} />
       )}

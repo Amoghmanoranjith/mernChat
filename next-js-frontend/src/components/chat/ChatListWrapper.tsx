@@ -1,7 +1,7 @@
 "use client";
 import { useSwipe } from "@/hooks/useUtils/useSwipe";
-import { selectChatBar, setChatBar } from "@/services/redux/slices/uiSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectChatBar, setChatBar } from "@/lib/client/slices/uiSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 
@@ -11,7 +11,7 @@ type PropTypes = {
 
 export const ChatListWrapper = ({ children }: PropTypes) => {
   const dispatch = useDispatch();
-  const chatBar = useAppSelector(selectChatBar)
+  const chatBar = useAppSelector(selectChatBar);
 
   const {
     onTouchStart: onTouchStartChatBar,

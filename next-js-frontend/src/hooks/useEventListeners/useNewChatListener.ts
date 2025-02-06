@@ -1,43 +1,38 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Event } from "@/interfaces/events.interface";
 import { Friend } from "@/interfaces/friends.interface";
-import { chatApi } from "@/services/api/chat.api";
-import { friendApi } from "@/services/api/friend.api";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
-import { getOtherMemberOfPrivateChat } from "@/utils/helpers";
+import { chatApi } from "@/lib/client/rtk-query/chat.api";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
+import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 export const useNewChatListener = () => {
   const dispatch = useAppDispatch();
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
 
-  useSocketEvent(Event.NEW_CHAT, (newChat:ChatWithUnreadMessages) => {
-
-    console.log('new chat event received');
+  useSocketEvent(Event.NEW_CHAT, (newChat: fetchUserChatsResponse) => {
+    console.log("new chat event received");
     if (loggedInUserId && !newChat.isGroupChat) {
-
       const member = getOtherMemberOfPrivateChat(newChat, loggedInUserId);
 
       if (member) {
+        dispatch(
+          friendApi.util.updateQueryData("getFriends", undefined, (draft) => {
+            const newFriend: Friend = {
+              _id: member._id,
+              avatar: member.avatar,
+              createdAt: JSON.stringify(new Date()),
+              isActive: true,
+              username: member.username,
+              lastSeen: member.lastSeen,
+              publicKey: member.publicKey,
+              verificationBadge: member.verificationBadge,
+            };
 
-          dispatch(
-              friendApi.util.updateQueryData("getFriends", undefined, (draft) => {
-
-                const newFriend: Friend = {
-                  _id: member._id,
-                  avatar: member.avatar,
-                  createdAt: JSON.stringify(new Date()),
-                  isActive: true,
-                  username: member.username,
-                  lastSeen: member.lastSeen,
-                  publicKey: member.publicKey,
-                  verificationBadge: member.verificationBadge,
-                };
-                
-                draft.push(newFriend);
-              })
-          );
+            draft.push(newFriend);
+          })
+        );
       }
     }
 
@@ -46,6 +41,5 @@ export const useNewChatListener = () => {
         draft.push(newChat);
       })
     );
-
   });
 };

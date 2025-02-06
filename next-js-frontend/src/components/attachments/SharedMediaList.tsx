@@ -1,27 +1,31 @@
 import { useHandleSharedMediaInfiniteScroll } from "@/hooks/useChat/useHandleSharedMediaInfiniteScroll";
 import { useHandleSharedMediaScroll } from "@/hooks/useChat/useHandleSharedMediaScroll";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import Image from "next/image";
 import { useRef } from "react";
 import { CircleLoading } from "../shared/CircleLoading";
 
 export const SharedMediaList = () => {
-
   const containerRef = useRef<HTMLDivElement>(null);
   const chatId = useAppSelector(selectSelectedChatDetails)?._id as string;
 
-  const { hasMore, setPage, sharedMedia, isFetching} = useHandleSharedMediaInfiniteScroll({chatId});
-  const { handleSharedMediaScroll } = useHandleSharedMediaScroll({containerRef,hasMore,setPage,isFetching});
+  const { hasMore, setPage, sharedMedia, isFetching } =
+    useHandleSharedMediaInfiniteScroll({ chatId });
+  const { handleSharedMediaScroll } = useHandleSharedMediaScroll({
+    containerRef,
+    hasMore,
+    setPage,
+    isFetching,
+  });
 
-  
   return (
     <div
       ref={containerRef}
       onScroll={handleSharedMediaScroll}
       className="grid grid-cols-2 gap-4 place-items-center h-[28rem] overflow-y-auto"
     >
-    {sharedMedia?.attachments.map((url) => (
+      {sharedMedia?.attachments.map((url) => (
         <Image
           key={url}
           height={200}
@@ -31,7 +35,7 @@ export const SharedMediaList = () => {
           alt={"attachment"}
         />
       ))}
-      {isFetching && <CircleLoading/>}
+      {isFetching && <CircleLoading />}
     </div>
   );
 };

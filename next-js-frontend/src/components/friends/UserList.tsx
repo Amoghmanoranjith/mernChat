@@ -1,10 +1,9 @@
-import { Friend } from "@/interfaces/friends.interface"
+import { fetchUserFriendsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService"
 import { UserItem } from "./UserItem"
-import { User } from "@/interfaces/auth.interface"
 
 type PropTypes = {
-    users:Array<Pick<User , "_id" | 'name' | "username" | 'avatar'>>
-    friends:Friend[]
+    users:Array<Pick<FetchUserInfoResponse , "id" | 'name' | "username" | 'avatar'>>
+    friends:fetchUserFriendsResponse[]
     loggedInUserId: string
     sendFriendRequest:(receiverId:string)=>void
 }
@@ -17,7 +16,7 @@ export const UserList = ({users,friends,loggedInUserId,sendFriendRequest}:PropTy
                   key={index} 
                   user={user} 
                   loggedInUserId={loggedInUserId}
-                  isFriendAlready={friends.some(friend=>friend._id===user._id)}
+                  isFriendAlready={friends.some(friend=>friend.id===user.id)}
                   sendFriendRequest={sendFriendRequest} 
                 />
             ))

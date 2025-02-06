@@ -1,14 +1,16 @@
-import { selectRemoveMemberForm, setRemoveMemberForm } from "../../services/redux/slices/uiSlice"
-import { useAppDispatch, useAppSelector } from "../../services/redux/store/hooks"
+import {
+  selectRemoveMemberForm,
+  setRemoveMemberForm,
+} from "../../lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/client/store/hooks";
 
 export const useToggleRemoveMemberForm = () => {
+  const dispatch = useAppDispatch();
+  const removeMemberForm = useAppSelector(selectRemoveMemberForm);
 
-    const dispatch = useAppDispatch()
-    const removeMemberForm = useAppSelector(selectRemoveMemberForm)
+  const toggleRemoveMember = () => {
+    dispatch(setRemoveMemberForm(!removeMemberForm));
+  };
 
-    const toggleRemoveMember = ()=>{
-        dispatch(setRemoveMemberForm(!removeMemberForm))
-    }
-
-    return {toggleRemoveMember};
-}
+  return { toggleRemoveMember };
+};

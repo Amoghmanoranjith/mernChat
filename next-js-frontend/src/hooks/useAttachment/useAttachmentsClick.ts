@@ -1,5 +1,5 @@
-import { setAttachments } from "@/services/redux/slices/uiSlice";
-import { useAppDispatch } from "@/services/redux/store/hooks";
+import { setAttachments } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 
 type PropTypes = {
   attachments: string[];

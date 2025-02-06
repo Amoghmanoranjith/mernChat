@@ -1,8 +1,8 @@
 import { motion } from "framer-motion"; // For animations
 import { useEffect, useState } from "react"; // React hooks for managing state and side effects
 import { createPortal } from "react-dom"; // Function for creating portals
-import { selectisDarkMode } from "../../services/redux/slices/uiSlice"; // Selector to determine if dark mode is enabled
-import { useAppSelector } from "../../services/redux/store/hooks"; // Custom hook to access the Redux state
+import { selectisDarkMode } from "../../lib/client/slices/uiSlice"; // Selector to determine if dark mode is enabled
+import { useAppSelector } from "../../lib/client/store/hooks"; // Custom hook to access the Redux state
 
 // Define the types for the modal props to ensure type safety in TypeScript
 type PropTypes = {

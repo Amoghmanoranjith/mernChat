@@ -1,10 +1,10 @@
 "use client";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { sortChats } from "@/utils/helpers";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { sortChats } from "@/lib/shared/helpers";
 import { ChatListItem } from "./ChatListItem";
 
 type PropTypes = {
-  chats: ChatWithUnreadMessages[];
+  chats: fetchUserChatsResponse[];
   isFiltered: boolean;
 };
 
@@ -14,7 +14,10 @@ export const ChatList = ({ chats, isFiltered }: PropTypes) => {
   return (
     <div className="flex flex-col gap-y-4">
       {sortedChats.map((chat) => (
-        <ChatListItem key={`${chat._id}-${chat.latestMessage?._id}`} chat={chat} />
+        <ChatListItem
+          key={`${chat.id}-${chat.latestMessage?.id}`}
+          chat={chat}
+        />
       ))}
     </div>
   );

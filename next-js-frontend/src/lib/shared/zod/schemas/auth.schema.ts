@@ -72,12 +72,7 @@ const keyRecoverySchema = z.object({
 });
 
 export {
-  loginSchema,
-  signupSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  otpVerificationSchema,
-  keyRecoverySchema,
+  forgotPasswordSchema, keyRecoverySchema, loginSchema, otpVerificationSchema, resetPasswordSchema, signupSchema
 };
 
 export type signupSchemaType = z.infer<typeof signupSchema>;

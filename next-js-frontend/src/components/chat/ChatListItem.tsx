@@ -1,34 +1,34 @@
 "use client";
-import { DEFAULT_AVATAR } from "@/constants";
 import { useChatListItemClick } from "@/hooks/useChat/useChatListItemClick";
-import type { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
-import Image from "next/image";
-import { getChatAvatar } from "../../utils/helpers";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { ChatListItemBasicInfo } from "./ChatListItemBasicInfo";
 import { ChatListItemSecondaryInfo } from "./ChatListItemSecondaryInfo";
+import Image from "next/image";
+import { DEFAULT_AVATAR } from "@/constants";
+import { getChatAvatar } from "@/lib/shared/helpers";
 
 type PropTypes = {
-  chat: ChatWithUnreadMessages;
+  chat: fetchUserChatsResponse;
 };
 
 export const ChatListItem = ({ chat }: PropTypes) => {
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
   const { handleChatListItemClick } = useChatListItemClick();
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
 
   return (
     <div
-      onClick={() => handleChatListItemClick(chat._id)}
+      onClick={() => handleChatListItemClick(chat.id)}
       className={` ${
-        selectedChatId === chat._id ? "bg-secondary-dark" : ""
+        selectedChatId === chat.id ? "bg-secondary-dark" : ""
       }  text-text p-1 flex items-center w-full hover:bg-secondary-dark hover:cursor-pointer gap-x-3`}
     >
       <Image
         className="aspect-square rounded-full object-cover max-md:w-14"
-        src={getChatAvatar(chat, loggedInUserId) as string || DEFAULT_AVATAR}
+        src={(getChatAvatar(chat, loggedInUserId) as string) || DEFAULT_AVATAR}
         alt="chat avatar"
         width={70}
         height={70}

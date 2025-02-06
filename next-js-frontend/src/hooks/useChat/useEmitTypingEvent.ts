@@ -1,7 +1,7 @@
 import { useSocket } from "@/context/socket.context";
 import { useEffect } from "react";
-import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice";
-import { useAppSelector } from "../../services/redux/store/hooks";
+import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
 import { UserTypingEventPayloadData } from "@/interfaces/message.interface";
 import { Event } from "@/interfaces/events.interface";
 

@@ -1,16 +1,15 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
   searchVal: string;
-  filteredChats: ChatWithUnreadMessages[];
+  filteredChats: fetchUserChatsResponse[];
 };
 
-export const useFilteredChatsVisibility = ({
-  filteredChats,
-  searchVal,
-}: PropTypes) => {
+export const useFilteredChatsVisibility = ({filteredChats,searchVal}: PropTypes) => {
+
   const [showFilteredChats, setShowFilteredChats] = useState<boolean>(false);
+  
   useEffect(() => {
     if (filteredChats.length) {
       // great, that means user has typed something

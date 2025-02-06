@@ -1,5 +1,5 @@
-import { setNavMenu } from "@/services/redux/slices/uiSlice";
-import { useAppDispatch } from "@/services/redux/store/hooks";
+import { setNavMenu } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 
 export const useCloseNavMenu = () => {
   const dispatch = useAppDispatch();

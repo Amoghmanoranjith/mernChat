@@ -13,11 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model ChatMembers {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String
+}
+
 model Chat {
   id                       String   @id @default(cuid())
   name                     String?
   isGroupChat              Boolean  @default(false)
-  members                  User[]   @relation("userChats")
   avatar                   String   @default("https://res.cloudinary.com/dh5fjdce9/image/upload/v1717842288/defaultAvatar_q2y2az.png")
   avatarCloudinaryPublicId String?
   admin                    User?    @relation(fields: [adminId], references: [id])
@@ -29,6 +36,7 @@ model Chat {
 
   messages       Message[]
   UnreadMessages UnreadMessages[]
+  ChatMembers    ChatMembers[]
 }
 
 model Friends {
@@ -182,8 +190,6 @@ model User {
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
 
-  chats Chat[] @relation("userChats")
-
   Chat                    Chat[]
   Vote                    Vote[]
   Reactions               Reactions[]
@@ -199,6 +205,7 @@ model User {
   FriendRequestSent     FriendRequest[] @relation("SentRequests")
   FriendRequestReceived FriendRequest[] @relation("ReceivedRequests")
 
-  friendsAsUser1 Friends[] @relation("UserAsFriend1")
-  friendsAsUser2 Friends[] @relation("UserAsFriend2")
+  friendsAsUser1 Friends[]     @relation("UserAsFriend1")
+  friendsAsUser2 Friends[]     @relation("UserAsFriend2")
+  ChatMembers    ChatMembers[]
 }

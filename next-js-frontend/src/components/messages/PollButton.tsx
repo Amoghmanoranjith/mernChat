@@ -1,6 +1,6 @@
 import { useHandleVoteClick } from "@/hooks/useMessages/useHandleVoteClick";
 import { PollOption } from "@/interfaces/message.interface";
-import { haveUserVotedThisOption } from "@/utils/helpers";
+import { haveUserVotedThisOption } from "@/lib/shared/helpers";
 import { motion } from "framer-motion";
 import { DefaultPollOptionDot } from "../ui/DefaultPollOptionDot";
 import { FilledGreenDot } from "../ui/FilledGreenDot";

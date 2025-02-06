@@ -1,6 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Friend } from "../../interfaces/friends.interface";
 import { fetchUserFriendsResponse } from "@/lib/server/services/userService";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const friendApi = createApi({
     reducerPath:"friendApi",

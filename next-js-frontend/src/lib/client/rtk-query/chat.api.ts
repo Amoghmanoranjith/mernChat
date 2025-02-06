@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { ChatWithUnreadMessages } from "../../interfaces/chat.interface";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 export const chatApi = createApi({
@@ -12,10 +11,10 @@ export const chatApi = createApi({
         getChats:builder.query<fetchUserChatsResponse[],void>({
             query:()=>"/chat"
         }),
-        createChat:builder.mutation<void,Required<Pick<ChatWithUnreadMessages,'name'> & {members:string[],isGroupChat:string}> & {avatar?:Blob}>({
+        createChat:builder.mutation<void,Required<Pick<fetchUserChatsResponse,'name'> & {members:string[],isGroupChat:string}> & {avatar?:Blob}>({
             query:({name,members,isGroupChat,avatar})=>{
                 const formData = new FormData()
-                formData.append("name", name);
+                formData.append("name", name || 'default_name');
                 for (const member of members) formData.append("members[]", member);
                 formData.append("isGroupChat", isGroupChat); 
                 if(avatar) formData.append("avatar",avatar)

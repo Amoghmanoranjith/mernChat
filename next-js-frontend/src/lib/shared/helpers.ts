@@ -1,6 +1,5 @@
-import { User } from "@/interfaces/auth.interface";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { PollOption } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
   differenceInDays,
@@ -54,7 +53,6 @@ const uint8ArrayToBase64 = (array: any) => {
   // For example: "Hello" becomes "SGVsbG8=" after Base64 encoding.
   return btoa(str);
 };
-
 
 // Function to convert a Base64-encoded string to a Uint8Array (byte array)
 const base64ToUint8Array = (base64: string) => {
@@ -122,39 +120,39 @@ const formatRelativeTime = (stringDate: string | Date) => {
 };
 
 const getChatName = (
-  selectedChatDetails: ChatWithUnreadMessages | null,
-  loggedInUserId: User["id"] | undefined | null
+  selectedChatDetails: fetchUserChatsResponse | null,
+  loggedInUserId: FetchUserInfoResponse['id'] | undefined | null
 ) => {
   let chatName = "N/A";
-  if(selectedChatDetails && selectedChatDetails?.isGroupChat){
+  if(selectedChatDetails && selectedChatDetails.isGroupChat){
     chatName = selectedChatDetails.name as string;
   }
   else{
-    chatName = getOtherMemberOfPrivateChat(selectedChatDetails as ChatWithUnreadMessages, loggedInUserId as string)?.username as string;
+    chatName = getOtherMemberOfPrivateChat(selectedChatDetails as fetchUserChatsResponse, loggedInUserId as string).user.username
   }
   return chatName?.length > 16 ? chatName?.substring(0, 16) + "..." : chatName;
 };
 
 const getChatAvatar = (
-  selectedChatDetails: ChatWithUnreadMessages | null,
-  loggedInUserId: User["id"] | null | undefined
+  selectedChatDetails: fetchUserChatsResponse | null,
+  loggedInUserId: FetchUserInfoResponse["id"] | null | undefined
 ) => {
   return selectedChatDetails?.isGroupChat
     ? selectedChatDetails.avatar
-    : selectedChatDetails?.members.filter(
-        (member) => member._id !== loggedInUserId
-      )[0]?.avatar;
+    : selectedChatDetails?.ChatMembers.filter(
+        (member) => member.user.id !== loggedInUserId
+      )[0].user.avatar;
 };
 
-const sortChats = (chats: ChatWithUnreadMessages[]) => {
+const sortChats = (chats: fetchUserChatsResponse[]) => {
   return [...chats].sort((a, b) => {
     // First, we compare the unread message counts for both chats
     // The purpose is to show the chat with more unread messages at the top
     // If chat 'b' has more unread messages than chat 'a', the comparison returns a positive number, moving 'b' higher in the list
     // If chat 'a' has more unread messages than chat 'b', the comparison returns a negative number, moving 'a' higher in the list
-    if (b.unreadMessages.count !== a.unreadMessages.count) {
+    if (b.UnreadMessages[0].count != a.UnreadMessages[0].count){
       // Sorting in descending order, so we subtract 'a' unread count from 'b' unread count
-      return b.unreadMessages.count - a.unreadMessages.count;
+      return b.UnreadMessages[0].count - a.UnreadMessages[0].count;
     } else {
       // If the unread message counts are the same, we move to the next sorting criteria:
       // We compare the timestamp of the latest messages to display the most recent one at the top
@@ -177,72 +175,79 @@ const sortChats = (chats: ChatWithUnreadMessages[]) => {
   });
 };
 
+const truncateTextMessage = (text: string | null | undefined) => {
+  if(text){
+    return text.length > 25 ? text.substring(0, 25) + "..." : text;
+  }
+  else{
+    return null;
+  }
+}
+
 const getAppropriateLastLatestMessageForGroupChats = (
-  latestMessage: ChatWithUnreadMessages["latestMessage"]
+  latestMessage: fetchUserChatsResponse["latestMessage"]
 ) => {
-  return latestMessage?.isPoll
+  return latestMessage?.isPollMessage
     ? "Sent a poll"
     : latestMessage?.url
     ? "Sent a gif"
-    : latestMessage?.attachments?.length
+    : latestMessage?.attachments.length
     ? "Sent an attachment"
-    : latestMessage?.content?.length
-    ? (latestMessage.content.length>25 ? latestMessage.content.substring(0, 25) + "..." : latestMessage.content)
+    : latestMessage?.isTextMessage
+    ? truncateTextMessage(latestMessage.textMessageContent)
     : null;
 };
 
 const getAppropriateLastLatestMessageForPrivateChats = (
-  latestMessage: ChatWithUnreadMessages["latestMessage"]
+  latestMessage: fetchUserChatsResponse["latestMessage"]
 ) => {
-  return latestMessage?.isPoll
+  return latestMessage?.isPollMessage
     ? "Sent a poll"
     : latestMessage?.url
     ? "Sent a gif"
-    : latestMessage?.attachments?.length
+    : latestMessage?.attachments.length
     ? "Sent an attachment"
     : null;
 };
 
 const getAppropriateUnreadMessageForGroupChats = (
-  unreadMessage: ChatWithUnreadMessages["unreadMessages"]
+  unreadMessage: fetchUserChatsResponse["UnreadMessages"]
 ) => {
-  return unreadMessage?.message?.poll
+  return unreadMessage[0]?.message?.isPollMessage
     ? "Sent a poll"
-    : unreadMessage?.message?.url
+    : unreadMessage[0]?.message?.url
     ? "Sent a gif"
-    : unreadMessage?.message?.attachments
+    : unreadMessage[0]?.message?.attachments
     ? "Sent an attachment"
-    : unreadMessage?.message?.content
-    ? (unreadMessage.message.content.length>25 ? unreadMessage.message.content.substring(0, 25) + "..." : unreadMessage.message.content)
+    : unreadMessage[0]?.message?.isTextMessage
+    ? truncateTextMessage(unreadMessage[0]?.message.isTextMessage ? 'default-man': 'default-man')
     : null;
 };
 
 const getAppropriateUnreadMessageForPrivateChats = (
-  unreadMessage: ChatWithUnreadMessages["unreadMessages"]
+  unreadMessage: fetchUserChatsResponse["UnreadMessages"]
 ) => {
-  return unreadMessage?.message?.poll
+  return unreadMessage[0]?.message?.isPollMessage
     ? "Sent a poll"
-    : unreadMessage?.message?.url
+    : unreadMessage[0]?.message?.url
     ? "Sent a gif"
-    : unreadMessage?.message?.attachments
+    : unreadMessage[0]?.message?.attachments
     ? "Sent an attachment"
     : null;
 };
 
 const getOtherMemberOfPrivateChat = (
-  chat: ChatWithUnreadMessages,
+  chat: fetchUserChatsResponse,
   loggedInUserId: string
 ) => {
-  return chat?.members.filter((member) => member._id !== loggedInUserId)[0];
+  return chat.ChatMembers.filter(({user:{id}}) => id !== loggedInUserId)[0];
 };
 
 const getOtherMembersOfGroupChatThatAreActive = (
-  chat: ChatWithUnreadMessages,
+  chat: fetchUserChatsResponse,
   loggedInUserId: string
 ) => {
-  return chat.members.filter(
-    (member) => member._id !== loggedInUserId && member.isActive
-  );
+  return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
 };
 
 const haveUserVotedThisOption = (option:PollOption,loggedInUserId:string)=>{

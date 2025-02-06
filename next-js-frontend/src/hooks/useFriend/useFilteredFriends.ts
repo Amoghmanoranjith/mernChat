@@ -1,22 +1,24 @@
 import { Friend } from "@/interfaces/friends.interface";
-import { useGetFriendsQuery } from "@/services/api/friend.api";
+import { useGetFriendsQuery } from "@/lib/client/rtk-query/friend.api";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
-    searchVal: string;
-}
+  searchVal: string;
+};
 
-export const useFilteredFriends = ({searchVal}:PropTypes) => {
+export const useFilteredFriends = ({ searchVal }: PropTypes) => {
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const { data: friends } = useGetFriendsQuery();
 
-    const [filteredFriends,setFilteredFriends] = useState<Friend[]>([])
-    const {data:friends} = useGetFriendsQuery();
+  useEffect(() => {
+    if (friends) {
+      setFilteredFriends(
+        friends.filter((friend) =>
+          friend.username.toLowerCase().includes(searchVal.toLowerCase())
+        )
+      );
+    }
+  }, [searchVal, friends]);
 
-    useEffect(()=>{
-        if(friends){
-          setFilteredFriends(friends.filter(friend=>friend.username.toLowerCase().includes(searchVal.toLowerCase())));
-        }
-        
-    },[searchVal,friends])
-
-    return {filteredFriends,setFilteredFriends};
-}
+  return { filteredFriends, setFilteredFriends };
+};

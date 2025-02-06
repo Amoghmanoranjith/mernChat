@@ -14,10 +14,6 @@ export interface User {
   oAuthSignup: boolean;
 }
 
-export interface Auth {
-  loggedInUser: User | null;
-}
-
 export interface ResetPassword {
   token: string;
   newPassword: string;

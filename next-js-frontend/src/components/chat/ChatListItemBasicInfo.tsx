@@ -1,12 +1,12 @@
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import {
   formatRelativeTime,
   getChatName,
   getOtherMemberOfPrivateChat,
   getOtherMembersOfGroupChatThatAreActive,
-} from "@/utils/helpers";
+} from "@/lib/shared/helpers";
 import { ActiveDot } from "../ui/ActiveDot";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
@@ -15,7 +15,7 @@ type PropTypes = {
 };
 
 export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
 
   const renderOnlineStatus = () => {
     if (chat.isGroupChat) {
@@ -38,21 +38,24 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
   };
 
   const time = formatRelativeTime(
-      JSON.stringify(
-        chat.unreadMessages.message?.createdAt ||
+    JSON.stringify(
+      chat.unreadMessages.message?.createdAt ||
         chat.latestMessage?.createdAt ||
         chat.createdAt
-      )
+    )
   );
 
-  const chatName = getChatName(chat, loggedInUserId) as string;
+  // const chatName = getChatName(chat, loggedInUserId) as string;
+  const chatName = "demo-name";
 
   return (
     <>
       <div className="flex items-center gap-x-1">
         <p className="font-medium break-words">{chatName}</p>
         <span>
-          {!chat.isGroupChat && getOtherMemberOfPrivateChat(chat, loggedInUserId)?.verificationBadge && <VerificationBadgeIcon/>}
+          {!chat.isGroupChat &&
+            getOtherMemberOfPrivateChat(chat, loggedInUserId)
+              ?.verificationBadge && <VerificationBadgeIcon />}
         </span>
         <div>{renderOnlineStatus()}</div>
       </div>

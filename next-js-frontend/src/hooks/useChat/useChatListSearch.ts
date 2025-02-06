@@ -1,11 +1,12 @@
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { getChatName } from "@/utils/helpers";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { getChatName } from "@/lib/shared/helpers";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
   searchVal: string;
   loggedInUserId: string;
-  chats: ChatWithUnreadMessages[];
+  chats: fetchUserChatsResponse[];
 };
 
 export const useChatListSearch = ({
@@ -13,24 +14,16 @@ export const useChatListSearch = ({
   loggedInUserId,
   chats,
 }: PropTypes) => {
-  const [filteredChats, setFilteredChats] = useState<ChatWithUnreadMessages[]>(
+  const [filteredChats, setFilteredChats] = useState<fetchUserChatsResponse[]>(
     []
   );
 
   useEffect(() => {
     if (searchVal.trim().length) {
-      setFilteredChats(
-        chats.filter((chat) =>
-          getChatName(chat, loggedInUserId)
-            ?.toLowerCase()
-            ?.includes(searchVal.toLowerCase())
-        )
-      );
-    }
-    else if(searchVal.trim().length==0){
+    } else if (searchVal.trim().length == 0) {
       setFilteredChats([]);
     }
-  }, [searchVal]);
+  }, [chats, loggedInUserId, searchVal]);
 
   return { filteredChats };
 };

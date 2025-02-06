@@ -1,5 +1,5 @@
 import { PollOption } from "@/interfaces/message.interface";
-import { haveUserVotedThisOption } from "@/utils/helpers";
+import { haveUserVotedThisOption } from "@/lib/shared/helpers";
 import { useVoteIn } from "./useVoteIn";
 import { useVoteOut } from "./useVoteOut";
 

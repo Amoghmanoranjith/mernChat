@@ -1,11 +1,11 @@
-import { setNavMenu, setNewgroupChatForm } from "@/services/redux/slices/uiSlice";
-import { useAppDispatch } from "@/services/redux/store/hooks";
+import { setNavMenu, setNewgroupChatForm } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 
 export const useOpenGroupChatForm = () => {
-    const dispatch = useAppDispatch();
-    const openGroupChatForm = ()=>{
-        dispatch(setNavMenu(false));
-        dispatch(setNewgroupChatForm(true));
-    }
-    return {openGroupChatForm};
-}
+  const dispatch = useAppDispatch();
+  const openGroupChatForm = () => {
+    dispatch(setNavMenu(false));
+    dispatch(setNewgroupChatForm(true));
+  };
+  return { openGroupChatForm };
+};

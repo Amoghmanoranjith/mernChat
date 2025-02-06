@@ -1,8 +1,8 @@
 "use client";
 import type { User } from "@/interfaces/auth.interface";
 import { useEffect } from "react";
-import { updateLoggedInUser } from "../../services/redux/slices/authSlice";
-import { useAppDispatch } from "../../services/redux/store/hooks";
+import { updateLoggedInUser } from "../../lib/client/slices/authSlice";
+import { useAppDispatch } from "../../lib/client/store/hooks";
 
 type PropTypes = {
   isSuccess: boolean;

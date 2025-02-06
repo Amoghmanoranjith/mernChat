@@ -1,13 +1,13 @@
 "use client";
 import { useChatHeaderClick } from "@/hooks/useChat/useChatHeaderClick";
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import Image from "next/image";
 import {
   getChatAvatar,
   getOtherMemberOfPrivateChat,
-} from "../../utils/helpers";
+} from "../../lib/shared/helpers";
 import { ChatHeaderBasicInfo } from "./ChatHeaderBasicInfo";
 import { ChatHeaderSecondaryInfo } from "./ChatHeaderSecondaryInfo";
 import { DEFAULT_AVATAR } from "@/constants";
@@ -17,7 +17,7 @@ type PropTypes = {
 };
 
 export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
 
   const otherMemberOfPrivateChat = getOtherMemberOfPrivateChat(
     selectedChatDetails,

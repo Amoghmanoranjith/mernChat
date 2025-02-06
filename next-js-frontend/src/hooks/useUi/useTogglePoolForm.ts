@@ -1,16 +1,15 @@
-import { selectPollForm, setPollForm } from "../../services/redux/slices/uiSlice"
-import { useAppDispatch, useAppSelector } from "../../services/redux/store/hooks"
+import { selectPollForm, setPollForm } from "../../lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/client/store/hooks";
 
 export const useTogglePoolForm = () => {
+  const dispatch = useAppDispatch();
+  const pollForm = useAppSelector(selectPollForm);
 
-    const dispatch = useAppDispatch()
-    const pollForm = useAppSelector(selectPollForm)
+  const togglePollForm = () => {
+    dispatch(setPollForm(!pollForm));
+  };
 
-    const togglePollForm = ()=>{
-        dispatch(setPollForm(!pollForm))
-    }
-
-    return {
-        togglePollForm
-    }
-}
+  return {
+    togglePollForm,
+  };
+};

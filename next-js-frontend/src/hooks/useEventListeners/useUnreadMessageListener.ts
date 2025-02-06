@@ -4,9 +4,9 @@ import {
   MessageSeenEventPayloadData,
   UnreadMessageEventReceiveData,
 } from "@/interfaces/message.interface";
-import { chatApi } from "@/services/api/chat.api";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
+import { chatApi } from "@/lib/client/rtk-query/chat.api";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 import { useEffect, useRef } from "react";
 

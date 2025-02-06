@@ -1,7 +1,7 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/services/api/chat.api";
-import { friendApi } from "@/services/api/friend.api";
-import { useAppDispatch } from "@/services/redux/store/hooks";
+import { chatApi } from "@/lib/client/rtk-query/chat.api";
+import { friendApi } from "@/lib/client/rtk-query/friend.api";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
 export const useOnlineListener = () => {

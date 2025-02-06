@@ -1,8 +1,8 @@
 import { useSocket } from "@/context/socket.context";
 import { Event } from "@/interfaces/events.interface";
 import { MessageSeenEventPayloadData } from "@/interfaces/message.interface";
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { useEffect } from "react";
 
 export const useUpdateUnreadMessagesAsSeenOnChatSelect = () => {

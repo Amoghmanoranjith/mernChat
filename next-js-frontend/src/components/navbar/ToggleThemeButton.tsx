@@ -1,6 +1,6 @@
 import { useUpdateTheme } from "@/hooks/useUtils/useUpdateTheme";
-import { selectisDarkMode } from "@/services/redux/slices/uiSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectisDarkMode } from "@/lib/client/slices/uiSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { MoonIcon } from "../ui/icons/MoonIcon";
 import { SunIcon } from "../ui/icons/SunIcon";
 

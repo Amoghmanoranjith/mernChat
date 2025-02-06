@@ -1,6 +1,6 @@
 "use client";
 
-import { initializeIndexDb } from "@/utils/indexedDB";
+import { initializeIndexDb } from "@/lib/client/indexedDB";
 import { useEffect } from "react";
 
 export const InitializeIndexedDbWrapper = () => {

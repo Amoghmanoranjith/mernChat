@@ -1,9 +1,14 @@
-import { fetchUserChatsResponse, fetchUserFriendRequestResponse, fetchUserFriendsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
-import { chatApi } from "@/services/api/chat.api";
-import { friendApi } from "@/services/api/friend.api";
-import { requestApi } from "@/services/api/request.api";
-import { updateLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppDispatch } from "@/services/redux/store/hooks";
+import {
+  fetchUserChatsResponse,
+  fetchUserFriendRequestResponse,
+  fetchUserFriendsResponse,
+  FetchUserInfoResponse,
+} from "@/lib/server/services/userService";
+import { chatApi } from "@/lib/client/rtk-query/chat.api";
+import { friendApi } from "@/lib/client/rtk-query/friend.api";
+import { requestApi } from "@/lib/client/rtk-query/request.api";
+import { updateLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useEffect } from "react";
 
 type PropTypes = {
@@ -24,7 +29,13 @@ export const usePopulateStateWithServerSideFetchedData = ({
   useEffect(() => {
     dispatch(updateLoggedInUser(user));
     dispatch(chatApi.util.upsertQueryData("getChats", undefined, [...chats]));
-    dispatch(friendApi.util.upsertQueryData("getFriends", undefined, [...friends]));
-    dispatch(requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [...friendRequest]));
+    dispatch(
+      friendApi.util.upsertQueryData("getFriends", undefined, [...friends])
+    );
+    dispatch(
+      requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [
+        ...friendRequest,
+      ])
+    );
   }, [chats, dispatch, friendRequest, friends, user]);
 };

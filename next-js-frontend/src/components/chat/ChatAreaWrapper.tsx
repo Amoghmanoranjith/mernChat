@@ -2,16 +2,14 @@
 
 import { useMediaQuery } from "@/hooks/useUtils/useMediaQuery";
 import { useSwipe } from "@/hooks/useUtils/useSwipe";
-import {
-  updateSelectedChatDetails,
-} from "@/services/redux/slices/chatSlice";
+import { updateSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import {
   selectChatBar,
   selectChatDetailsBar,
   setChatBar,
   setChatDetailsBar,
-} from "@/services/redux/slices/uiSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
+} from "@/lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 
 type PropTypes = {
   children: React.ReactNode;

@@ -6,8 +6,8 @@ import { useGenerateKeyPair } from "@/hooks/useAuth/useGenerateKeyPair";
 import { useStoreUserKeysInDatabase } from "@/hooks/useAuth/useStoreUserKeysInDatabase";
 import { useStoreUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useStoreUserPrivateKeyInIndexedDB";
 import { useUpdateLoggedInUserPublicKeyInState } from "@/hooks/useAuth/useUpdateLoggedInUserPublicKeyInState";
-import type { signupSchemaType } from "@/schemas/auth.schema";
-import { signupSchema } from "@/schemas/auth.schema";
+import type { signupSchemaType } from "@/lib/shared/zod/schemas/auth.schema";
+import { signupSchema } from "@/lib/shared/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState } from "react";
 import { useFormStatus } from "react-dom";
@@ -16,7 +16,6 @@ import { CircleLoading } from "../shared/CircleLoading";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const SignupForm = () => {
-
   const [state, signupAction] = useActionState(signup, undefined);
 
   const {
@@ -28,15 +27,27 @@ export const SignupForm = () => {
 
   const password = watch("password");
 
-  const { privateKey, publicKey } = useGenerateKeyPair({user:state?.data});
-  const { privateKeyJWK, publicKeyJWK } = useConvertPrivateAndPublicKeyInJwkFormat({ privateKey, publicKey });
-  const { encryptedPrivateKey } = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
-  const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({ encryptedPrivateKey, publicKeyJWK });
-  useStoreUserPrivateKeyInIndexedDB({privateKey: privateKeyJWK,userKeysStoredInDatabaseSuccess,userId: state?.data?.id});
-  useUpdateLoggedInUserPublicKeyInState({publicKey: publicKeyReturnedFromServerAfterBeingStored});
+  const { privateKey, publicKey } = useGenerateKeyPair({ user: state?.data });
+  const { privateKeyJWK, publicKeyJWK } =
+    useConvertPrivateAndPublicKeyInJwkFormat({ privateKey, publicKey });
+  const { encryptedPrivateKey } = useEncryptPrivateKeyWithUserPassword({
+    password,
+    privateKeyJWK,
+  });
+  const {
+    publicKeyReturnedFromServerAfterBeingStored,
+    userKeysStoredInDatabaseSuccess,
+  } = useStoreUserKeysInDatabase({ encryptedPrivateKey, publicKeyJWK });
+  useStoreUserPrivateKeyInIndexedDB({
+    privateKey: privateKeyJWK,
+    userKeysStoredInDatabaseSuccess,
+    userId: state?.data?.id,
+  });
+  useUpdateLoggedInUserPublicKeyInState({
+    publicKey: publicKeyReturnedFromServerAfterBeingStored,
+  });
 
   const onSubmit: SubmitHandler<signupSchemaType> = (data) => {
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...credentials } = data;
     const formData = new FormData();
@@ -45,10 +56,10 @@ export const SignupForm = () => {
     formData.append("username", credentials.username);
     formData.append("email", credentials.email);
     formData.append("password", credentials.password);
-    
-    startTransition(()=>{
+
+    startTransition(() => {
       signupAction(formData);
-    })
+    });
   };
 
   return (

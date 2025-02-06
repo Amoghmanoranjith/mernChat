@@ -1,13 +1,15 @@
-import { selectChatDetailsBar, setChatDetailsBar } from "../../services/redux/slices/uiSlice"
-import { useAppDispatch, useAppSelector } from "../../services/redux/store/hooks"
+import {
+  selectChatDetailsBar,
+  setChatDetailsBar,
+} from "../../lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/client/store/hooks";
 
 export const useToggleChatDetailsBar = () => {
-    
-    const dispatch = useAppDispatch()
-    const chatDetailsBar = useAppSelector(selectChatDetailsBar)
+  const dispatch = useAppDispatch();
+  const chatDetailsBar = useAppSelector(selectChatDetailsBar);
 
-    const toggleChatDetailsBar=()=>{
-        dispatch(setChatDetailsBar(!chatDetailsBar))
-    }
-    return {toggleChatDetailsBar};
-}
+  const toggleChatDetailsBar = () => {
+    dispatch(setChatDetailsBar(!chatDetailsBar));
+  };
+  return { toggleChatDetailsBar };
+};

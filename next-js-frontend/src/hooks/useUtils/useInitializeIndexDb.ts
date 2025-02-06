@@ -1,9 +1,8 @@
-import { useEffect } from "react"
-import { initializeIndexDb } from "../../utils/indexedDB"
+import { useEffect } from "react";
+import { initializeIndexDb } from "../../lib/client/indexedDB";
 
 export const useInitializeIndexDb = () => {
-    
-    useEffect(()=>{
-        initializeIndexDb()
-    },[])
-}
+  useEffect(() => {
+    initializeIndexDb();
+  }, []);
+};

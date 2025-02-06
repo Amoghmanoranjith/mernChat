@@ -1,8 +1,9 @@
-import { FriendRequest } from "@/interfaces/request.interface"
+import { FriendRequest } from "@/interfaces/request.interface";
+import { fetchUserFriendRequestResponse } from "@/lib/server/services/userService";
 import { FriendRequestItem } from "./FriendRequestItem";
 
 type PropTypes = {
-    users:FriendRequest[];
+    users:fetchUserFriendRequestResponse[];
     friendRequestHandler:(requestId: FriendRequest['_id'], action: "accept" | "reject") => void
 }
 export const FriendRequestList = ({users,friendRequestHandler}:PropTypes) => {
@@ -10,7 +11,7 @@ export const FriendRequestList = ({users,friendRequestHandler}:PropTypes) => {
     <div className="flex flex-col gap-y-3">
         {
             users.map(user=>(
-                <FriendRequestItem key={user._id} user={user} friendRequestHandler={friendRequestHandler} />
+                <FriendRequestItem key={user.id} user={user} friendRequestHandler={friendRequestHandler} />
             ))
         }
     </div>

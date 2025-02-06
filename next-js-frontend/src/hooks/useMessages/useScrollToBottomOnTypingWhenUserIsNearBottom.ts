@@ -1,9 +1,9 @@
-import { selectSelectedChatDetails } from "@/services/redux/slices/chatSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { RefObject, useEffect } from "react";
 
 type PropTypes = {
-  container :RefObject<HTMLDivElement | null>;
+  container: RefObject<HTMLDivElement | null>;
   isNearBottom: boolean;
 };
 

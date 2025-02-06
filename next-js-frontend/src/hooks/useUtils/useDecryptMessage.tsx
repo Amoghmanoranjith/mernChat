@@ -1,6 +1,6 @@
 import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { decryptMessage } from "@/utils/encryption";
-import { getOtherMemberOfPrivateChat } from "@/utils/helpers";
+import { decryptMessage } from "@/lib/client/encryption";
+import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import { useEffect, useState } from "react";
 import { useGetSharedKey } from "../useAuth/useGetSharedKey";
 
@@ -15,7 +15,6 @@ export const useDecryptMessage = ({
   selectedChatDetails,
   cipherText,
 }: PropTypes) => {
-
   const [sharedKey, setSharedKey] = useState<CryptoKey>();
   const [decryptedMessage, setDecryptedMessage] = useState<string>("");
 
@@ -27,7 +26,7 @@ export const useDecryptMessage = ({
   );
 
   const handleSetSharedKey = async () => {
-    const key = await getSharedKey({loggedInUserId,otherMember});
+    const key = await getSharedKey({ loggedInUserId, otherMember });
     if (key) setSharedKey(key);
   };
 
@@ -42,10 +41,9 @@ export const useDecryptMessage = ({
   };
 
   useEffect(() => {
-    if(!selectedChatDetails.isGroupChat){
+    if (!selectedChatDetails.isGroupChat) {
       handleSetSharedKey();
-    }
-    else{
+    } else {
       setDecryptedMessage(cipherText);
     }
   }, [selectedChatDetails.isGroupChat]);

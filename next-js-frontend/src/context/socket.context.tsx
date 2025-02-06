@@ -7,8 +7,8 @@ import React, {
   useState,
 } from "react";
 import io, { Socket } from "socket.io-client";
-import { selectLoggedInUser } from "../services/redux/slices/authSlice";
-import { useAppSelector } from "../services/redux/store/hooks";
+import { selectLoggedInUser } from "../lib/client/slices/authSlice";
+import { useAppSelector } from "../lib/client/store/hooks";
 
 const socketContext = createContext<Socket | null>(null);
 

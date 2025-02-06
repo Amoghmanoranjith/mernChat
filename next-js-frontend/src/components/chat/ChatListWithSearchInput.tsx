@@ -1,20 +1,20 @@
 "use client";
 import { useChatListSearch } from "@/hooks/useChat/useChatListSearch";
 import { useFilteredChatsVisibility } from "@/hooks/useChat/useFilteredChatsVisibility";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
-import { selectLoggedInUser } from "@/services/redux/slices/authSlice";
-import { useAppSelector } from "@/services/redux/store/hooks";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { useState } from "react";
 import { SearchInputForChatList } from "../ui/SearchInput";
 import { ChatList } from "./ChatList";
 
 type PropTypes = {
-  chats: ChatWithUnreadMessages[];
+  chats: fetchUserChatsResponse[];
 };
 
 export const ChatListWithSearchInput = ({ chats }: PropTypes) => {
   const [searchVal, setSearchVal] = useState<string>("");
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
   const { filteredChats } = useChatListSearch({
     chats,
     loggedInUserId,

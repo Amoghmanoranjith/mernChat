@@ -1,9 +1,9 @@
-import { useGetChatsQuery } from "@/services/api/chat.api";
+import { useGetChatsQuery } from "@/lib/client/rtk-query/chat.api";
 import {
   selectSelectedChatDetails,
   updateSelectedChatDetails,
-} from "@/services/redux/slices/chatSlice";
-import { useAppDispatch, useAppSelector } from "@/services/redux/store/hooks";
+} from "@/lib/client/slices/chatSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useToggleChatBar } from "../useUI/useToggleChatBar";
 import { useMediaQuery } from "../useUtils/useMediaQuery";
 
@@ -17,7 +17,7 @@ export const useChatListItemClick = () => {
 
   const handleChatListItemClick = (chatId: string) => {
     if (selectedChatId !== chatId && chats && chats.length) {
-      const selectedChatByUser = chats.find((chat) => chat._id === chatId);
+      const selectedChatByUser = chats.find((chat) => chat.id === chatId);
       if (selectedChatByUser) {
         dispatch(updateSelectedChatDetails(selectedChatByUser));
       }

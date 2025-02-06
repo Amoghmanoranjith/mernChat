@@ -1,13 +1,12 @@
-import { setNavMenu, setProfileForm } from "../../services/redux/slices/uiSlice"
-import { useAppDispatch } from "../../services/redux/store/hooks"
+import { setNavMenu, setProfileForm } from "../../lib/client/slices/uiSlice";
+import { useAppDispatch } from "../../lib/client/store/hooks";
 
 export const useOpenProfileForm = () => {
+  const dispatch = useAppDispatch();
 
-    const dispatch = useAppDispatch()
-
-    const openProfileForm = ()=>{
-        dispatch(setNavMenu(false))
-        dispatch(setProfileForm(true))
-    }
-    return {openProfileForm};
-}
+  const openProfileForm = () => {
+    dispatch(setNavMenu(false));
+    dispatch(setProfileForm(true));
+  };
+  return { openProfileForm };
+};

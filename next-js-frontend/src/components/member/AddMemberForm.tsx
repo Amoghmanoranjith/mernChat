@@ -1,76 +1,85 @@
-'use client';
-import { useEffect, useState } from "react"
-import { useAddMember } from "../../hooks/useMember/useAddMember"
-import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice"
-import { useAppSelector } from "../../services/redux/store/hooks"
-import { MemberList } from "./MemberList"
-import {motion} from 'framer-motion'
-import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm"
-import { Friend } from "@/interfaces/friends.interface"
-import { useGetFriendsQuery } from "@/services/api/friend.api"
+"use client";
+import { useEffect, useState } from "react";
+import { useAddMember } from "../../hooks/useMember/useAddMember";
+import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
+import { MemberList } from "./MemberList";
+import { motion } from "framer-motion";
+import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm";
+import { Friend } from "@/interfaces/friends.interface";
+import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 
 const AddMemberForm = () => {
+  const { data: friends } = useGetUserFriendRequestsQuery();
 
-  const {data:friends} = useGetFriendsQuery()
-  
-  const selectedChatDetails = useAppSelector(selectSelectedChatDetails)
-  const {toggleAddMemberForm}= useToggleAddMemberForm()
+  const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
+  const { toggleAddMemberForm } = useToggleAddMemberForm();
 
-  const [selectedMembers,setSelectedMembers] = useState<string[]>([])
-  const [searchVal,setSearchVal] = useState<string>("")
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [searchVal, setSearchVal] = useState<string>("");
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
-  const {addMember} = useAddMember()
+  const { addMember } = useAddMember();
 
   const handleAddMember = () => {
-    if(selectedChatDetails?._id){
-      toggleAddMemberForm()
-      addMember({_id:selectedChatDetails?._id,members:selectedMembers})
+    if (selectedChatDetails?._id) {
+      toggleAddMemberForm();
+      addMember({ _id: selectedChatDetails?._id, members: selectedMembers });
     }
-  }
+  };
 
   useEffect(() => {
     if (friends && searchVal) {
-      const filtered = friends.filter(friend => friend.username.toLowerCase().includes(searchVal.toLowerCase()));
+      const filtered = friends.filter((friend) =>
+        friend.username.toLowerCase().includes(searchVal.toLowerCase())
+      );
       setFilteredFriends(filtered);
     }
-  }, [searchVal,friends]);
+  }, [searchVal, friends]);
 
-  const toggleSelection = (memberId:string)=>{
-    if(selectedMembers.includes(memberId)){
-      setSelectedMembers(prev=>prev.filter(member=>member!==memberId))
+  const toggleSelection = (memberId: string) => {
+    if (selectedMembers.includes(memberId)) {
+      setSelectedMembers((prev) =>
+        prev.filter((member) => member !== memberId)
+      );
+    } else {
+      setSelectedMembers((prev) => [...prev, memberId]);
     }
-    else{
-      setSelectedMembers(prev=>[...prev,memberId])
-    }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-y-5">
-
       <h4 className="text-xl">Add members to {selectedChatDetails?.name} </h4>
 
-      <input value={searchVal} onChange={e=>setSearchVal(e.target.value)} className="p-3 rounded w-full text-text bg-background outline outline-1 outline-secondary-darker" placeholder="Search Friends"/>
+      <input
+        value={searchVal}
+        onChange={(e) => setSearchVal(e.target.value)}
+        className="p-3 rounded w-full text-text bg-background outline outline-1 outline-secondary-darker"
+        placeholder="Search Friends"
+      />
 
       <div className="overflow-y-auto max-h-52">
-
         <MemberList
           selectable={true}
           existingMembers={selectedChatDetails?.members || []}
           members={filteredFriends}
           selectedMembers={selectedMembers}
-          toggleSelection={toggleSelection} 
+          toggleSelection={toggleSelection}
         />
-
       </div>
 
-      {
-        selectedMembers.length!==0 &&
-        <motion.button  initial={{y:5}} animate={{y:0}} onClick={handleAddMember} className="bg-primary text-white py-2 rounded-sm disabled:bg-gray-400">Add member</motion.button>
-      }
-
+      {selectedMembers.length !== 0 && (
+        <motion.button
+          initial={{ y: 5 }}
+          animate={{ y: 0 }}
+          onClick={handleAddMember}
+          className="bg-primary text-white py-2 rounded-sm disabled:bg-gray-400"
+        >
+          Add member
+        </motion.button>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default AddMemberForm;

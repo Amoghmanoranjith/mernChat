@@ -1,11 +1,11 @@
+import { attachmentApi } from "@/lib/client/rtk-query/attachment.api";
+import { authApi } from "@/lib/client/rtk-query/auth.api";
+import { chatApi } from "@/lib/client/rtk-query/chat.api";
+import { messageApi } from "@/lib/client/rtk-query/message.api";
+import { requestApi } from "@/lib/client/rtk-query/request.api";
+import { userApi } from "@/lib/client/rtk-query/user.api";
 import { configureStore } from "@reduxjs/toolkit";
-import { attachmentApi } from "@/services/api/attachment.api";
-import { authApi } from "@/services/api/auth.api";
-import { chatApi } from "@/services/api/chat.api";
-import { friendApi } from "@/services/api/friend.api";
-import { messageApi } from "@/services/api/message.api";
-import { requestApi } from "@/services/api/request.api";
-import { userApi } from "@/services/api/user.api";
+import { friendApi } from "../rtk-query/friend.api";
 import authSlice from "../slices/authSlice";
 import chatSlice from "../slices/chatSlice";
 import uiSlice from "../slices/uiSlice";
@@ -22,18 +22,18 @@ export const makeStore = () => {
       [messageApi.reducerPath]: messageApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [requestApi.reducerPath]: requestApi.reducer,
-      [friendApi.reducerPath]: friendApi.reducer,
       [attachmentApi.reducerPath]: attachmentApi.reducer,
+      [friendApi.reducerPath]: friendApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({serializableCheck:false})
+      getDefaultMiddleware({ serializableCheck: false })
         .concat(authApi.middleware)
         .concat(chatApi.middleware)
         .concat(messageApi.middleware)
         .concat(userApi.middleware)
         .concat(requestApi.middleware)
-        .concat(friendApi.middleware)
-        .concat(attachmentApi.middleware),
+        .concat(attachmentApi.middleware)
+        .concat(friendApi.middleware),
   });
 };
 

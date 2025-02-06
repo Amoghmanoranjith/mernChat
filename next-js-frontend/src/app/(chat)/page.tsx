@@ -22,6 +22,8 @@ export default async function ChatPage() {
     fetchUserChats({loggedInUserId}),
   ]);
 
+  console.log(chats);
+
   return (
     (friends && chats && friendRequest && user) ? (
     <ChatWrapper
@@ -34,18 +36,18 @@ export default async function ChatPage() {
         <ChatListWrapper>
           <ChatListWithSearchInputWrapper />
         </ChatListWrapper>
-
+{/* 
         <ChatAreaWrapper>
           <div className="flex flex-col gap-y-3 h-full justify-between relative">
             <ChatHeaderWrapper />
             <MessageListSkeletonWrapper loggedInUserId={user.id} />
             <MessageInputAreaWrapper />
           </div>
-        </ChatAreaWrapper>
+        </ChatAreaWrapper> */}
 
-        <ChatDetailsWrapper>
+        {/* <ChatDetailsWrapper>
           <ChatDetailsLoaderWrapper loggedInUser={user} />
-        </ChatDetailsWrapper>
+        </ChatDetailsWrapper> */}
       </div>
     </ChatWrapper>
   )

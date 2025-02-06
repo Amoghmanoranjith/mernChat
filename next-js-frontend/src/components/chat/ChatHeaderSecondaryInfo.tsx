@@ -5,7 +5,7 @@ import {
 import {
   formatRelativeTime,
   getOtherMembersOfGroupChatThatAreActive,
-} from "@/utils/helpers";
+} from "@/lib/shared/helpers";
 import { ActiveDot } from "../ui/ActiveDot";
 
 type PropTypes = {
@@ -19,28 +19,35 @@ export const ChatHeaderSecondaryInfo = ({
   otherMemberOfPrivateChat,
   loggedInUserId,
 }: PropTypes) => {
-
-  const isPrivateChatActive = !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat?.isActive;
-  const isPrivateChatInActive = !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat?.isActive;
+  const isPrivateChatActive =
+    !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat?.isActive;
+  const isPrivateChatInActive =
+    !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat?.isActive;
   const isGroupChat = selectedChatDetails.isGroupChat;
   const totalMembersInGroupChat = selectedChatDetails.members.length;
-  const activeMemberCountInGroupChat = getOtherMembersOfGroupChatThatAreActive(selectedChatDetails,loggedInUserId);
+  const activeMemberCountInGroupChat = getOtherMembersOfGroupChatThatAreActive(
+    selectedChatDetails,
+    loggedInUserId
+  );
 
   return (
     <>
       {isPrivateChatInActive && (
         <p className="text-secondary-darker max-sm:text-sm">
-          last seen {formatRelativeTime(JSON.stringify(otherMemberOfPrivateChat?.lastSeen))}
+          last seen{" "}
+          {formatRelativeTime(
+            JSON.stringify(otherMemberOfPrivateChat?.lastSeen)
+          )}
         </p>
-      )} 
-      
+      )}
+
       {isPrivateChatActive && (
         <div className="flex items-center gap-x-2">
           <ActiveDot />
           <p className="text-secondary-darker max-sm:text-sm">Active</p>
         </div>
       )}
-      
+
       {isGroupChat && (
         <>
           <p className="text-secondary-darker max-sm:text-sm">

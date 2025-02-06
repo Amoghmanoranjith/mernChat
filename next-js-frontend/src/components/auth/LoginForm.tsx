@@ -1,6 +1,9 @@
 "use client";
 import { login } from "@/actions/auth.actions";
-import { loginSchema, loginSchemaType } from "@/schemas/auth.schema";
+import {
+  loginSchema,
+  loginSchemaType,
+} from "@/lib/shared/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
@@ -22,7 +25,6 @@ export const LoginForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-    
   } = useForm<loginSchemaType>({
     resolver: zodResolver(loginSchema),
   });
@@ -35,7 +37,7 @@ export const LoginForm = () => {
     startTransition(() => {
       loginAction(formData);
     });
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
@@ -89,17 +91,17 @@ export const LoginForm = () => {
   );
 };
 
-function SubmitButton(){
-  const {pending} = useFormStatus();
+function SubmitButton() {
+  const { pending } = useFormStatus();
   return (
-        <button
-          disabled={pending}
-          type="submit"
-          className={`w-full ${
-            pending ? "bg-background" : "bg-primary"
-          } text-white px-6 py-3 rounded shadow-lg font-medium text-center flex justify-center`}
-        >
-          {pending ? <CircleLoading size="6" /> : "Login"}
-        </button>
-  )
+    <button
+      disabled={pending}
+      type="submit"
+      className={`w-full ${
+        pending ? "bg-background" : "bg-primary"
+      } text-white px-6 py-3 rounded shadow-lg font-medium text-center flex justify-center`}
+    >
+      {pending ? <CircleLoading size="6" /> : "Login"}
+    </button>
+  );
 }

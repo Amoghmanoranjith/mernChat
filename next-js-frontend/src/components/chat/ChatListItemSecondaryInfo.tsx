@@ -4,7 +4,7 @@ import {
   getAppropriateLastLatestMessageForPrivateChats,
   getAppropriateUnreadMessageForGroupChats,
   getAppropriateUnreadMessageForPrivateChats,
-} from "@/utils/helpers";
+} from "@/lib/shared/helpers";
 import { TypingIndicatorAnimation } from "../ui/TypingIndicatorAnimation";
 import { DisplayDecryptedMessage } from "../messages/DisplayDecryptedMessage";
 
@@ -14,7 +14,7 @@ type PropTypes = {
 
 export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
   const renderHelper = () => {
-    if (chat.userTyping.length>0) {
+    if (chat.userTyping.length > 0) {
       // if any user is typing
       // then show typing indicator animation
       return (
@@ -42,13 +42,20 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         // as in private chats E2EE(end-to-end-enncrytion) is applied
         if (chat.latestMessage?.content?.length) {
           // here we will decrypt the message and then show it
-          return <DisplayDecryptedMessage cipherText={chat.latestMessage.content} chat={chat}/>
+          return (
+            <DisplayDecryptedMessage
+              cipherText={chat.latestMessage.content}
+              chat={chat}
+            />
+          );
         } else {
           // but if the latest message is not a text message
           // we can our utility function to get the appropriate message
           return (
             <span className="text-sm text-secondary-darker">
-              {getAppropriateLastLatestMessageForPrivateChats(chat.latestMessage)}
+              {getAppropriateLastLatestMessageForPrivateChats(
+                chat.latestMessage
+              )}
             </span>
           );
         }
@@ -72,7 +79,12 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         if (chat.unreadMessages.message?.content?.length) {
           // here will have to decrypt the message
           // and then only we can show it
-          return <DisplayDecryptedMessage cipherText={chat.unreadMessages?.message?.content} chat={chat}/>
+          return (
+            <DisplayDecryptedMessage
+              cipherText={chat.unreadMessages?.message?.content}
+              chat={chat}
+            />
+          );
         } else {
           // but if the unread message is not a text message
           // then we can use our utility function to get the appropriate message
@@ -88,9 +100,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
 
   return (
     <>
-      <div className=" w-full h-full">
-        {renderHelper()}
-      </div>
+      <div className=" w-full h-full">{renderHelper()}</div>
       {chat.unreadMessages?.count > 0 && (
         <p className="bg-primary flex items-center justify-center text-white rounded-full h-5 w-5 p-2">
           {chat.unreadMessages?.count}

@@ -1,11 +1,11 @@
 import { useSocket } from "@/context/socket.context";
 import { Event } from "@/interfaces/events.interface";
 import type { MessageEventPayloadData } from "@/interfaces/message.interface";
-import { getOtherMemberOfPrivateChat } from "@/utils/helpers";
-import { selectLoggedInUser } from "../../services/redux/slices/authSlice";
-import { selectSelectedChatDetails } from "../../services/redux/slices/chatSlice";
-import { useAppSelector } from "../../services/redux/store/hooks";
-import { encryptMessage } from "../../utils/encryption";
+import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
+import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
+import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
+import { encryptMessage } from "../../lib/client/encryption";
 import { useGetSharedKey } from "../useAuth/useGetSharedKey";
 
 export const useSendMessage = () => {

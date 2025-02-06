@@ -1,16 +1,16 @@
-import { User } from '@/interfaces/auth.interface'
+import { FetchUserInfoResponse } from '@/lib/server/services/userService'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
 type PropTypes = {
-    user:Pick<User , '_id' | 'name' | "username" | 'avatar'>
+    user:Pick<FetchUserInfoResponse , 'id' | 'name' | "username" | 'avatar'>
     sendFriendRequest:(receiverId:string)=>void
     isFriendAlready:boolean
     loggedInUserId: string
 }
 export const UserItem = ({user,isFriendAlready,loggedInUserId,sendFriendRequest}:PropTypes) => {
 
-  const isUserItself = loggedInUserId === user._id.toString()
+  const isUserItself = loggedInUserId === user.id.toString()
 
   return (
     <div className="p-2 flex items-center justify-between">
@@ -27,7 +27,7 @@ export const UserItem = ({user,isFriendAlready,loggedInUserId,sendFriendRequest}
         </div>
         {
           !isUserItself && !isFriendAlready &&
-          <motion.button whileHover={{y:-1}} whileTap={{scale:0.950}} onClick={()=>sendFriendRequest(user._id)} className="p-2 bg-primary hover:bg-primary-dark text-text rounded-full">
+          <motion.button whileHover={{y:-1}} whileTap={{scale:0.950}} onClick={()=>sendFriendRequest(user.id)} className="p-2 bg-primary hover:bg-primary-dark text-text rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>

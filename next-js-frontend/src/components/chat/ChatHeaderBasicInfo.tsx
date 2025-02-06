@@ -2,7 +2,7 @@ import {
   ChatMember,
   ChatWithUnreadMessages,
 } from "@/interfaces/chat.interface";
-import { getChatName } from "@/utils/helpers";
+import { getChatName } from "@/lib/shared/helpers";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
 type PropTypes = {

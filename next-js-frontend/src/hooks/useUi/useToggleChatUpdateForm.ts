@@ -1,13 +1,14 @@
-import { selectChatUpdateForm, setChatUpdateForm } from "../../services/redux/slices/uiSlice"
-import { useAppDispatch, useAppSelector } from "../../services/redux/store/hooks"
+import {
+  selectChatUpdateForm,
+  setChatUpdateForm,
+} from "../../lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/client/store/hooks";
 
 export const useToggleChatUpdateForm = () => {
+  const dispatch = useAppDispatch();
+  const chatUpdateForm = useAppSelector(selectChatUpdateForm);
 
-  const dispatch = useAppDispatch()
-  const chatUpdateForm = useAppSelector(selectChatUpdateForm)
-
-  return ()=>{
-    dispatch(setChatUpdateForm(!chatUpdateForm))
-  }
-
-}
+  return () => {
+    dispatch(setChatUpdateForm(!chatUpdateForm));
+  };
+};

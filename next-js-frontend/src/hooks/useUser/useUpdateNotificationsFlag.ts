@@ -1,4 +1,4 @@
-import { useUpdateNotificationsMutation } from "@/services/api/user.api";
+import { useUpdateNotificationsMutation } from "@/lib/client/rtk-query/user.api";
 import { useToast } from "../useUI/useToast";
 
 export const useUpdateNotificationsFlag = () => {

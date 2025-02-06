@@ -1,5 +1,5 @@
 import { User } from "@/interfaces/auth.interface";
-import { getUserPrivateKeyFromIndexedDB } from "@/utils/indexedDB";
+import { getUserPrivateKeyFromIndexedDB } from "@/lib/client/indexedDB";
 import { useCallback, useEffect } from "react";
 import { useToggleRecoverPrivateKeyForm } from "../useUI/useToggleRecoverPrivateKeyForm";
 

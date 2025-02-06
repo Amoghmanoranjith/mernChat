@@ -2,7 +2,7 @@ import { InitializeIndexedDbWrapper } from "@/components/auth/InitializeIndexedD
 import { ModalWrapper } from "@/components/modal/ModalWrapper";
 import { ThemeInitializer } from "@/components/theme/ThemeInitializer";
 import { SocketProvider } from "@/context/socket.context";
-import StoreProvider from "@/services/redux/store/storeProvider";
+import StoreProvider from "@/lib/client/store/StoreProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -30,15 +30,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {/* Modal root for portals */}
         <div id="modal-root"></div>
         <StoreProvider>
           <SocketProvider>
-            <Toaster/>
-            <InitializeIndexedDbWrapper/>
-            <ThemeInitializer/>
-            <ModalWrapper/>
+            <Toaster />
+            <InitializeIndexedDbWrapper />
+            <ThemeInitializer />
+            <ModalWrapper />
             {children}
           </SocketProvider>
         </StoreProvider>

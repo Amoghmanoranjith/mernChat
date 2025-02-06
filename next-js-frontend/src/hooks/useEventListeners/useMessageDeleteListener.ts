@@ -1,17 +1,25 @@
-import { Event } from "@/interfaces/events.interface"
-import { messageApi } from "@/services/api/message.api"
-import { useAppDispatch } from "@/services/redux/store/hooks"
-import { useSocketEvent } from "../useSocket/useSocketEvent"
+import { Event } from "@/interfaces/events.interface";
+import { messageApi } from "@/lib/client/rtk-query/message.api";
+import { useAppDispatch } from "@/lib/client/store/hooks";
+import { useSocketEvent } from "../useSocket/useSocketEvent";
 
 export const useMessageDeleteListener = () => {
+  const dispatch = useAppDispatch();
 
-    const dispatch = useAppDispatch()
-
-    useSocketEvent(Event.MESSAGE_DELETE,({messageId,chatId}:{messageId:string,chatId:string})=>{
-        dispatch(
-            messageApi.util.updateQueryData("getMessagesByChatId",{chatId,page:1},(draft)=>{
-                draft.messages = draft.messages.filter(message=>message._id!==messageId)
-            })
+  useSocketEvent(
+    Event.MESSAGE_DELETE,
+    ({ messageId, chatId }: { messageId: string; chatId: string }) => {
+      dispatch(
+        messageApi.util.updateQueryData(
+          "getMessagesByChatId",
+          { chatId, page: 1 },
+          (draft) => {
+            draft.messages = draft.messages.filter(
+              (message) => message._id !== messageId
+            );
+          }
         )
-    })
-}
+      );
+    }
+  );
+};

@@ -1,5 +1,5 @@
 import { User } from "@/interfaces/auth.interface";
-import { generateKeyPair } from "@/utils/encryption";
+import { generateKeyPair } from "@/lib/client/encryption";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
