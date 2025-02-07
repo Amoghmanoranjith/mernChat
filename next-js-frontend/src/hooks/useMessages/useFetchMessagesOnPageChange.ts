@@ -25,7 +25,7 @@ export const useFetchMessagesOnPageChange = ({
   setHasMoreMessages,
   isFetching,
 }: PropTypes) => {
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
   useEffect(() => {
     // Only fetch messages if the page is greater than 1 (indicating the user wants older messages)
@@ -37,5 +37,5 @@ export const useFetchMessagesOnPageChange = ({
     if (page === totalPages) {
       setHasMoreMessages(false);
     }
-  }, [page]);
+  }, [getPreviousMessages, hasMoreMessages, isFetching, page, selectedChatId, setHasMoreMessages, totalPages]);
 };

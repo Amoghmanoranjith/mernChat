@@ -11,7 +11,7 @@ export const useSetTheme = () => {
         const localTheme = localStorage.getItem('theme') as Theme;
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-        if (localTheme==='dark' ||  localTheme === 'light') {
+        if (localTheme==='dark' || localTheme === 'light') {
             updateTheme(localTheme)
         }
         else{

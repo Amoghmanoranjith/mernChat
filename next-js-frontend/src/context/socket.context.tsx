@@ -52,7 +52,7 @@ export const SocketProvider = ({ children }: PropTypes) => {
         };
       }
     }
-  }, [loggedInUser?.email]);
+  }, [loggedInUser, loggedInUser?.email]);
 
   const socketValue = useMemo(() => socket, [isConnected]);
 

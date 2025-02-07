@@ -65,10 +65,11 @@ export const getMessages = asyncErrorHandler(async(req:Request,res:Response,next
         },
       },
       omit:{
-        senderId:false,
+        senderId:true,
+        pollId:true,
       },
       orderBy:{
-        createdAt:"asc"
+        createdAt:"desc"
       },
       skip:calculateSkip(pageNumber,limitNumber),
       take:limitNumber

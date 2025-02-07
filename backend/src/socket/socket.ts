@@ -253,37 +253,57 @@ const registerSocketHandlers = (io:Server)=>{
                 where:{chatId:chatId,id:newMessage.id},
                 include:{
                     sender:{
-                        select:{
+                      select:{
                         id:true,
                         username:true,
                         avatar:true,
-                        }
+                      }
                     },
                     attachments:{
-                        select:{
+                      select:{
                         secureUrl:true,
-                        }
+                      }
                     },
                     poll:{
-                        omit:{id:true}
+                      omit:{
+                        id:true,
+                      },
+                      include:{
+                        votes:{
+                          include:{
+                            user:{
+                              select:{
+                                id:true,
+                                username:true,
+                                avatar:true
+                              }
+                            }
+                          },
+                          omit:{
+                            id:true,
+                            pollId:true,
+                            userId:true,
+                          }
+                        },
+                      }
                     },
                     reactions:{
-                        select:{
+                      select:{
                         user:{
-                            select:{
+                          select:{
                             id:true,
                             username:true,
                             avatar:true
-                            }
+                          }
                         },
                         reaction:true,
-                        }
+                      }
                     },
-                },
-                omit:{
+                  },
+                  omit:{
                     senderId:true,
                     pollId:true,
-                },
+                  },
             })
             
             io.to(chatId).emit(Events.MESSAGE,{...message,isNew:true})
@@ -356,13 +376,20 @@ const registerSocketHandlers = (io:Server)=>{
         })
 
         socket.on(Events.MESSAGE_SEEN,async({chatId}:MessageSeenEventReceivePayload)=>{
-            
-            const unreadMessageData = await prisma.unreadMessages.update({
+
+            const doesUnreadMessageExists =  await prisma.unreadMessages.findUnique({
                 where:{
                     userId_chatId:{
                         userId:socket.user.id,
                         chatId,
                     }
+                }
+            })
+            
+            if(!doesUnreadMessageExists) return;
+            const unreadMessageData = await prisma.unreadMessages.update({
+                where:{
+                    id:doesUnreadMessageExists.id
                 },
                 data:{
                     count:0,

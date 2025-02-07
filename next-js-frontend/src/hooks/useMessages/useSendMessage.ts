@@ -7,7 +7,7 @@ import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 import { useGetSharedKey } from "../useAuth/useGetSharedKey";
 
-interface MessageEventSendPayload {
+type MessageEventSendPayload = {
   chatId:string
   isPollMessage:boolean
   textMessageContent?:string | ArrayBuffer
@@ -26,7 +26,7 @@ export const useSendMessage = () => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
   const { getSharedKey } = useGetSharedKey();
 
-  const sendMessage = async (messageVal?: string, url?: string, pollQuestion?: string, pollOptions?: Array<string>, isMultipleAnswers?: boolean ) => {
+  const sendMessage = async (messageVal?: string, url?: string, pollQuestion?: string, pollOptions?: Array<string>, isMultipleAnswers?: boolean) => {
 
     let encryptedMessage;
 

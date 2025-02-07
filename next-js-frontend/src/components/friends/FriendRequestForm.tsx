@@ -1,14 +1,14 @@
 import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
+import { fetchUserFriendRequestResponse } from "@/lib/server/services/userService";
 import { useAcceptOrRejectFriendRequest } from "../../hooks/userRequest/useAcceptOrRejectFriendRequest";
 import { FriendRequestList } from "./FriendRequestList";
-import { FriendRequest } from "@/interfaces/request.interface";
 
 const FriendRequestForm = () => {
   const { data: friendRequests } = useGetUserFriendRequestsQuery();
   const { handleFriendRequest } = useAcceptOrRejectFriendRequest();
 
   const friendRequestHandler = (
-    requestId: FriendRequest["_id"],
+    requestId: fetchUserFriendRequestResponse['id'],
     action: "accept" | "reject"
   ) => {
     handleFriendRequest({ requestId, action });

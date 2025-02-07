@@ -1,4 +1,3 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -8,6 +7,7 @@ import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 import { MemberList } from "./MemberList";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 const RemoveMemberForm = () => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
@@ -20,9 +20,7 @@ const RemoveMemberForm = () => {
     selectedChatDetails && selectedChatDetails?.members.length <= 3;
 
   const [searchVal, setSearchVal] = useState<string>("");
-  const [filteredMembers, setFilteredMembers] = useState<
-    ChatWithUnreadMessages["members"]
-  >([]);
+  const [filteredMembers, setFilteredMembers] = useState<fetchUserChatsResponse["ChatMembers"]>([]);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
   useEffect(() => {

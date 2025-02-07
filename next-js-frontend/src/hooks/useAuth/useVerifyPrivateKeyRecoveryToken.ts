@@ -66,7 +66,7 @@ export const useVerifyPrivateKeyRecoveryToken = ({
         // and then we will store the decrypted privateKey in indexedDB
         await storeUserPrivateKeyInIndexedDB({
           privateKey: privateKeyInJwk,
-          userId: loggedInUser._id,
+          userId: loggedInUser.id,
         });
 
         // and then we will remove the tempPassword and loggedInUser from localStorage

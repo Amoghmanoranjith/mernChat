@@ -12,12 +12,19 @@ interface InitialState {
   profileForm: boolean;
   removeMemberForm: boolean;
   gifForm: boolean;
-  attachments: Array<string>;
+  attachments: Message['attachments'] | null;
   chatBar: boolean;
   chatDetailsBar: boolean;
   pollForm: boolean;
   viewVotes: boolean;
-  votesData: Pick<Message, "pollQuestion" | "pollOptions"> | null;
+  votesData: {
+    options:string[];
+    optionIndexToVotesMap: Record<number, {
+      id: string;
+      username: string;
+      avatar: string;
+  }[]>
+  } | null
   chatUpdateForm: boolean;
   activeJoinedChat: string | null;
   recoverPrivateKeyForm: boolean;
@@ -35,7 +42,7 @@ const initialState: InitialState = {
   profileForm: false,
   removeMemberForm: false,
   gifForm: false,
-  attachments: [],
+  attachments: null,
   chatBar: true,
   chatDetailsBar: false,
   pollForm: false,
@@ -78,8 +85,8 @@ const uiSlice = createSlice({
     setDarkMode: (state, action: PayloadAction<boolean>) => {
       state.isDarkMode = action.payload;
     },
-    setAttachments: (state, action: PayloadAction<Array<string>>) => {
-      state.attachments.push(...action.payload);
+    setAttachments: (state, action: PayloadAction<Message['attachments']>) => {
+      state.attachments = action.payload;
     },
     resetAttachments: (state) => {
       state.attachments = [];
@@ -96,10 +103,14 @@ const uiSlice = createSlice({
     setViewVotes: (state, action: PayloadAction<boolean>) => {
       state.viewVotes = action.payload;
     },
-    setVotesData: (
-      state,
-      action: PayloadAction<Pick<Message, "pollQuestion" | "pollOptions">>
-    ) => {
+    setVotesData: (state,action: PayloadAction<{
+      options:string[];
+      optionIndexToVotesMap: Record<number, {
+        id: string;
+        username: string;
+        avatar: string;
+    }[]>
+    }>) => {
       state.votesData = action.payload;
     },
     setChatUpdateForm: (state, action: PayloadAction<boolean>) => {

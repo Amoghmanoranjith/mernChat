@@ -1,7 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { FriendRequest } from "../../../interfaces/request.interface";
-import { setFriendRequestForm } from "../slices/uiSlice";
 import { fetchUserFriendRequestResponse } from "@/lib/server/services/userService";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { setFriendRequestForm } from "../slices/uiSlice";
 
 export const requestApi = createApi({
   reducerPath: "requestApi",
@@ -10,6 +9,7 @@ export const requestApi = createApi({
     credentials: "include",
   }),
   endpoints: (builder) => ({
+
     sendFriendRequest: builder.mutation<void, { receiverId: string }>({
       query: ({ receiverId }) => ({
         url: "/",
@@ -17,16 +17,12 @@ export const requestApi = createApi({
         body: { receiver: receiverId },
       }),
     }),
-    getUserFriendRequests: builder.query<
-      fetchUserFriendRequestResponse[],
-      void
-    >({
+
+    getUserFriendRequests: builder.query<fetchUserFriendRequestResponse[],void>({
       query: () => "/",
     }),
-    handleFriendRequest: builder.mutation<
-      FriendRequest["_id"],
-      { requestId: FriendRequest["_id"]; action: "accept" | "reject" }
-    >({
+
+    handleFriendRequest: builder.mutation<fetchUserFriendRequestResponse["id"],{ requestId: fetchUserFriendRequestResponse["id"]; action: "accept" | "reject" }>({
       query: ({ requestId, action }) => ({
         url: `/${requestId}`,
         method: "DELETE",

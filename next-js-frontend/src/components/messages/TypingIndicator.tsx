@@ -1,9 +1,9 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { AnimatePresence, motion } from "framer-motion";
 import { TypingIndicatorWithUserList } from "../chat/TypingIndicatorWithUserList";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const TypingIndicator = ({
@@ -11,7 +11,7 @@ export const TypingIndicator = ({
 }: PropTypes) => {
   return (
     <AnimatePresence>
-      {selectedChatDetails.userTyping.length && (
+      {selectedChatDetails.typingUsers.length && (
         <motion.div
           className="w-fit"
           variants={{
@@ -24,7 +24,7 @@ export const TypingIndicator = ({
         >
           <TypingIndicatorWithUserList
             isGroupChat={selectedChatDetails.isGroupChat}
-            users={selectedChatDetails.userTyping}
+            users={selectedChatDetails.typingUsers}
           />
         </motion.div>
       )}

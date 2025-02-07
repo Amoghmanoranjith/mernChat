@@ -25,6 +25,7 @@ export const TextMessage = ({
   setOpenContextMenuMessageId,
   loggedInUserId,
 }: PropTypes) => {
+  
   const { decryptedMessage } = useDecryptMessage({
     cipherText,
     loggedInUserId,

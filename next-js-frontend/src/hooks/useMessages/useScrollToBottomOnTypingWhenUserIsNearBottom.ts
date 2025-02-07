@@ -15,12 +15,11 @@ export const useScrollToBottomOnTypingWhenUserIsNearBottom = ({
   // as if the user is reading old messages and someone starts typing, we don't want to scroll to bottom
 
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  const isAnyUserTyping =
-    selectedChatDetails && selectedChatDetails.userTyping.length > 0;
+  const isAnyUserTyping = selectedChatDetails && selectedChatDetails.typingUsers.length > 0;
 
   useEffect(() => {
     if (container.current && isAnyUserTyping && isNearBottom) {
       container.current.scrollTop = container.current.scrollHeight;
     }
-  }, [isAnyUserTyping]);
+  }, [container, isAnyUserTyping, isNearBottom]);
 };

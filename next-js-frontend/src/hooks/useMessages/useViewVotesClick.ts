@@ -1,20 +1,25 @@
-import { Message } from "@/interfaces/message.interface";
+import { setVotesData } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useToggleViewVotes } from "../useUI/useToggleViewVotes";
-import { useSetVotesData } from "./useSetVotesData";
 
 type PropTypes = {
-  pollQuestion: string;
-  pollOptions: Message["pollOptions"];
+  options:string[];
+  optionIndexToVotesMap: Record<number, {
+    id: string;
+    username: string;
+    avatar: string;
+}[]>
 };
 
-export const useViewVotesClick = ({ pollOptions, pollQuestion }: PropTypes) => {
+export const useViewVotesClick = ({optionIndexToVotesMap,options}: PropTypes) => {
+  
   const { toggleViewVotes } = useToggleViewVotes();
-  const { handleSetVotesData } = useSetVotesData();
+  const dispatch = useAppDispatch();
 
   const handleViewVotesClick = () => {
+    dispatch(setVotesData({options,optionIndexToVotesMap}));
     toggleViewVotes();
-    handleSetVotesData({ pollQuestion, pollOptions });
   };
-
+  
   return { handleViewVotesClick };
 };

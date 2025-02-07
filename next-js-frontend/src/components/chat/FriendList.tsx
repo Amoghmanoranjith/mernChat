@@ -1,9 +1,9 @@
-import { Friend } from "@/interfaces/friends.interface"
+import { fetchUserFriendsResponse } from "@/lib/server/services/userService"
 import { FriendCard } from "../friends/FriendCard"
 
 
 type PropTypes = {
-    friends:Friend[]
+    friends:fetchUserFriendsResponse[]
     handleAddOrRemoveMember:(newMember: string) => void
     selectedMembers:Array<string>
 }
@@ -14,7 +14,7 @@ export const FriendList = ({friends,handleAddOrRemoveMember,selectedMembers}:Pro
         {
             friends.map((friend)=>(
                 <FriendCard
-                 key={friend._id}
+                 key={friend.id}
                  friend={friend}
                  handleAddOrRemoveMember={handleAddOrRemoveMember}
                  selectedMembers={selectedMembers}

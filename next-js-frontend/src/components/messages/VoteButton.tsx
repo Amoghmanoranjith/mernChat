@@ -1,36 +1,41 @@
 import { useHandleVoteClick } from "@/hooks/useMessages/useHandleVoteClick";
-import { PollOption } from "@/interfaces/message.interface";
-import { haveUserVotedThisOption } from "@/lib/shared/helpers";
 import { motion } from "framer-motion";
 import { DefaultPollOptionDot } from "../ui/DefaultPollOptionDot";
 import { FilledGreenDot } from "../ui/FilledGreenDot";
 
 type PropTypes = {
-  option: PollOption;
   messageId: string;
   loggedInUserId: string;
   isMultipleAnswers: boolean;
-  index: number;
-  totalOptions: PollOption[];
+  optionIndex: number;
+  totalOptions: number;
+  optionIndexToVotesMap: Record<number, {
+    id: string;
+    username: string;
+    avatar: string;
+}[]>
 };
 
-export const PollButton = ({
-  option,
+export const VoteButton = ({
   messageId,
   loggedInUserId,
   isMultipleAnswers,
-  index,
+  optionIndex,
   totalOptions,
+  optionIndexToVotesMap,
 }: PropTypes) => {
-  const voted = haveUserVotedThisOption(option, loggedInUserId);
+  
+  const currentOptionVotes = optionIndexToVotesMap[optionIndex];
+  const haveUserVotedInThisOption = currentOptionVotes?.some(({id})=>id===loggedInUserId);
 
   const { handleVoteClick } = useHandleVoteClick({
-    index,
     isMultipleAnswers,
     loggedInUserId,
     messageId,
-    option,
     totalOptions,
+    haveUserVotedInThisOption,
+    optionIndex,
+    optionIndexToVotesMap
   });
 
   return (
@@ -39,7 +44,7 @@ export const PollButton = ({
       whileTap={{ scale: 0.95 }}
       onClick={handleVoteClick}
     >
-      {voted ? <FilledGreenDot /> : <DefaultPollOptionDot />}
+      {haveUserVotedInThisOption ? <FilledGreenDot /> : <DefaultPollOptionDot />}
     </motion.button>
   );
 };

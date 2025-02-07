@@ -1,5 +1,5 @@
-import { Friend } from "@/interfaces/friends.interface";
 import { useGetFriendsQuery } from "@/lib/client/rtk-query/friend.api";
+import { fetchUserFriendsResponse } from "@/lib/server/services/userService";
 import { useEffect, useState } from "react";
 
 type PropTypes = {
@@ -7,7 +7,7 @@ type PropTypes = {
 };
 
 export const useFilteredFriends = ({ searchVal }: PropTypes) => {
-  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const [filteredFriends, setFilteredFriends] = useState<fetchUserFriendsResponse[]>([]);
   const { data: friends } = useGetFriendsQuery();
 
   useEffect(() => {

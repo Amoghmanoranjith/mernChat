@@ -3,14 +3,14 @@ import { useEmojiClickReactionFeature } from "@/hooks/useMessages/useEmojiClickR
 import { useHandleContextMenuClick } from "@/hooks/useMessages/useHandleContextMenuClick";
 import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
 import type { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRef } from "react";
-import { ContextMenu } from "../shared/ContextMenu";
+import { ContextMenu } from "../contextMenu/ContextMenu";
 import { MessageDisplay } from "./MessageDisplay";
-import { MessageReactionsInfo } from "./MessageReactionsInfo";
 import { MessageReactions } from "./MessageReactions";
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { MessageReactionsInfo } from "./MessageReactionsInfo";
 
 type PropTypes = {
   editMessageId: string | undefined;
@@ -39,6 +39,7 @@ export const MessageListItem = ({
   setOpenContextMenuMessageId,
   setEditMessageId,
 }: PropTypes) => {
+
   const reactionsRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
@@ -48,10 +49,11 @@ export const MessageListItem = ({
   useHandleOutsideClick(contextMenuRef, () =>
     setOpenContextMenuMessageId(undefined)
   );
-  useCloseReactionsMenuWhenZeroReactions(message, setReactionMenuMessageId);
+
+  useCloseReactionsMenuWhenZeroReactions({ message, setReactionMenuMessageId });
 
   const { handleContextMenuClick } = useHandleContextMenuClick({
-    messageId: message._id,
+    messageId: message.id,
     openContextMenuMessageId,
     setOpenContextMenuMessageId,
   });
@@ -59,15 +61,15 @@ export const MessageListItem = ({
   const { handleEmojiClick } = useEmojiClickReactionFeature({
     chatId: selectedChatDetails.id,
     loggedInUserId,
-    messageId: message._id,
+    messageId: message.id,
     message,
     setOpenContextMenuMessageId,
   });
 
-  const myMessage = message.sender._id === loggedInUserId;
-  const isContextMenuOpen = openContextMenuMessageId === message._id;
-  const isReactionMenuOpen = reactionMenuMessageId === message._id;
-  const messageHasReactions = message?.reactions && message.reactions.length > 0;
+  const myMessage = message.sender.id === loggedInUserId;
+  const isContextMenuOpen = openContextMenuMessageId === message.id;
+  const isReactionMenuOpen = reactionMenuMessageId === message.id;
+  const messageHasReactions = message.reactions.length > 0;
 
   return (
     <motion.div
@@ -80,13 +82,14 @@ export const MessageListItem = ({
     >
       {isContextMenuOpen && (
         <ContextMenu
-          messageId={message._id}
+          messageId={message.id}
           setEditMessageId={setEditMessageId}
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}
           onEmojiClick={handleEmojiClick}
-          myMessage={message.sender._id === loggedInUserId}
+          myMessage={message.sender.id === loggedInUserId}
         />
       )}
+      
       {!myMessage && (
         <Image
           className="aspect-square object-cover w-12 self-end rounded-full max-lg:w-10 max-sm:w-8"

@@ -24,9 +24,9 @@ export const useGroupUpdateEventListener = () => {
     }) => {
       dispatch(
         chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find((draft) => draft._id === _id);
+          const chat = draft.find((draft) => draft.id === _id);
           if (chat) {
-            if (chat._id === selectedChatDetails?._id) {
+            if (chat.id === selectedChatDetails?.id) {
               dispatch(updateChatNameOrAvatar({ name, avatar }));
             }
             if (name) chat.name = name;

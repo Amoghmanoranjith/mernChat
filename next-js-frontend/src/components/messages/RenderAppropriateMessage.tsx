@@ -27,29 +27,24 @@ export const RenderAppropriateMessage = ({
   return (
     <>
       {selectedChatDetails.isGroupChat &&
-        loggedInUserId != message.sender._id && (
+        loggedInUserId != message.sender.id && (
           <p className="text-primary-dark font-medium">
             {message.sender.username}
           </p>
         )}
-      {message.isPoll && message.pollQuestion &&  (
-        <PollCard
-          isMutipleAnswers={message?.isMultipleAnswers ? true : false}
-          messageId={message._id}
-          question={message.pollQuestion}
-          options={message.pollOptions}
-        />
+      {message.isPollMessage && (
+        <PollCard messageId={message.id} pollData={message.poll!}/>
       )}
-      {message.attachments && (
+      {message.attachments.length > 0 && (
         <AttachmentList attachments={message.attachments} />
       )}
       {message.url && <Gif url={message.url} />}
-      {message.content && (
+      {message.isTextMessage && (
         <TextMessage
-          cipherText={message.content}
+          cipherText={message.textMessageContent!}
           editMessageId={editMessageId}
           loggedInUserId={loggedInUserId}
-          messageId={message._id}
+          messageId={message.id}
           selectedChatDetails={selectedChatDetails}
           setEditMessageId={setEditMessageId}
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}

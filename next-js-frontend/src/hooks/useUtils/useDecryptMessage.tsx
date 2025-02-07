@@ -1,13 +1,13 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { decryptMessage } from "@/lib/client/encryption";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGetSharedKey } from "../useAuth/useGetSharedKey";
 
 type PropTypes = {
   cipherText: string;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const useDecryptMessage = ({
@@ -23,12 +23,12 @@ export const useDecryptMessage = ({
   const otherMember = getOtherMemberOfPrivateChat(
     selectedChatDetails,
     loggedInUserId
-  );
+  ).user;
 
-  const handleSetSharedKey = async () => {
+  const handleSetSharedKey = useCallback(async()=>{
     const key = await getSharedKey({ loggedInUserId, otherMember });
     if (key) setSharedKey(key);
-  };
+  },[getSharedKey, loggedInUserId, otherMember])
 
   const handleDecryptMessage = async (
     sharedKey: CryptoKey,
@@ -46,13 +46,13 @@ export const useDecryptMessage = ({
     } else {
       setDecryptedMessage(cipherText);
     }
-  }, [selectedChatDetails.isGroupChat]);
+  }, [cipherText, handleSetSharedKey, selectedChatDetails.isGroupChat]);
 
   useEffect(() => {
     if (sharedKey) {
       handleDecryptMessage(sharedKey, cipherText);
     }
-  }, [sharedKey]);
+  }, [cipherText, sharedKey]);
 
   return { decryptedMessage };
 };

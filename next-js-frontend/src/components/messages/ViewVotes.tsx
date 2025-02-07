@@ -5,6 +5,12 @@ import { useAppSelector } from "../../lib/client/store/hooks";
 const ViewVotes = () => {
   const votesData = useAppSelector(selectVotesData);
 
+  
+
+  if(votesData){
+    const {optionIndexToVotesMap,options} = votesData
+  }
+
   return (
     <div className="flex flex-col gap-y-8 select-none">
       <h6 className="font-medium text-xl">{votesData?.pollQuestion}</h6>

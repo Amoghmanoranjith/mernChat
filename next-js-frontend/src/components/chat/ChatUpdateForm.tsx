@@ -24,7 +24,7 @@ const ChatUpdateForm = () => {
     watch,
     formState: { errors },
   } = useForm<GroupChatSchemaType>({ resolver: zodResolver(groupChatSchema) });
-  const nameVal = watch("name", selectedChatDetails?.name);
+  const nameVal = watch("name", selectedChatDetails?.name || '');
 
   const onSubmit: SubmitHandler<GroupChatSchemaType> = ({ name }) => {
     if (selectedChatDetails) {
@@ -33,7 +33,7 @@ const ChatUpdateForm = () => {
         avatar?: Blob | undefined;
         name?: string | undefined;
       } = {
-        chatId: selectedChatDetails?._id,
+        chatId: selectedChatDetails?.id,
       };
 
       if (name.trim() !== selectedChatDetails.name) payload.name = name;

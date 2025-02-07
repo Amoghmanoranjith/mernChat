@@ -1,4 +1,4 @@
-import { ChatMember } from "@/interfaces/chat.interface"
+import { ChatMember } from "@/lib/server/services/userService"
 import Image from "next/image"
 
 type PropTypes = {
@@ -11,7 +11,7 @@ type PropTypes = {
 
 export const MemberCard = ({member,isSelected=false,isMemberAlready,selectable,toggleSelection}:PropTypes) => {
   return (
-    <div onClick={()=>isMemberAlready?"":selectable?toggleSelection(member._id):""} className={`flex justify-between rounded-md cursor-pointer ${isSelected?"bg-primary hover:bg-primary-dark":'hover:bg-secondary-darker'} p-2 shadow-sm`}>
+    <div onClick={()=>isMemberAlready?"":selectable?toggleSelection(member.id):""} className={`flex justify-between rounded-md cursor-pointer ${isSelected?"bg-primary hover:bg-primary-dark":'hover:bg-secondary-darker'} p-2 shadow-sm`}>
         
         <div className="flex gap-x-2 items-center">
           <Image src={member.avatar} height={100} width={100} className="size-7" alt={member.username}/>

@@ -61,7 +61,7 @@ function OAuthRedirectPageContent(){
   const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
   const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
   const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user._id});
+  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user.id});
   useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
   
   return (

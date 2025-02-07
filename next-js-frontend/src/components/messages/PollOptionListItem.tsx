@@ -1,42 +1,39 @@
-import { PollOption } from "@/interfaces/message.interface";
 import { Display2RecentVotesAndRemaningVotesCount } from "./Display2RecentVotesAndRemaningVotesCount";
-import { PollButton } from "./PollButton";
 import { PollVotePercentageBar } from "./PollVotePercentageBar";
+import { VoteButton } from "./VoteButton";
 
 type PropTypes = {
-  index: number;
-  option: PollOption;
-  totalOptions: PollOption[];
+  optionIndex: number;
+  option: string;
+  totalOptions: number;
   messageId: string;
   loggedInUserId: string;
-  isMutipleAnswers: boolean;
+  isMultipleAnswers: boolean;
+  optionIndexToVotesMap: Record<number, {
+    id: string;
+    username: string;
+    avatar: string;
+}[]>
 };
 
-export const PollOptionListItem = ({
-  option,
-  isMutipleAnswers,
-  index,
-  messageId,
-  loggedInUserId,
-  totalOptions,
-}: PropTypes) => {
+export const PollOptionListItem = ({option,optionIndex,messageId,loggedInUserId,totalOptions,isMultipleAnswers,optionIndexToVotesMap}: PropTypes) => {
   return (
     <div className="flex flex-col gap-y-2 justify-center">
       <div className="flex items-center justify-between">
         <div className="flex gap-x-2">
-          <PollButton
-            index={index}
-            isMultipleAnswers={isMutipleAnswers}
+          <VoteButton
+            optionIndex={optionIndex}
+            isMultipleAnswers={isMultipleAnswers}
             loggedInUserId={loggedInUserId}
             messageId={messageId}
-            option={option}
             totalOptions={totalOptions}
+            optionIndexToVotesMap={optionIndexToVotesMap}
           />
-          <p className="break-words">{option.option}</p>
+          <p className="break-words">{option}</p>
         </div>
-        <Display2RecentVotesAndRemaningVotesCount option={option} />
+        <Display2RecentVotesAndRemaningVotesCount optionIndexToVotesMap={optionIndexToVotesMap}  optionIndex={optionIndex} />
       </div>
-      <PollVotePercentageBar totalOptions={totalOptions} option={option} />
+      <PollVotePercentageBar totalOptions={totalOptions} optionIndex={optionIndex} optionIndexToVotesMap={optionIndexToVotesMap}/>
     </div>
   );
 };

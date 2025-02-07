@@ -85,7 +85,7 @@ export const ModalWrapper = () => {
   const isProfileFormOpen = useAppSelector(selectProfileForm);
   const isRemoveMemberFormOpen = useAppSelector(selectRemoveMemberForm);
   const isGifFormOpen = useAppSelector(selectGifForm);
-  const isAttachmentsOpen = useAppSelector(selectAttachments).length > 0;
+  const isAttachmentsOpen = useAppSelector(selectAttachments) != null;
   const isPollFormOpen = useAppSelector(selectPollForm);
   const isViewVotesOpen = useAppSelector(selectViewVotes);
   const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);

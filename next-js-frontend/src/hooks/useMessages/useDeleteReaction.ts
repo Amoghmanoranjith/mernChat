@@ -1,19 +1,17 @@
 import { useSocket } from "@/context/socket.context";
 import { Event } from "@/interfaces/events.interface";
 
+type DeleteReactionEventSendPayload = {
+  chatId: string;
+  messageId: string;
+};
+
 export const useDeleteReaction = () => {
   const socket = useSocket();
 
-  const deleteReaction = ({
-    chatId,
-    messageId,
-  }: {
-    chatId: string;
-    messageId: string;
-  }) => {
-    socket?.emit(Event.DELETE_REACTION, { chatId, messageId });
+  const deleteReaction = (data: DeleteReactionEventSendPayload) => {
+    socket?.emit(Event.DELETE_REACTION, data);
   };
-
   return {
     deleteReaction,
   };

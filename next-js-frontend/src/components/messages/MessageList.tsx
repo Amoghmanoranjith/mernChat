@@ -9,11 +9,11 @@ import { useScrollToBottomOnTypingWhenUserIsNearBottom } from "@/hooks/useMessag
 import { useSetHasMoreMessagesBasedOnTotalPages } from "@/hooks/useMessages/useSetHasMoreMessagesBasedOnTotalPages";
 import { useSetPageToOneOnChatChange } from "@/hooks/useMessages/useSetPageToOneOnChatChange";
 import { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useRef, useState } from "react";
 import { CircleLoading } from "../shared/CircleLoading";
 import { MessageListItem } from "./MessageListItem";
 import { TypingIndicator } from "./TypingIndicator";
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 type PropTypes = {
   messages: Message[];
@@ -22,12 +22,7 @@ type PropTypes = {
   loggedInUserId: string;
 };
 
-export const MessageList = ({
-  messages,
-  selectedChatDetails,
-  totalPages,
-  loggedInUserId,
-}: PropTypes) => {
+export const MessageList = ({messages,selectedChatDetails,totalPages,loggedInUserId}: PropTypes) => {
   
   const [editMessageId, setEditMessageId] = useState<string>();
   const [openContextMenuMessageId, setOpenContextMenuMessageId] = useState<string>();
@@ -90,16 +85,16 @@ export const MessageList = ({
 
   return (
     <>
-    {/* <span className="text-white">{`total page - ${totalPages}  |  page - ${page}  |  isNearBottom - ${isNearBottom}`}</span> */}
+      <span className="text-white">{`total page - ${totalPages}  |  page - ${page}  |  isNearBottom - ${isNearBottom}`}</span>
       <div
         ref={messageContainerRef}
         onScroll={handleScroll}
         className="relative flex h-full flex-col gap-y-4 max-xl:gap-y-2 overflow-y-auto overflow-x-hidden"
       >
-        {IsFetchingMessages && <CircleLoading />}
+        {IsFetchingMessages && <CircleLoading/>}
         {messages.map((message) => (
           <MessageListItem
-            key={`${message._id}-${message.isEdited}`}
+            key={`${message.id}-${message.isEdited}`}
             openContextMenuMessageId={openContextMenuMessageId}
             selectedChatDetails={selectedChatDetails}
             loggedInUserId={loggedInUserId}

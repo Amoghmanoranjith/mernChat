@@ -1,8 +1,8 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useSendAttachments } from "./useSendAttachments";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse | null;
   selectedAttachments: Blob[];
   setSelectedAttachments: React.Dispatch<React.SetStateAction<Array<Blob>>>;
 };
@@ -17,11 +17,10 @@ export const useHandleUploadAttachment = ({
     if (selectedChatDetails && selectedAttachments) {
       uploadAttachment({
         attachments: selectedAttachments,
-        chatId: selectedChatDetails?._id,
+        chatId: selectedChatDetails?.id,
       });
       setSelectedAttachments([]);
     }
   };
-
   return { handleUploadAttachments };
 };

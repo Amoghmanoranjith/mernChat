@@ -1,9 +1,9 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { TypingIndicatorAnimation } from "../ui/TypingIndicatorAnimation";
 import { TypingUserList } from "./TypingUserList";
 
 type PropTypes = {
-  users: ChatWithUnreadMessages["userTyping"];
+  users: fetchUserChatsResponse['typingUsers']
   isGroupChat: boolean;
 };
 

@@ -5,7 +5,7 @@ import { useAppSelector } from "../../lib/client/store/hooks";
 import { useToast } from "../useUI/useToast";
 
 export const useFetchAttachments = () => {
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
   const [
     fetchAttachments,
     { error, isError, isFetching, isSuccess, isUninitialized, currentData },
@@ -22,7 +22,7 @@ export const useFetchAttachments = () => {
     if (selectedChatId) {
       fetchAttachments({ chatId: selectedChatId, page: 1 }, true);
     }
-  }, [selectedChatId]);
+  }, [fetchAttachments, selectedChatId]);
 
   return {
     fetchAttachments,

@@ -12,7 +12,7 @@ export const MessageReactions = ({
 }: PropTypes) => {
   return (
     <div
-      onClick={() => setReactionMenuMessageId(message._id)}
+      onClick={() => setReactionMenuMessageId(message.id)}
       className="bg-secondary-dark self-end px-1 rounded-lg flex items-center -mt-1 cursor-pointer"
     >
       <DisplayFirst3ReactionsAndRemainingReactionsCounts

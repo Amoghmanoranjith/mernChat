@@ -1,13 +1,19 @@
-import { PollOption } from "@/interfaces/message.interface";
-
 type PropTypes = {
-  option: PollOption;
-  totalOptions: PollOption[];
+  optionIndex:number;
+  totalOptions: number;
+  optionIndexToVotesMap: Record<number, {
+    id: string;
+    username: string;
+    avatar: string;
+}[]>
 };
 
-export const PollVotePercentageBar = ({ option, totalOptions }: PropTypes) => {
+export const PollVotePercentageBar = ({optionIndex,totalOptions,optionIndexToVotesMap}: PropTypes) => {
+
+  const votesInThisOption = optionIndexToVotesMap[optionIndex]?.length;
+
   const calculateVotePercentage = () => {
-    const percentage = (option.votes.length / totalOptions.length) * 100;
+    const percentage = (votesInThisOption/totalOptions) * 100;
     return Math.round(percentage);
   };
 

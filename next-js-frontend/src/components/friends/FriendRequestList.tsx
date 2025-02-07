@@ -1,10 +1,9 @@
-import { FriendRequest } from "@/interfaces/request.interface";
 import { fetchUserFriendRequestResponse } from "@/lib/server/services/userService";
 import { FriendRequestItem } from "./FriendRequestItem";
 
 type PropTypes = {
     users:fetchUserFriendRequestResponse[];
-    friendRequestHandler:(requestId: FriendRequest['_id'], action: "accept" | "reject") => void
+    friendRequestHandler:(requestId: fetchUserFriendRequestResponse['id'], action: "accept" | "reject") => void
 }
 export const FriendRequestList = ({users,friendRequestHandler}:PropTypes) => {
   return (

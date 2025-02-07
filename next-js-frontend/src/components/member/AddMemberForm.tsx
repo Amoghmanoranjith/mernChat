@@ -22,9 +22,9 @@ const AddMemberForm = () => {
   const { addMember } = useAddMember();
 
   const handleAddMember = () => {
-    if (selectedChatDetails?._id) {
+    if (selectedChatDetails?.id) {
       toggleAddMemberForm();
-      addMember({ _id: selectedChatDetails?._id, members: selectedMembers });
+      addMember({ _id: selectedChatDetails?.id, members: selectedMembers });
     }
   };
 

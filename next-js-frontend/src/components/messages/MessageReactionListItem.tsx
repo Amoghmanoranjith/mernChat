@@ -15,19 +15,18 @@ export const MessageReactionListItem = ({
   chatId,
   messageId,
 }: PropTypes) => {
-  const myReaction = reaction.user._id === loggedInUserId;
+
+  const myReaction = reaction.user.id === loggedInUserId;
   const { deleteReaction } = useDeleteReaction();
 
   const handleReactionClick = () => {
-    if (myReaction) {
-      deleteReaction({ chatId, messageId });
-    }
+    if (myReaction) deleteReaction({ chatId, messageId });
   };
 
   return (
     <div
       onClick={handleReactionClick}
-      key={reaction.user?._id}
+      key={reaction.user.id}
       className={`flex items-center justify-between ${
         myReaction ? "cursor-pointer" : ""
       }`}
@@ -45,7 +44,7 @@ export const MessageReactionListItem = ({
           {myReaction && <p className="text-sm">Tap to remove</p>}
         </div>
       </div>
-      <span className="text-xl">{reaction.emoji}</span>
+      <span className="text-xl">{reaction.reaction}</span>
     </div>
   );
 };

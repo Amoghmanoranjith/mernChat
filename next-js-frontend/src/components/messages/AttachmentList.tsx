@@ -1,12 +1,15 @@
 import { useAttachmentsClick } from "@/hooks/useAttachment/useAttachmentsClick";
+import { Message } from "@/interfaces/message.interface";
 import Image from "next/image";
 
 type PropTypes = {
-  attachments: string[];
+  attachments: Message['attachments']
 };
 
 export const AttachmentList = ({ attachments }: PropTypes) => {
+
   const { handleAttachmentsClick } = useAttachmentsClick({ attachments });
+
   return (
     <div
       onClick={handleAttachmentsClick}
@@ -14,7 +17,7 @@ export const AttachmentList = ({ attachments }: PropTypes) => {
       {attachments.map((attachment, index) => (
         <Image
           className="size-60 object-cover"
-          src={attachment}
+          src={attachment.secureUrl}
           key={index}
           alt="attachment"
           width={200}

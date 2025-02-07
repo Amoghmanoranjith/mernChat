@@ -20,8 +20,8 @@ export const MessageListSkeletonWrapper = ({ loggedInUserId }: PropTypes) => {
   return (
     <MessageList
       messages={currentData.messages}
-      selectedChatDetails={selectedChatDetails}
       totalPages={currentData.totalPages}
+      selectedChatDetails={selectedChatDetails}
       loggedInUserId={loggedInUserId}
     />
   );

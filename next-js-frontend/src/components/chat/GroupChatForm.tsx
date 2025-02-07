@@ -19,6 +19,7 @@ import Image from "next/image";
 import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 
 const GroupChatForm = () => {
+
   const [image, setImage] = useState<Blob>();
   const [preview, setPreview] = useState<string>();
 
@@ -29,12 +30,14 @@ const GroupChatForm = () => {
 
   const { data: friends } = useGetUserFriendRequestsQuery();
   const { isLoading } = useCreateGroupChat();
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<GroupChatSchemaType>({ resolver: zodResolver(groupChatSchema) });
+
   const { createGroupChatSubmitHandler } = useCreateGroupChatSubmit({
     image,
     selectedMembers,
@@ -43,16 +46,10 @@ const GroupChatForm = () => {
   const nameValue = watch("name");
 
   const handleAddOrRemoveMember = (newMember: string) => {
-    if (selectedMembers.includes(newMember)) {
-      setSelectedMembers((prev) =>
-        prev.filter((member) => member !== newMember)
-      );
-    } else {
-      if (selectedMembers.length === 30) {
-        toast.error("Group with more than 30 members cannot be created");
-      } else {
-        setSelectedMembers((prev) => [...prev, newMember]);
-      }
+    if (selectedMembers.includes(newMember)) setSelectedMembers(prev =>prev.filter((member) => member !== newMember));
+    else {
+      if (selectedMembers.length === 30) toast.error("Group with more than 30 members cannot be created");
+      else setSelectedMembers((prev) => [...prev, newMember]);
     }
   };
 
@@ -73,11 +70,7 @@ const GroupChatForm = () => {
           : "Create group chat"}
       </h5>
 
-      <form
-        noValidate
-        onSubmit={handleSubmit(createGroupChatSubmitHandler)}
-        className="flex flex-col gap-y-8"
-      >
+      <form noValidate onSubmit={handleSubmit(createGroupChatSubmitHandler)} className="flex flex-col gap-y-8">
         <div className="flex flex-col gap-y-4">
           {/* avatar selection */}
           <div className="w-24 rounded-full relative overflow-hidden">
@@ -148,7 +141,6 @@ const GroupChatForm = () => {
           </div>
         </div>
 
-        {/* <button type="submit" className="px-6 py-2 bg-primary text-white rounded shadow-lg">Create group {selectedMembers.length?`with ${selectedMembers.length===1?"1 member":`${selectedMembers.length} members`}`:null}</button> */}
         <SubmitButton
           isLoading={isLoading}
           btnText={`Create Group ${

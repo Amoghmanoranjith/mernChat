@@ -247,10 +247,6 @@ const getOtherMembersOfGroupChatThatAreActive = (
   return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
 };
 
-const haveUserVotedThisOption = (option:PollOption,loggedInUserId:string)=>{
-  return option.votes.findIndex(vote=>vote._id===loggedInUserId)!==-1
-}
-
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
@@ -262,7 +258,7 @@ export {
   getChatAvatar,
   getChatName,
   getOtherMemberOfPrivateChat,
-  getOtherMembersOfGroupChatThatAreActive, haveUserVotedThisOption, isErrorWithMessage,
+  getOtherMembersOfGroupChatThatAreActive,isErrorWithMessage,
   isFetchBaseQueryError,
   sortChats,
   uint8ArrayToBase64

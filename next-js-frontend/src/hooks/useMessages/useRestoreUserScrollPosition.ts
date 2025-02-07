@@ -27,5 +27,5 @@ export const useRestoreUserScrollPosition = ({container,page,prevHeightRef,prevS
         prevHeightRef.current +
         prevScrollTopRef.current;
     }
-  }, [IsFetchingMessages, page]); // Dependencies: Re-run when fetching status or page changes.
+  }, [IsFetchingMessages, container, page, prevHeightRef, prevScrollTopRef]); // Dependencies: Re-run when fetching status or page changes.
 };

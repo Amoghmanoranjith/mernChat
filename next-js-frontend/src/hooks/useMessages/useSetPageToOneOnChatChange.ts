@@ -7,7 +7,7 @@ type PropTypes = {
 };
 
 export const useSetPageToOneOnChatChange = ({ setPage }: PropTypes) => {
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
   useLayoutEffect(() => {
     setPage(1);

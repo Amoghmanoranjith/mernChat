@@ -28,7 +28,7 @@ export const useScrollToBottomOnNewMessageWhenUserIsNearBottom = ({
         if (container.current) {
           container.current.scrollTop = container.current.scrollHeight;
         }
-      }, 100); // Increased delay for better reliability
+      }, 100); // adding delay to ensure that first the new message is rendered and then scroll to bottom
     }
-  }, [messages]); // Only depend on 'messages'
+  }, [container, isNearBottom, messages, prevHeightRef, prevScrollTopRef]); // Only depend on 'messages'
 };

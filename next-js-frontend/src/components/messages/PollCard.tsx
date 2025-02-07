@@ -1,37 +1,36 @@
 import { useViewVotesClick } from "@/hooks/useMessages/useViewVotesClick";
-import { User } from "@/interfaces/auth.interface";
 import { Message } from "@/interfaces/message.interface";
-import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
-import { useAppSelector } from "../../lib/client/store/hooks";
 import { PollOptionList } from "./PollOptionList";
 
 type PropTypes = {
-  messageId: string;
-  question: string;
-  options: Message["pollOptions"];
-  isMutipleAnswers: boolean;
+  pollData: NonNullable<Message["poll"]>;
+  messageId:string
 };
 
-export const PollCard = ({
-  question,
-  options,
-  isMutipleAnswers,
-  messageId,
-}: PropTypes) => {
-  const loggedInUser = useAppSelector(selectLoggedInUser) as User;
-  const { handleViewVotesClick } = useViewVotesClick({
-    pollQuestion: question,
-    pollOptions: options,
+export const PollCard = ({ pollData, messageId}: PropTypes) => {
+
+  // [optionIndex]:[votes[]]
+  // i.e [optionIndex] : [{id,username,avatar},{id,username,avatar}...]
+  const optionIndexToVotesMap:Record<number,{id:string,username:string,avatar:string}[]> = {};
+  pollData?.votes?.forEach(({user,optionIndex})=>{
+    if(optionIndexToVotesMap[optionIndex]){
+      optionIndexToVotesMap[optionIndex].push(user)
+    }
+    else{
+      optionIndexToVotesMap[optionIndex] = [user]
+    }
   });
+
+  const { handleViewVotesClick } = useViewVotesClick({optionIndexToVotesMap,options:pollData.options});
 
   return (
     <div className="flex flex-col gap-y-4 min-w-56">
-      <h6 className="text-lg font-medium">{question}</h6>
+      <h6 className="text-lg font-medium">{pollData.question}</h6>
       <PollOptionList
-        isMutipleAnswers={isMutipleAnswers}
-        loggedInUserId={loggedInUser.id}
         messageId={messageId}
-        options={options}
+        options={pollData.options}
+        isMultipleAnswers={pollData.multipleAnswers}
+        optionIndexToVotesMap={optionIndexToVotesMap}
       />
       <button onClick={handleViewVotesClick} className="text-center">
         View votes

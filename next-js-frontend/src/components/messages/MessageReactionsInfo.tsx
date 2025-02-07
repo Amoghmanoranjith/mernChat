@@ -14,7 +14,7 @@ export const MessageReactionsInfo = ({
   message,
   selectedChatDetails,
 }: PropTypes) => {
-  const myMessage = loggedInUserId === message.sender._id;
+  const myMessage = loggedInUserId === message.sender.id;
 
   return (
     <motion.div
@@ -28,7 +28,7 @@ export const MessageReactionsInfo = ({
       <h4 className="text-lg">Reactions</h4>
       <MessageReactionList
         loggedInUserId={loggedInUserId}
-        messageId={message._id}
+        messageId={message.id}
         reactions={message.reactions}
         selectedChatDetails={selectedChatDetails}
       />

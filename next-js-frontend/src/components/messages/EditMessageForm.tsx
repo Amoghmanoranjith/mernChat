@@ -19,14 +19,16 @@ export const EditMessageForm = ({
   setEditMessageId,
   setOpenContextMenuMessageId,
 }: PropTypes) => {
+
   const [updatedContentValue, setUpdatedContentValue] = useState<string>(prevContentValue);
+
   const { handleEditMessageSubmit } = useHandleEditMessageSubmit({
     messageId,
     setEditMessageId,
     setOpenContextMenuMessageId,
     updatedContentValue,
   });
-
+  
   const handleCancel = () => {
     setEditMessageId("");
     setOpenContextMenuMessageId("");

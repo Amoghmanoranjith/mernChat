@@ -22,7 +22,7 @@ export const DisplayFirst3ReactionsAndRemainingReactionsCounts = ({
           initial="hide"
           animate="show"
         >
-          {reaction.emoji}
+          {reaction.reaction}
         </motion.p>
       ))}
       {remainingReactions > 0 && (

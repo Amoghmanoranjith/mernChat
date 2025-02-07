@@ -30,7 +30,7 @@ export const MessageDisplay = ({
   const { handleDoubleClick } = useDoubleClickReactionFeature({
     chatId: selectedChatDetails.id,
     loggedInUserId,
-    messageId: message._id,
+    messageId: message.id,
     reactions: message.reactions,
   });
 
@@ -49,7 +49,7 @@ export const MessageDisplay = ({
         setOpenContextMenuMessageId={setOpenContextMenuMessageId}
       />
       <div className="flex items-center ml-auto gap-x-1 flex-nowrap shrink-0">
-        {message?.isEdited && 
+        {message.isEdited && 
           <p className="text-secondary font-medim text-sm max-sm:text-xs">
             Edited
           </p>

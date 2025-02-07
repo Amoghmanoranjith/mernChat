@@ -1,16 +1,16 @@
 "use client";
 import { useDecryptMessage } from "@/hooks/useUtils/useDecryptMessage";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 type PropTypes = {
   cipherText: string;
-  chat: ChatWithUnreadMessages;
+  chat: fetchUserChatsResponse;
 };
 
 export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
-  const loggedInUserId = useAppSelector(selectLoggedInUser)?._id as string;
+  const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
 
   const { decryptedMessage } = useDecryptMessage({
     cipherText,

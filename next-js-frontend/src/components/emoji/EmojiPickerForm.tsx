@@ -1,11 +1,12 @@
+'use client';
 import EmojiPicker, {
   EmojiClickData,
   EmojiStyle,
   Theme,
 } from "emoji-picker-react";
+import { useMediaQuery } from "../../hooks/useUtils/useMediaQuery";
 import { selectisDarkMode } from "../../lib/client/slices/uiSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
-import { useMediaQuery } from "../../hooks/useUtils/useMediaQuery";
 
 type PropTypes = {
   onEmojiClick: (e: EmojiClickData) => void;

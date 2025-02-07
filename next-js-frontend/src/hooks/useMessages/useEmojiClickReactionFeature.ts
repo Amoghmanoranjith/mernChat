@@ -1,7 +1,7 @@
-import { EmojiClickData } from "emoji-picker-react";
-import { useSendNewReaction } from "./useSendNewReaction";
-import { useDeleteReaction } from "./useDeleteReaction";
 import { Message } from "@/interfaces/message.interface";
+import { EmojiClickData } from "emoji-picker-react";
+import { useDeleteReaction } from "./useDeleteReaction";
+import { useSendNewReaction } from "./useSendNewReaction";
 
 type PropTypes = {
   message: Message;
@@ -20,21 +20,16 @@ export const useEmojiClickReactionFeature = ({
   messageId,
   loggedInUserId,
 }: PropTypes) => {
+
   const { sendNewReaction } = useSendNewReaction();
   const { deleteReaction } = useDeleteReaction();
 
   const handleEmojiClick = (e: EmojiClickData) => {
-    if (
-      message.reactions?.length > 0 &&
-      message.reactions.find(
-        (reaction) => reaction.user?._id === loggedInUserId
-      )
-    ) {
+    if (message.reactions?.length > 0 && message.reactions.find(reaction => reaction.user.id === loggedInUserId)) {
       // if an old reaction exists then delete it first
       deleteReaction({ chatId, messageId });
     }
     sendNewReaction({ chatId, messageId, reaction: e.emoji });
-
     setOpenContextMenuMessageId(undefined);
   };
 

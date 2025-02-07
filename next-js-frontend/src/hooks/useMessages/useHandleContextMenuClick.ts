@@ -11,9 +11,8 @@ export const useHandleContextMenuClick = ({
   openContextMenuMessageId,
   messageId,
 }: PropTypes) => {
-  const handleContextMenuClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
+
+  const handleContextMenuClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenContextMenuMessageId(

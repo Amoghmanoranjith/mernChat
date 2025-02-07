@@ -9,7 +9,7 @@ type PropTypes = {
 export const useScrollToBottomOnChatSelect = ({
   messageContainerRef,
 }: PropTypes) => {
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
   useEffect(() => {
     const container = messageContainerRef.current;
@@ -24,5 +24,5 @@ export const useScrollToBottomOnChatSelect = ({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [selectedChatId]);
+  }, [messageContainerRef, selectedChatId]);
 };

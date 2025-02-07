@@ -1,5 +1,5 @@
-import { PollOption } from "@/interfaces/message.interface";
-import { haveUserVotedThisOption } from "@/lib/shared/helpers";
+import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { useVoteIn } from "./useVoteIn";
 import { useVoteOut } from "./useVoteOut";
 
@@ -7,29 +7,38 @@ type PropTypes = {
   messageId: string;
   loggedInUserId: string;
   isMultipleAnswers: boolean;
-  index: number;
-  option: PollOption;
-  totalOptions: PollOption[];
+  optionIndex: number;
+  totalOptions: number;
+  haveUserVotedInThisOption: boolean;
+  optionIndexToVotesMap: Record<number, {
+    id: string;
+    username: string;
+    avatar: string;
+}[]>
 };
 
 export const useHandleVoteClick = ({
-  index,
+  optionIndex,
   isMultipleAnswers,
   loggedInUserId,
   messageId,
-  option,
+  haveUserVotedInThisOption,
   totalOptions,
+  optionIndexToVotesMap
 }: PropTypes) => {
+  
   const { handleVoteIn } = useVoteIn();
   const { handleVoteOut } = useVoteOut();
 
-  const voted = haveUserVotedThisOption(option, loggedInUserId);
+  const chatId =  useAppSelector(selectSelectedChatDetails)?.id as string;
 
   const handleVoteClick = () => {
-    if (voted) {
+
+    if (haveUserVotedInThisOption) {
       // if already voted then clicking it again means voting out
-      handleVoteOut({ messageId, optionIndex: index });
-    } else {
+      handleVoteOut({chatId,messageId,optionIndex:optionIndex});
+    } 
+    else {
       // if not voted already, then it means voting for the first time
       // but there exists two cases
       // 1. single answer poll
@@ -44,19 +53,19 @@ export const useHandleVoteClick = ({
         // in this loop
         // we are checking every option for the user's vote
         // and if we find any then we vote out from that option
-        for (let i = 0; i < totalOptions.length; i++) {
-          const currentOption = totalOptions[i];
-          const previousVoteIndex = currentOption.votes.findIndex(
-            (vote) => vote._id === loggedInUserId
-          );
-          if (previousVoteIndex !== -1) {
-            handleVoteOut({ messageId, optionIndex: i });
-            break;
+        for (let i = 0; i < totalOptions; i++) {
+          const currentOptionVotes = optionIndexToVotesMap[i];
+          for(let j = 0; j<currentOptionVotes?.length ; j++){
+            const vote = currentOptionVotes[j];
+            if(vote.id === loggedInUserId){
+              handleVoteOut({chatId,messageId,optionIndex:i});
+              break;
+            }
           }
         }
       }
       // and vote in remains the same for both cases
-      handleVoteIn({ messageId, optionIndex: index });
+      handleVoteIn({chatId,messageId,optionIndex});
     }
   };
 

@@ -1,16 +1,17 @@
 import { useSocket } from "@/context/socket.context";
 import { Event } from "@/interfaces/events.interface";
-import { NewReactionEventPayloadData } from "@/interfaces/message.interface";
+
+type NewReactionEventReceivePayload = {
+  chatId: string;
+  messageId: string;
+  reaction: string;
+};
 
 export const useSendNewReaction = () => {
   const socket = useSocket();
 
-  const sendNewReaction = ({
-    chatId,
-    messageId,
-    reaction,
-  }: NewReactionEventPayloadData) => {
-    socket?.emit(Event.NEW_REACTION, { chatId, messageId, reaction });
+  const sendNewReaction = (data: NewReactionEventReceivePayload) => {
+    socket?.emit(Event.NEW_REACTION, data);
   };
 
   return {
