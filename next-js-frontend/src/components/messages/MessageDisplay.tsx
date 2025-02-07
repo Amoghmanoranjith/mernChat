@@ -36,7 +36,7 @@ export const MessageDisplay = ({
 
   return (
     <motion.div
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: message.isPollMessage ? 1 : 0.95 }}
       onDoubleClick={handleDoubleClick}
       className={`${myMessage ? "bg-primary text-white" : "bg-secondary-dark"} ${isContextMenuOpen? "border-2 border-double border-spacing-4 border-": null} max-w-96 min-w-10 rounded-2xl px-4 py-2 flex flex-col gap-y-1 justify-center max-md:max-w-80 max-sm:max-w-64`}
     >
