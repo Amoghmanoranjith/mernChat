@@ -11,6 +11,7 @@ type PropTypes = {
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
   messageId: string;
   myMessage: boolean;
+  isTextMessage:boolean;
 };
 
 export const ContextMenu = ({
@@ -19,6 +20,7 @@ export const ContextMenu = ({
   onEmojiClick,
   messageId,
   myMessage,
+  isTextMessage
 }: PropTypes) => {
   return (
     <motion.div
@@ -38,6 +40,7 @@ export const ContextMenu = ({
           messageId={messageId}
           setEditMessageId={setEditMessageId}
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}
+          isTextMessage={isTextMessage}
         />
       )}
     </motion.div>

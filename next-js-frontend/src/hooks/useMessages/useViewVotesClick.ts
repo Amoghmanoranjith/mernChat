@@ -1,6 +1,7 @@
 import { setVotesData } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useToggleViewVotes } from "../useUI/useToggleViewVotes";
+import { MouseEvent } from "react";
 
 type PropTypes = {
   options:string[];

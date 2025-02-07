@@ -8,12 +8,14 @@ type PropTypes = {
   >;
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
   messageId: string;
+  isTextMessage:boolean;
 };
 
 export const ContextMenuOptions = ({
   setEditMessageId,
   setOpenContextMenuMessageId,
   messageId,
+  isTextMessage,
 }: PropTypes) => {
   const { deleteMessage } = useDeleteMessage();
 
@@ -22,18 +24,21 @@ export const ContextMenuOptions = ({
       className={`flex flex-col bg-secondary-dark text-text p-2 rounded-2xl shadow-2xl min-w-32 self-end`}
     >
       <div className="flex flex-col">
-        <div
-          onClick={() => {
-            setOpenContextMenuMessageId(undefined);
-            setEditMessageId(messageId);
-          }}
-          className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
-        >
-          <p>Edit</p>
-          <span>
-            <EditIcon />
-          </span>
-        </div>
+        {
+          isTextMessage &&
+          <div
+            onClick={() => {
+              setOpenContextMenuMessageId(undefined);
+              setEditMessageId(messageId);
+            }}
+            className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
+          >
+            <p>Edit</p>
+            <span>
+              <EditIcon />
+            </span>
+          </div>
+        }
         <div
           onClick={() => deleteMessage({ messageId })}
           className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"

@@ -87,6 +87,7 @@ export const MessageListItem = ({
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}
           onEmojiClick={handleEmojiClick}
           myMessage={message.sender.id === loggedInUserId}
+          isTextMessage={message.isTextMessage}
         />
       )}
       
