@@ -20,6 +20,7 @@ export const MessageInput = ({
   toggleAttachmentsMenu,
   toggleEmojiForm,
 }: PropTypes) => {
+  
   const { getRowValue } = useDynamicRowValue();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -40,14 +41,14 @@ export const MessageInput = ({
 
   return (
     <div className="flex rounded-xl text-text items-center bg-secondary">
+
       <button type="button" onClick={toggleEmojiForm}>
         <SmileIcon />
       </button>
+
       <textarea
         value={messageVal}
-        onChange={(e) => {
-          setMessageVal(e.target.value);
-        }}
+        onChange={(e) => setMessageVal(e.target.value)}
         className="px-3 py-5 bg-secondary outline-none rounded-sm w-full max-sm:text-sm resize-none scroll-smooth"
         aria-autocomplete="none"
         style={{ scrollbarWidth: "none" }}
@@ -63,12 +64,14 @@ export const MessageInput = ({
         rows={getRowValue(messageVal.length)}
         onKeyDown={handleKeyDown}
       />
+
       {!messageVal.trim() && (
         <MessageInputExtraOptions
           toggleAttachmentsMenu={toggleAttachmentsMenu}
           toggleGif={toggleGif}
         />
       )}
+
       {messageVal.trim().length>0 && (
         <motion.button
           onMouseDown={(e) => e.preventDefault()}
@@ -80,6 +83,7 @@ export const MessageInput = ({
           <SendIcon />
         </motion.button>
       )}
+
     </div>
   );
 };

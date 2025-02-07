@@ -1,4 +1,3 @@
-import { UserTypingEventReceiveData } from "@/interfaces/chat.interface";
 import { Event } from "@/interfaces/events.interface";
 import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
@@ -10,6 +9,15 @@ import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useEffect, useRef } from "react";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
+type UserTypingEventReceivePayload = {
+  user:{
+      id:string
+      username:string
+      avatar:string
+  },
+  chatId:string
+}
+
 export const useTypingListener = () => {
   const dispatch = useAppDispatch();
 
@@ -20,56 +28,56 @@ export const useTypingListener = () => {
     selectedChatDetailsRef.current = selectedChatDetails;
   }, [selectedChatDetails]);
 
-  useSocketEvent(
-    Event.USER_TYPING,
-    ({ chatId, user }: UserTypingEventReceiveData) => {
+  useSocketEvent(Event.USER_TYPING,({chatId,user}: UserTypingEventReceivePayload) => {
+
       if (selectedChatDetailsRef.current) {
-        const isTypinginOpennedChat =
-          selectedChatDetailsRef.current &&
-          chatId === selectedChatDetailsRef.current._id;
+
+        const isTypinginOpennedChat = chatId === selectedChatDetailsRef.current.id;
 
         if (isTypinginOpennedChat) {
-          const isUserAlreadyTyping =
-            selectedChatDetailsRef.current.userTyping.some(
-              (typingUser) => typingUser._id == user._id
-            );
+
+          const isUserAlreadyTyping = selectedChatDetailsRef.current.typingUsers.some(typingUser => typingUser.id == user.id);
+
           if (!isUserAlreadyTyping) {
             dispatch(updateUserTyping(user));
             setTimeout(() => {
-              dispatch(removeUserTyping(user._id));
+              dispatch(removeUserTyping(user.id));
             }, 1000);
           }
+
         }
-      } else {
+        
+      }
+      else {
+
         let isNewUserPushedInTypingArray: boolean = false;
+
         dispatch(
           chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-            const chat = draft.find((chat) => chat._id === chatId);
+            const chat = draft.find(draft => draft.id === chatId);
             if (chat) {
-              const isUserAlreadyTyping = chat.userTyping.some(
-                (typingUser) => typingUser._id === user._id
-              );
+              const isUserAlreadyTyping = chat.typingUsers.some(typingUser => typingUser.id === user.id);
               if (!isUserAlreadyTyping) {
-                chat.userTyping.push(user);
+                chat.typingUsers.push(user);
                 isNewUserPushedInTypingArray = true;
               }
             }
           })
-        );
+        )
+
         if (isNewUserPushedInTypingArray) {
           setTimeout(() => {
             dispatch(
               chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-                const chat = draft.find((chat) => chat._id === chatId);
+                const chat = draft.find(draft => draft.id === chatId);
                 if (chat) {
-                  chat.userTyping = chat.userTyping.filter(
-                    (typingUser) => typingUser._id !== user._id
-                  );
+                  chat.typingUsers = chat.typingUsers.filter(typingUser => typingUser.id !== user.id);
                 }
               })
             );
           }, 1000);
         }
+
       }
     }
   );

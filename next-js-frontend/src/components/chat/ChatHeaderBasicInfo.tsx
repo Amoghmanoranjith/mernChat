@@ -1,12 +1,9 @@
-import {
-  ChatMember,
-  ChatWithUnreadMessages,
-} from "@/interfaces/chat.interface";
+import { ChatMember, fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { getChatName } from "@/lib/shared/helpers";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   loggedInUserId: string;
   otherMemberOfPrivateChat: ChatMember;
 };

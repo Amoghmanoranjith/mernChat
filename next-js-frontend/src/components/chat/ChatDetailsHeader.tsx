@@ -1,23 +1,23 @@
 import { DEFAULT_AVATAR } from "@/constants";
 import { User } from "@/interfaces/auth.interface";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { getChatAvatar, getChatName } from "@/lib/shared/helpers";
 import Image from "next/image";
 import { useToggleChatUpdateForm } from "../../hooks/useUI/useToggleChatUpdateForm";
 import { EndToEndEncryptedText } from "../ui/EndToEndEncryptedText";
 import { EditIcon } from "../ui/icons/EditIcon";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 type PropTypes = {
-  chat: ChatWithUnreadMessages;
+  chat: fetchUserChatsResponse;
   loggedInUser: User;
 };
 
 export const ChatDetailsHeader = ({ chat, loggedInUser }: PropTypes) => {
   const toggleChatUpdateForm = useToggleChatUpdateForm();
 
-  const isAdmin = chat.isGroupChat && chat.admin === loggedInUser._id;
-  const avatar = getChatAvatar(chat, loggedInUser._id);
-  const chatName = getChatName(chat, loggedInUser._id);
+  const isAdmin = chat.isGroupChat && chat.adminId === loggedInUser.id;
+  const avatar = getChatAvatar(chat, loggedInUser.id);
+  const chatName = getChatName(chat, loggedInUser.id);
 
   return (
     <>
@@ -43,7 +43,7 @@ export const ChatDetailsHeader = ({ chat, loggedInUser }: PropTypes) => {
       <div className="flex flex-col justify-center items-center">
         <h4 className="text-lg font-medium">{chatName}</h4>
         {chat.isGroupChat && (
-          <p className="text-secondary-darker">{chat.members.length} members</p>
+          <p className="text-secondary-darker">{chat.ChatMembers.length} members</p>
         )}
         {!chat.isGroupChat && <EndToEndEncryptedText />}
       </div>

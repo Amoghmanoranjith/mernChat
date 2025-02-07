@@ -1,8 +1,9 @@
 "use client";
+import { DEFAULT_AVATAR } from "@/constants";
 import { useChatHeaderClick } from "@/hooks/useChat/useChatHeaderClick";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import Image from "next/image";
 import {
   getChatAvatar,
@@ -10,10 +11,9 @@ import {
 } from "../../lib/shared/helpers";
 import { ChatHeaderBasicInfo } from "./ChatHeaderBasicInfo";
 import { ChatHeaderSecondaryInfo } from "./ChatHeaderSecondaryInfo";
-import { DEFAULT_AVATAR } from "@/constants";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
@@ -22,7 +22,7 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
   const otherMemberOfPrivateChat = getOtherMemberOfPrivateChat(
     selectedChatDetails,
     loggedInUserId
-  );
+  ).user;
 
   const { handleChatHeaderClick } = useChatHeaderClick();
 

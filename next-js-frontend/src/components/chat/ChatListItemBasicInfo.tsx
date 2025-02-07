@@ -15,6 +15,7 @@ type PropTypes = {
 };
 
 export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
+  
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
 
   const renderOnlineStatus = () => {

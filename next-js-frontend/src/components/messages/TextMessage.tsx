@@ -1,6 +1,6 @@
 "use client";
 import { useDecryptMessage } from "@/hooks/useUtils/useDecryptMessage";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useState } from "react";
 import { EditMessageForm } from "./EditMessageForm";
 
@@ -13,7 +13,7 @@ type PropTypes = {
     React.SetStateAction<string | undefined>
   >;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const TextMessage = ({

@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { Request } from "express";
 
 export interface AuthenticatedRequest extends Request {
-    user:Omit<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'> & Required<Pick<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'>>
+    user:Omit<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username' | 'hashedPassword' > & Required<Pick<Prisma.UserCreateInput,'id' | 'name' | 'email' | 'username'>> & {hashedPassword?:string}
 }
 
 export interface OAuthAuthenticatedRequest extends Request {

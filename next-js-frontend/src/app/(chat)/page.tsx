@@ -2,8 +2,8 @@ import { ChatAreaWrapper } from "@/components/chat/ChatAreaWrapper";
 import { ChatDetailsLoaderWrapper } from "@/components/chat/ChatDetailsLoaderWrapper";
 import { ChatDetailsWrapper } from "@/components/chat/ChatDetailsWrapper";
 import { ChatHeaderWrapper } from "@/components/chat/ChatHeaderWrapper";
-import { ChatListWithSearchInputWrapper } from "@/components/chat/ChatListWithSearchInputWrapper";
-import { ChatListWrapper } from "@/components/chat/ChatListWrapper";
+import { ChatListClientWrapper } from "@/components/chat/ChatListClientWrapper";
+import { ChatListSkeletonWrapper } from "@/components/chat/ChatListSkeletonWrapper";
 import { ChatWrapper } from "@/components/chat/ChatWrapper";
 import { MessageInputAreaWrapper } from "@/components/messages/MessageInputAreaWrapper";
 import { MessageListSkeletonWrapper } from "@/components/messages/MessageListSkeletonWrapper";
@@ -22,32 +22,30 @@ export default async function ChatPage() {
     fetchUserChats({loggedInUserId}),
   ]);
 
-  console.log(chats);
-
   return (
     (friends && chats && friendRequest && user) ? (
-    <ChatWrapper
+    <ChatWrapper 
       chats={chats}
       friendRequest={friendRequest}
       friends={friends}
       user={user}
     >
       <div className="h-full w-full flex p-4 max-md:p-2 gap-x-6 bg-background select-none">
-        <ChatListWrapper>
-          <ChatListWithSearchInputWrapper />
-        </ChatListWrapper>
-{/* 
+        <ChatListClientWrapper>
+          <ChatListSkeletonWrapper/>
+        </ChatListClientWrapper>
+
         <ChatAreaWrapper>
           <div className="flex flex-col gap-y-3 h-full justify-between relative">
             <ChatHeaderWrapper />
             <MessageListSkeletonWrapper loggedInUserId={user.id} />
-            <MessageInputAreaWrapper />
+            <MessageInputAreaWrapper/>
           </div>
-        </ChatAreaWrapper> */}
+        </ChatAreaWrapper>
 
-        {/* <ChatDetailsWrapper>
+        <ChatDetailsWrapper>
           <ChatDetailsLoaderWrapper loggedInUser={user} />
-        </ChatDetailsWrapper> */}
+        </ChatDetailsWrapper>
       </div>
     </ChatWrapper>
   )

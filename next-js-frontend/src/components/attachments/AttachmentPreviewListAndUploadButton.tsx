@@ -1,9 +1,9 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { AttachmentUploadButton } from "./AttachmentUploadButton";
 import { SelectedAttachmentsPreviewList } from "./SelectedAttachmentsPreviewList";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   selectedAttachments: Blob[];
   setSelectedAttachments: React.Dispatch<React.SetStateAction<Blob[]>>;
   attachmentsPreview: string[];

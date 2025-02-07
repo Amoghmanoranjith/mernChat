@@ -1,4 +1,4 @@
-import { ChatMember } from "./chat.interface"
+import { ChatMember } from "@/lib/server/services/userService";
 
 export interface PollOption {
     option:string,
@@ -6,25 +6,46 @@ export interface PollOption {
 }
 
 export interface Message {
-    _id:string
-    content?:string
-    sender:{
-        _id:string
-        username:string
-        avatar:string
-    }
-    chat:string
-    url?:string
-    isEdited?:boolean
-    attachments?:Array<string> | []
-    isPoll?:boolean
-    pollQuestion?:string
-    pollOptions?:PollOption[]
-    reactions:Array<{user:Pick<ChatMember, '_id' | 'username' | 'avatar'>,emoji:string}>,
-    isMultipleAnswers?:boolean
-    createdAt:Date
-    updatedAt:Date
-    isNew?:boolean
+    sender: {
+        id: string;
+        username: string;
+        avatar: string;
+    };
+    attachments: {
+        secureUrl: string;
+    }[];
+    poll:{
+        votes: {
+            user: {
+                id: string;
+                username: string;
+                avatar: string;
+            };
+            optionIndex: number;
+        }[];
+        question: string;
+        options: string[];
+        multipleAnswers: boolean;
+    } | null;
+    reactions: {
+        user: {
+            id: string;
+            username: string;
+            avatar: string;
+        };
+        reaction: string;
+    }[];
+    id: string;
+    isTextMessage: boolean;
+    textMessageContent: string | null;
+    senderId: string;
+    chatId: string;
+    url: string | null;
+    pollId: string | null;
+    isPollMessage: boolean;
+    isEdited: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface UnreadMessage {
@@ -39,43 +60,10 @@ export interface UnreadMessage {
     sender:ChatMember
 }
 
-export interface MessageEventPayloadData {
-    chat:string
-    content?:string | ArrayBuffer
-    url?:string
-    isPoll?:boolean
-    pollQuestion?:string
-    pollOptions?:Array<{option:string,votes:Array<string>}>
-    isMultipleAnswers?:boolean
-}
-
-export interface MessageSeenEventPayloadData {
-    chatId:string
-}
-
-export interface MessageSeenEventReceiveData {
-    chat:string,
-    user:ChatMember
-    readAt:Date
-}
-
-export interface UnreadMessageEventReceiveData {
-    chatId:string
-    message:UnreadMessage["message"]
-    sender:ChatMember
-}
-
 export interface EditMessageEventPayloadData {
     messageId:string,
     updatedContent:string,
     chatId:string
-}
-
-export interface EditMessageEventReceiveData {
-    _id: string
-    chat: string
-    content: string
-    isEdited: boolean
 }
 
 export interface VoteInEventPayloadData {
@@ -91,13 +79,13 @@ export interface VoteInEventReceiveData {
 }
 
 export interface VoteOutEventReceiveData extends Omit<VoteInEventReceiveData,'user'> {
-    user:Pick<ChatMember , '_id'>
+    user:Pick<ChatMember , 'id'>
 }
 
 export interface NewReactionEventReceiveData {
     chatId:string
     messageId:string
-    user:Pick<ChatMember, '_id' | 'username' | 'avatar'>
+    user:Pick<ChatMember, 'id' | 'username' | 'avatar'>
     emoji:string
 }
 

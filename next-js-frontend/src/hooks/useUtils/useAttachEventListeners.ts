@@ -10,9 +10,9 @@ import { useMessageSeenListener } from "../useEventListeners/useMessageSeenListe
 import { useNewChatListener } from "../useEventListeners/useNewChatListener";
 import { useNewMemberAddedListener } from "../useEventListeners/useNewMemberAddedListener";
 import { useNewReactionListener } from "../useEventListeners/useNewReactionListener";
-import { useOfflineListener } from "../useEventListeners/useOfflineListener";
-import { useOnlineListener } from "../useEventListeners/useOnlineListener";
-import { useOnlineUsersListener } from "../useEventListeners/useOnlineUsersListener";
+import { useOfflineUserListener } from "../useEventListeners/useOfflineUserListener";
+import { useOnlineUserListener } from "../useEventListeners/useOnlineUserListener";
+import { useOnlineUsersListListener } from "../useEventListeners/useOnlineUsersListListener";
 import { useTypingListener } from "../useEventListeners/useTypingListener";
 import { useUnreadMessageListener } from "../useEventListeners/useUnreadMessageListener";
 import { useVoteInListener } from "../useEventListeners/useVoteInListener";
@@ -33,9 +33,9 @@ export const useAttachEventListeners = () => {
 
   
   // user status
-  useOfflineListener();
-  useOnlineListener();
-  useOnlineUsersListener();
+  useOfflineUserListener();
+  useOnlineUserListener();
+  useOnlineUsersListListener();
   
   
   // polling

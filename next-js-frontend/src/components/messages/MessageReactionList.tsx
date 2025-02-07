@@ -1,12 +1,12 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { MessageReactionListItem } from "./MessageReactionListItem";
 
 type PropTypes = {
   reactions: Message["reactions"];
   loggedInUserId: string;
   messageId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const MessageReactionList = ({
@@ -23,7 +23,7 @@ export const MessageReactionList = ({
           reaction={reaction}
           loggedInUserId={loggedInUserId}
           messageId={messageId}
-          chatId={selectedChatDetails._id}
+          chatId={selectedChatDetails.id}
         />
       ))}
     </div>

@@ -133,10 +133,7 @@ const getChatName = (
   return chatName?.length > 16 ? chatName?.substring(0, 16) + "..." : chatName;
 };
 
-const getChatAvatar = (
-  selectedChatDetails: fetchUserChatsResponse | null,
-  loggedInUserId: FetchUserInfoResponse["id"] | null | undefined
-) => {
+const getChatAvatar = (selectedChatDetails: fetchUserChatsResponse | null,loggedInUserId: FetchUserInfoResponse["id"] | null | undefined) => {
   return selectedChatDetails?.isGroupChat
     ? selectedChatDetails.avatar
     : selectedChatDetails?.ChatMembers.filter(

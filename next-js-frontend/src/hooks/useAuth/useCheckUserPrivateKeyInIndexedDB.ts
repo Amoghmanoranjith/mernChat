@@ -7,18 +7,15 @@ type PropTypes = {
   loggedInUser: User;
 };
 
-export const useCheckUserPrivateKeyInIndexedDB = ({
-  loggedInUser,
-}: PropTypes) => {
+export const useCheckUserPrivateKeyInIndexedDB = ({loggedInUser}: PropTypes) => {
+
   const { toggleRecoverPrivateKeyForm } = useToggleRecoverPrivateKeyForm();
 
   const checkPrivateKeyInIndexedDB = useCallback(async () => {
-    const userPrivateKey = await getUserPrivateKeyFromIndexedDB({
-      userId: loggedInUser.id,
-    });
-    if (userPrivateKey == null) {
-      toggleRecoverPrivateKeyForm();
-    }
+    
+    const userPrivateKey = await getUserPrivateKeyFromIndexedDB({userId: loggedInUser.id});
+    if (userPrivateKey == null) toggleRecoverPrivateKeyForm();
+
   }, [loggedInUser.id, toggleRecoverPrivateKeyForm]);
 
   useEffect(() => {

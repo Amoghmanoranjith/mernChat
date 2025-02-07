@@ -28,9 +28,9 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
             id:chatId
         },
         include:{
-            members:{
+            ChatMembers:{
                 select:{
-                    id:true,
+                  userId:true,
                 }
             }
         }
@@ -104,19 +104,19 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
     const io:Server = req.app.get("io");
     emitEventToRoom({data:newMessage,event:Events.MESSAGE,io,room:chatId})
 
-    const otherMembersOfChat = isExistingChat.members.filter(({ id }) => req.user.id !== id);
+    const otherMembersOfChat = isExistingChat.ChatMembers.filter(({userId}) => req.user.id !== userId);
 
-    const updateOrCreateUnreadMessagePromises = otherMembersOfChat.map(({ id }) => {
+    const updateOrCreateUnreadMessagePromises = otherMembersOfChat.map(({ userId }) => {
         return prisma.unreadMessages.upsert({
           where: {
-            userId_chatId: { userId: id, chatId: chatId }, // Using the unique composite key
+            userId_chatId: { userId,chatId: chatId }, // Using the unique composite key
           },
           update: {
             count: { increment: 1 },
             senderId: req.user.id,
           },
           create: {
-            userId: id,
+            userId: userId,
             chatId,
             count: 1,
             senderId: req.user.id,

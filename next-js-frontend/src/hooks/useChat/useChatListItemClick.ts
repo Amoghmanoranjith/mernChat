@@ -8,8 +8,9 @@ import { useToggleChatBar } from "../useUI/useToggleChatBar";
 import { useMediaQuery } from "../useUtils/useMediaQuery";
 
 export const useChatListItemClick = () => {
+
   const dispatch = useAppDispatch();
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
   const { toggleChatBar } = useToggleChatBar();
   const { data: chats } = useGetChatsQuery();
 
@@ -18,9 +19,10 @@ export const useChatListItemClick = () => {
   const handleChatListItemClick = (chatId: string) => {
     if (selectedChatId !== chatId && chats && chats.length) {
       const selectedChatByUser = chats.find((chat) => chat.id === chatId);
-      if (selectedChatByUser) {
-        dispatch(updateSelectedChatDetails(selectedChatByUser));
-      }
+      if (selectedChatByUser) dispatch(updateSelectedChatDetails(selectedChatByUser));
+    }
+    else if(selectedChatId === chatId) {
+      dispatch(updateSelectedChatDetails(null));
     }
     if (isLg) {
       toggleChatBar();

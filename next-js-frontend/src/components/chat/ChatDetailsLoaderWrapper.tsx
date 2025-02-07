@@ -1,11 +1,11 @@
 "use client";
-import { User } from "@/interfaces/auth.interface";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
+import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { ChatDetails } from "./ChatDetails";
 
 type PropTypes = {
-  loggedInUser: User;
+  loggedInUser: FetchUserInfoResponse;
 };
 
 export const ChatDetailsLoaderWrapper = ({ loggedInUser }: PropTypes) => {

@@ -1,9 +1,9 @@
 "use client";
 import { useGetChatsQuery } from "@/lib/client/rtk-query/chat.api";
-import { ChatListWithSearchInput } from "./ChatListWithSearchInput";
 import { ChatListWithSearchSkeleton } from "../ui/skeleton/ChatListWithSearchSkeleton";
+import { ChatListWithSearchInput } from "./ChatListWithSearchInput";
 
-export const ChatListWithSearchInputWrapper = () => {
+export const ChatListSkeletonWrapper = () => {
   const { currentData } = useGetChatsQuery();
 
   return currentData ? (

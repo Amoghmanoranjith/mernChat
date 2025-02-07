@@ -291,10 +291,6 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
             id:true,
             username:true,
             avatar:true,
-            isOnline:true,
-            publicKey:true,
-            lastSeen:true,
-            verificationBadge:true
           }
         },
       }
@@ -302,37 +298,37 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
     latestMessage:{
       include:{
         sender:{
-          select:{
+            select:{
             id:true,
             username:true,
             avatar:true,
-          }
+            }
         },
         attachments:{
-          select:{
-            secureUrl:true
-          }
+            select:{
+            secureUrl:true,
+            }
         },
-        poll:true,
+        poll:{
+            omit:{id:true}
+        },
         reactions:{
-          include:{
+            select:{
             user:{
-              select:{
+                select:{
                 id:true,
                 username:true,
                 avatar:true
-              }
+                }
             },
-          },
-          omit:{
-            id: true,
-            createdAt: true,
-            updatedAt: true,
-            userId: true,
-            messageId: true
-          }
+            reaction:true,
+            }
         },
-      }
+    },
+    omit:{
+        senderId:true,
+        pollId:true,
+    },
     }
   }
 }> & {typingUsers: BasicUserInfo[]}

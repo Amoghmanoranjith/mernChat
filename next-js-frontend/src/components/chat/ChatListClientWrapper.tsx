@@ -9,7 +9,7 @@ type PropTypes = {
   children: React.ReactNode;
 };
 
-export const ChatListWrapper = ({ children }: PropTypes) => {
+export const ChatListClientWrapper = ({ children }: PropTypes) => {
   const dispatch = useDispatch();
   const chatBar = useAppSelector(selectChatBar);
 

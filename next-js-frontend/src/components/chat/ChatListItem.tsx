@@ -15,6 +15,7 @@ type PropTypes = {
 };
 
 export const ChatListItem = ({ chat }: PropTypes) => {
+  
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
   const { handleChatListItemClick } = useChatListItemClick();
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;

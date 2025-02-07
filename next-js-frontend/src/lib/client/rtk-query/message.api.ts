@@ -1,4 +1,4 @@
-import type { Message } from "@/interfaces/message.interface";
+import { Message } from "@/interfaces/message.interface";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 

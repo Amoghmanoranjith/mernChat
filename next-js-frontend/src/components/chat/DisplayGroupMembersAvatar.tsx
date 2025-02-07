@@ -1,8 +1,10 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+
+import { DEFAULT_AVATAR } from "@/constants";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import Image from "next/image";
 
 type PropTypes = {
-  members: ChatWithUnreadMessages["members"];
+  members: fetchUserChatsResponse['ChatMembers']
 };
 
 export const DisplayGroupMembersAvatar = ({ members }: PropTypes) => {
@@ -14,11 +16,11 @@ export const DisplayGroupMembersAvatar = ({ members }: PropTypes) => {
       {top4Members.map((member) => (
         <Image
           className="size-8 rounded-full object-cover shrink-0"
-          key={member._id}
-          src={member.avatar}
+          key={member.user.id}
+          src={member.user.avatar || DEFAULT_AVATAR}
           width={100}
           height={100}
-          alt={`${member.username} avatar`}
+          alt={`${member.user.username} avatar`}
         />
       ))}
       {remainingMembers > 0 && (

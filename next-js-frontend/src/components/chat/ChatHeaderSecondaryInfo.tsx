@@ -1,7 +1,4 @@
-import {
-  ChatMember,
-  ChatWithUnreadMessages,
-} from "@/interfaces/chat.interface";
+import { ChatMember, fetchUserChatsResponse } from "@/lib/server/services/userService";
 import {
   formatRelativeTime,
   getOtherMembersOfGroupChatThatAreActive,
@@ -9,7 +6,7 @@ import {
 import { ActiveDot } from "../ui/ActiveDot";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   otherMemberOfPrivateChat: ChatMember;
   loggedInUserId: string;
 };
@@ -19,12 +16,10 @@ export const ChatHeaderSecondaryInfo = ({
   otherMemberOfPrivateChat,
   loggedInUserId,
 }: PropTypes) => {
-  const isPrivateChatActive =
-    !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat?.isActive;
-  const isPrivateChatInActive =
-    !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat?.isActive;
+  const isPrivateChatActive = !selectedChatDetails.isGroupChat && otherMemberOfPrivateChat.isOnline;
+  const isPrivateChatInActive = !selectedChatDetails.isGroupChat && !otherMemberOfPrivateChat.isOnline;
   const isGroupChat = selectedChatDetails.isGroupChat;
-  const totalMembersInGroupChat = selectedChatDetails.members.length;
+  const totalMembersInGroupChat = selectedChatDetails.ChatMembers.length;
   const activeMemberCountInGroupChat = getOtherMembersOfGroupChatThatAreActive(
     selectedChatDetails,
     loggedInUserId

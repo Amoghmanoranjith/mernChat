@@ -1,5 +1,5 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { Gif } from "../ui/Gif";
 import { AttachmentList } from "./AttachmentList";
 import { PollCard } from "./PollCard";
@@ -8,7 +8,7 @@ import { TextMessage } from "./TextMessage";
 type PropTypes = {
   message: Message;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   editMessageId: string | undefined;
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
   setOpenContextMenuMessageId: React.Dispatch<

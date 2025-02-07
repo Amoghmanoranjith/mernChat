@@ -32,7 +32,7 @@ import { useCallback, useEffect } from "react";
 
 export const useClearExtraPreviousMessagesOnChatChange = () => {
   // Get the currently selected chat's ID from Redux state
-  const selectedChatId = useAppSelector(selectSelectedChatDetails)?._id;
+  const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
   const dispatch = useAppDispatch();
 
   /**

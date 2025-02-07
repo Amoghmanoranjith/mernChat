@@ -1,46 +1,37 @@
 import { Event } from "@/interfaces/events.interface";
-import { VoteOutEventReceiveData } from "@/interfaces/message.interface";
 import { messageApi } from "@/lib/client/rtk-query/message.api";
-import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
-import { useEffect, useRef } from "react";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
+type VoteOutEventReceivePayload = {
+  chatId:string
+  messageId:string
+  userId:string
+  optionIndex:number
+}
+
 export const useVoteOutListener = () => {
+
   const dispatch = useAppDispatch();
-  const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
 
-  const selectedChatDetailsRef = useRef(selectedChatDetails);
+  useSocketEvent(Event.VOTE_OUT,({chatId,messageId,optionIndex,userId}: VoteOutEventReceivePayload) => {
 
-  useEffect(() => {
-    selectedChatDetailsRef.current = selectedChatDetails;
-  }, [selectedChatDetails]);
+      dispatch(
+        messageApi.util.updateQueryData("getMessagesByChatId",{ chatId, page: 1 },(draft) => {
 
-  useSocketEvent(
-    Event.VOTE_OUT,
-    ({ _id, optionIndex, user }: VoteOutEventReceiveData) => {
-      const selectedChatDetails = selectedChatDetailsRef.current;
-      if (selectedChatDetails) {
-        dispatch(
-          messageApi.util.updateQueryData(
-            "getMessagesByChatId",
-            { chatId: selectedChatDetails._id, page: 1 },
-            (draft) => {
-              const message = draft.messages.find((draft) => draft._id === _id);
+            const message = draft.messages.find(draft => draft.id === messageId);
 
-              if (message && message.isPoll && message.pollOptions) {
-                const voteToBeRemovedIndex = message.pollOptions[
-                  optionIndex
-                ].votes.findIndex(({ _id }) => _id === user._id);
-                message.pollOptions[optionIndex].votes.splice(
-                  voteToBeRemovedIndex,
-                  1
-                );
+            if (message && message.isPollMessage){
+              const voteToBeRemovedIndex = message.poll?.votes.findIndex(vote=>vote.user.id === userId && vote.optionIndex === optionIndex);
+              
+              if(voteToBeRemovedIndex && voteToBeRemovedIndex !== -1){
+                message.poll?.votes.splice(voteToBeRemovedIndex,1);
               }
             }
-          )
-        );
-      }
+          }
+        )
+      );
+      
     }
   );
 };

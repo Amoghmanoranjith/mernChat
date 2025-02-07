@@ -205,15 +205,19 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                 },
               }
             },
-            members:{
+            ChatMembers:{
               select:{
-                id:true,
-                username:true,
-                avatar:true,
-                isOnline:true,
-                publicKey:true,
-                lastSeen:true,
-                verificationBadge:true
+                user:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey:true,
+                    lastSeen:true,
+                    verificationBadge:true
+                  }
+                }
               }
             },
             latestMessage:{

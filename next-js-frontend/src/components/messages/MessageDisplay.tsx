@@ -1,6 +1,6 @@
 import { useDoubleClickReactionFeature } from "@/hooks/useMessages/useDoubleClickReactionFeature";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
@@ -11,7 +11,7 @@ type PropTypes = {
   myMessage: boolean;
   editMessageId: string | undefined;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   message: Message;
   setEditMessageId: Dispatch<SetStateAction<string | undefined>>;
   setOpenContextMenuMessageId: Dispatch<SetStateAction<string | undefined>>;
@@ -28,7 +28,7 @@ export const MessageDisplay = ({
   setOpenContextMenuMessageId,
 }: PropTypes) => {
   const { handleDoubleClick } = useDoubleClickReactionFeature({
-    chatId: selectedChatDetails._id,
+    chatId: selectedChatDetails.id,
     loggedInUserId,
     messageId: message._id,
     reactions: message.reactions,

@@ -8,7 +8,7 @@ import { CircleLoading } from "../shared/CircleLoading";
 
 export const SharedMediaList = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const chatId = useAppSelector(selectSelectedChatDetails)?._id as string;
+  const chatId = useAppSelector(selectSelectedChatDetails)?.id as string;
 
   const { hasMore, setPage, sharedMedia, isFetching } =
     useHandleSharedMediaInfiniteScroll({ chatId });

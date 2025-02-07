@@ -8,7 +8,7 @@ import { CustomError, asyncErrorHandler } from "../utils/error.utils.js"
 type SessionPayload = {
     userId: string;
     expiresAt: Date;
-  };
+};
 
   
 export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{

@@ -31,6 +31,24 @@ export const getMessages = asyncErrorHandler(async(req:Request,res:Response,next
         poll:{
           omit:{
             id:true,
+          },
+          include:{
+            votes:{
+              include:{
+                user:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true
+                  }
+                }
+              },
+              omit:{
+                id:true,
+                pollId:true,
+                userId:true,
+              }
+            },
           }
         },
         reactions:{

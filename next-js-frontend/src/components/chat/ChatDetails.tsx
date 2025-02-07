@@ -1,8 +1,7 @@
 'use client';
 import { useFetchAttachments } from "@/hooks/useAttachment/useFetchAttachments";
 import { useToggleChatDetailsBar } from "@/hooks/useUI/useToggleChatDetailsBar";
-import { User } from "@/interfaces/auth.interface";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { ChevronRightIcon } from "../ui/icons/ChevronRightIcon";
 import { AddMemberSection } from "./AddMemberSection";
 import { ChatDetailsHeader } from "./ChatDetailsHeader";
@@ -12,8 +11,8 @@ import { SharedMedia } from "./SharedMedia";
 
 
 type PropTypes = {
-    selectedChatDetails:ChatWithUnreadMessages
-    loggedInUser:User
+    selectedChatDetails:fetchUserChatsResponse
+    loggedInUser:FetchUserInfoResponse
 }
 
 export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
@@ -21,7 +20,7 @@ export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
   const {toggleChatDetailsBar} = useToggleChatDetailsBar();
   const {sharedMedia} = useFetchAttachments()
 
-  const isAdmin = selectedChatDetails.isGroupChat && selectedChatDetails.admin === loggedInUser._id;
+  const isAdmin = selectedChatDetails.isGroupChat && selectedChatDetails.adminId === loggedInUser.id;
   const isGroupChat = selectedChatDetails.isGroupChat;
 
   return (
@@ -43,7 +42,7 @@ export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
             
             <div className="flex flex-col gap-y-4">
                 <div className="flex justify-between items-center">
-                    <DisplayGroupMembersAvatar members={selectedChatDetails.members}/>
+                    <DisplayGroupMembersAvatar members={selectedChatDetails.ChatMembers}/>
                     {isGroupChat && <span>See all</span>}
                 </div>
                 {

@@ -1,7 +1,7 @@
 "use client";
 import { useGenerateAttachmentsPreview } from "@/hooks/useAttachment/useGenerateAttachmentsPreview";
 import { useHandleSendMessage } from "@/hooks/useMessages/useHandleSendMessage";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useEmitTypingEvent } from "../../hooks/useChat/useEmitTypingEvent";
@@ -13,9 +13,10 @@ import { MessageInputAreaEmojiSelector } from "../messages/MessageInputAreaEmoji
 import { MessageInput } from "../ui/MessageInput";
 
 type PropTypes = {
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
+  
   const [selectedAttachments, setSelectedAttachments] = useState<Blob[]>([]);
   const { attachmentsPreview } = useGenerateAttachmentsPreview({selectedAttachments});
 

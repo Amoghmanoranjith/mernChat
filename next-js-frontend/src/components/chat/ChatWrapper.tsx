@@ -33,6 +33,5 @@ export const ChatWrapper = ({children,chats,friendRequest,friends,user}: PropTyp
   // messages
   useClearExtraPreviousMessagesOnChatChange();
 
-
   return children;
 };

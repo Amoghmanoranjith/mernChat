@@ -8,16 +8,16 @@ import { useScrollToBottomOnNewMessageWhenUserIsNearBottom } from "@/hooks/useMe
 import { useScrollToBottomOnTypingWhenUserIsNearBottom } from "@/hooks/useMessages/useScrollToBottomOnTypingWhenUserIsNearBottom";
 import { useSetHasMoreMessagesBasedOnTotalPages } from "@/hooks/useMessages/useSetHasMoreMessagesBasedOnTotalPages";
 import { useSetPageToOneOnChatChange } from "@/hooks/useMessages/useSetPageToOneOnChatChange";
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
 import { useRef, useState } from "react";
 import { CircleLoading } from "../shared/CircleLoading";
 import { MessageListItem } from "./MessageListItem";
 import { TypingIndicator } from "./TypingIndicator";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 type PropTypes = {
   messages: Message[];
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   totalPages: number;
   loggedInUserId: string;
 };

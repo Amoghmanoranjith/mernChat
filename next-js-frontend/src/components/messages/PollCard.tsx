@@ -29,7 +29,7 @@ export const PollCard = ({
       <h6 className="text-lg font-medium">{question}</h6>
       <PollOptionList
         isMutipleAnswers={isMutipleAnswers}
-        loggedInUserId={loggedInUser._id}
+        loggedInUserId={loggedInUser.id}
         messageId={messageId}
         options={options}
       />

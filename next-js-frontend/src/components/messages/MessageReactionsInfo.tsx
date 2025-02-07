@@ -1,12 +1,12 @@
-import { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import { Message } from "@/interfaces/message.interface";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { motion } from "framer-motion";
 import { MessageReactionList } from "./MessageReactionList";
 
 type PropTypes = {
   message: Message;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
 };
 
 export const MessageReactionsInfo = ({

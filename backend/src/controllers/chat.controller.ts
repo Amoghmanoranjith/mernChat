@@ -28,18 +28,6 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
 
         const memberIds=[...members,req.user.id]
 
-        const existingChat = await prisma.chat.findFirst({
-          where: {
-            AND: [
-              { members: { every: { id: { in: memberIds } } } }, // Ensure all members exist
-              { members: { none: { id: { notIn: memberIds } } } } // Ensure no extra members exist
-            ]
-          },
-        });
-        
-        if(existingChat){
-            return next(new CustomError("group chat already exists",400))
-        }
         let hasAvatar = false;
         if(req.file){
             hasAvatar = true;
@@ -49,21 +37,52 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
         const avatar = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].secure_url : DEFAULT_AVATAR;
         const avatarCloudinaryPublicId = (hasAvatar && uploadResults && uploadResults[0]) ? uploadResults[0].public_id : null;
         
-        const newChat = await prisma.chat.create({
+        const newChat =  await prisma.chat.create({
           data:{
             avatar,                    
             avatarCloudinaryPublicId,
             isGroupChat:true,
-            members:{
-              connect:members.map(member=>({id:member}))
-            },
             adminId:req.user.id,
             name,
           },
+          select:{
+            id:true,
+          }
+        })
+
+        await prisma.chatMembers.createMany({
+          data: memberIds.map(id=>({
+            chatId:newChat.id,
+            userId:id
+          }))
+        })
+
+        const populatedChat = await prisma.chat.findUnique({
+          where:{id:newChat.id},
           omit:{
             avatarCloudinaryPublicId:true,
           },
           include:{
+            ChatMembers:{
+              include:{
+                user:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey: true,
+                    lastSeen:true,
+                    verificationBadge:true,
+                  }
+                },
+              },
+              omit:{
+                chatId:true,
+                userId:true,
+                id:true,
+              }
+            },
             UnreadMessages:{
               select:{
                 count:true,
@@ -78,6 +97,7 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
                     },
                     isPollMessage:true,
                     createdAt:true,
+                    textMessageContent:true,
                   }
                 },
                 sender:{
@@ -91,17 +111,6 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
                     verificationBadge:true
                   }
                 },
-              }
-            },
-            members:{
-              select:{
-                id:true,
-                username:true,
-                avatar:true,
-                isOnline:true,
-                publicKey:true,
-                lastSeen:true,
-                verificationBadge:true
               }
             },
             latestMessage:{
@@ -127,38 +136,245 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
                         username:true,
                         avatar:true
                       }
-                    }
+                    },
                   },
-                  select:{
-                    reaction:true,
+                  omit:{
+                    id: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    userId: true,
+                    messageId: true
                   }
                 },
               }
             }
-          }
+          },
         })
         
         const io:Server = req.app.get("io");
         joinMembersInChatRoom({memberIds,roomToJoin:newChat.id,io})
-        emitEventToRoom({event:Events.NEW_CHAT,io,room:newChat.id,data:newChat});
+        emitEventToRoom({event:Events.NEW_CHAT,io,room:newChat.id,data:populatedChat});
         return res.status(201);
     }
 })
 
 const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
-    const chats = await prisma.chat.findMany({
-      where:{
-        members:{
-          some:{
-            id:req.user.id
+
+      const chats = await prisma.chat.findMany({
+          where:{
+            ChatMembers:{
+              some:{
+                userId:req.user.id
+              }
+            }
+          },
+          omit:{
+            avatarCloudinaryPublicId:true,
+          },
+          include:{
+            ChatMembers:{
+              include:{
+                user:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey: true,
+                    lastSeen:true,
+                    verificationBadge:true,
+                  }
+                },
+              },
+              omit:{
+                chatId:true,
+                userId:true,
+                id:true,
+              }
+            },
+            UnreadMessages:{
+              select:{
+                count:true,
+                message:{
+                  select:{
+                    isTextMessage:true,
+                    url:true,
+                    attachments:{
+                      select:{
+                        secureUrl:true,
+                      }
+                    },
+                    isPollMessage:true,
+                    createdAt:true,
+                    textMessageContent:true,
+                  }
+                },
+                sender:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey:true,
+                    lastSeen:true,
+                    verificationBadge:true
+                  }
+                },
+              }
+            },
+            latestMessage:{
+              include:{
+                sender:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                  }
+                },
+                attachments:{
+                  select:{
+                    secureUrl:true
+                  }
+                },
+                poll:true,
+                reactions:{
+                  include:{
+                    user:{
+                      select:{
+                        id:true,
+                        username:true,
+                        avatar:true
+                      }
+                    },
+                  },
+                  omit:{
+                    id: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    userId: true,
+                    messageId: true
+                  }
+                },
+              }
+            }
+          },
+      })
+  
+      const chatsWithUserTyping = chats.map(chat => ({
+        ...chat,
+        typingUsers: []
+      }));
+  
+    return res.status(200).json(chatsWithUserTyping)
+
+})
+
+const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
+
+    const {id}=req.params
+    const {members}:addMemberToChatType = req.body
+
+    const chat =  await prisma.chat.findUnique({where:{id}})
+    
+    if(!chat){
+        return next(new CustomError("Chat does not exists",404))
+    }
+    if(!chat.isGroupChat){
+        return next(new CustomError("This is not a group chat, you cannot add members",400))
+    }
+    const isAdminAddingMember = chat.adminId === req.user.id;
+    if(!isAdminAddingMember){
+        return next(new CustomError("You are not allowed to add members as you are not the admin of this chat",400))
+    }
+
+    const areMembersToBeAddedAlreadyExists = await prisma.chatMembers.findMany({
+      where: {
+        chatId: id,
+        userId: {
+          in: members,
+        },
+      },
+      include:{
+        user:{
+          select:{
+            username:true
           }
         }
+      }
+    });
+
+    if(areMembersToBeAddedAlreadyExists.length){
+      return next(new CustomError(`${areMembersToBeAddedAlreadyExists.map(({user:{username}})=>`${username}`)} already exists in members of this chat`,400))
+    }
+
+    const oldExistingMembers = await prisma.chatMembers.findMany({
+      where: {
+        chatId: id,
+      },
+      include:{
+        user:{
+          select:{
+            id:true,
+          }
+        }
+      }
+    });
+
+    const oldExistingMembersIds = oldExistingMembers.map(({user:{id}})=>id)
+
+    await prisma.chatMembers.createMany({
+      data: members.map(memberid=>({
+        chatId:id,
+        userId:memberid
+      }))
+    })
+
+    const newMemberDetails = await prisma.user.findMany({
+      where:{
+        id:{
+          in:members
+        }
+      },
+      select:{
+        id:true,
+        username:true,
+        avatar:true,
+        isOnline:true,
+        publicKey:true,
+        lastSeen:true,
+        verificationBadge:true
+      }
+    })
+
+    const updatedChat = await prisma.chat.findMany({
+      where:{
+        id:chat.id
       },
       omit:{
         avatarCloudinaryPublicId:true,
       },
       include:{
+        ChatMembers:{
+          include:{
+            user:{
+              select:{
+                id:true,
+                username:true,
+                avatar:true,
+                isOnline:true,
+                publicKey: true,
+                lastSeen:true,
+                verificationBadge:true,
+              }
+            },
+          },
+          omit:{
+            chatId:true,
+            userId:true,
+            id:true,
+          }
+        },
         UnreadMessages:{
           select:{
             count:true,
@@ -173,6 +389,7 @@ const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respon
                 },
                 isPollMessage:true,
                 createdAt:true,
+                textMessageContent:true,
               }
             },
             sender:{
@@ -186,17 +403,6 @@ const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respon
                 verificationBadge:true
               }
             },
-          }
-        },
-        members:{
-          select:{
-            id:true,
-            username:true,
-            avatar:true,
-            isOnline:true,
-            publicKey:true,
-            lastSeen:true,
-            verificationBadge:true
           }
         },
         latestMessage:{
@@ -234,159 +440,7 @@ const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Respon
             },
           }
         }
-      }
-    })
-
-    return res.status(200).json(chats)
-
-})
-
-const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const {id}=req.params
-    const {members}:addMemberToChatType = req.body
-
-    const chat = await prisma.chat.findUnique({
-      where:{
-        id,
       },
-      include:{
-        members:{
-          select:{
-            id:true
-          }
-        }
-      }
-    })
-
-    if(!chat){
-        return next(new CustomError("Chat does not exists",404))
-    }
-
-    if(!chat.isGroupChat){
-        return next(new CustomError("This is not a group chat, you cannot add members",400))
-    }
-    const isAdminAddingMember = chat.adminId === req.user.id;
-    if(!isAdminAddingMember){
-        return next(new CustomError("You are not allowed to add members as you are not the admin of this chat",400))
-    }
-    
-    const existingMemberIds = chat.members.map(member=>member.id)
-
-    const invalidMembers = members.filter(member=>existingMemberIds.includes(member))
-
-    if(invalidMembers.length){
-      return next(new CustomError(`${invalidMembers.map(member=>`${member}`)} already exists in members of this chat`,400))
-    }
-
-    const newMemberDetails = await prisma.user.findMany({
-      where:{
-        id:{
-          in:members
-        }
-      },
-      select:{
-        id:true,
-        username:true,
-        avatar:true,
-        isOnline:true,
-        publicKey:true,
-        lastSeen:true,
-        verificationBadge:true
-      }
-    })
-
-    await prisma.chat.update({
-      where:{
-        id:chat.id,
-      },
-      data:{
-        members:{
-          connect:newMemberDetails.map(member=>({id:member.id}))
-        }
-      }
-    })
-
-    const updatedChat = await prisma.chat.findMany({
-      where:{
-        id:chat.id
-      },
-      omit:{
-        avatarCloudinaryPublicId:true,
-      },
-      include:{
-        UnreadMessages:{
-          select:{
-            count:true,
-            message:{
-              select:{
-                isTextMessage:true,
-                url:true,
-                attachments:{
-                  select:{
-                    secureUrl:true,
-                  }
-                },
-                isPollMessage:true,
-                createdAt:true,
-              }
-            },
-            sender:{
-              select:{
-                id:true,
-                username:true,
-                avatar:true,
-                isOnline:true,
-                publicKey:true,
-                lastSeen:true,
-                verificationBadge:true
-              }
-            },
-          }
-        },
-        members:{
-          select:{
-            id:true,
-            username:true,
-            avatar:true,
-            isOnline:true,
-            publicKey:true,
-            lastSeen:true,
-            verificationBadge:true
-          }
-        },
-        latestMessage:{
-          include:{
-            sender:{
-              select:{
-                id:true,
-                username:true,
-                avatar:true,
-              }
-            },
-            attachments:{
-              select:{
-                secureUrl:true
-              }
-            },
-            poll:true,
-            reactions:{
-              include:{
-                user:{
-                  select:{
-                    id:true,
-                    username:true,
-                    avatar:true
-                  }
-                }
-              },
-              select:{
-                reaction:true,
-              }
-            },
-          }
-        }
-      }
     })
     
     const io:Server = req.app.get("io");
@@ -403,7 +457,7 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
       chatId:chat.id,
       members:newMemberDetails
     }
-    emitEvent({data:payload,event:Events.NEW_MEMBER_ADDED,io,users:existingMemberIds});
+    emitEvent({data:payload,event:Events.NEW_MEMBER_ADDED,io,users:oldExistingMembersIds});
     return res.status(200);
 })
 
@@ -412,19 +466,8 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
     const {id}=req.params
     const {members}:removeMemberfromChatType = req.body
 
-    const chat = await prisma.chat.findUnique({
-      where:{
-        id,
-      },
-      include:{
-        members:{
-          select:{
-            id:true
-          }
-        }
-      }
-    })
-
+    const chat =  await prisma.chat.findUnique({where:{id}})
+    
     if(!chat){
         return next(new CustomError("Chat does not exists",404))
     }
@@ -437,44 +480,70 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
     if(!isAdminRemovingMembers){
         return next(new CustomError("You are not allowed to remove members as you are not the admin of this chat",400))
     }
+
+    const existingMembers =  await prisma.chatMembers.findMany({
+      where:{
+        chatId:id
+      }
+    })
     
-    if(chat.members.length===3){
+    if(existingMembers.length===3){
       return next(new CustomError("Minimum 3 members are required in a group chat",400))
     }
 
-    const existingMemberIds = chat.members.map(member=>member.id);
-    const invalidMemberIds = members.filter(member=>!existingMemberIds.includes(member));
+    const existingMemberIds = existingMembers.map(({userId})=>userId);
 
-    if(invalidMemberIds.length){
+    const doesMembersToBeRemovedDosentExistsAlready = members.filter(memberId=>!existingMemberIds.includes(memberId));
+
+    if(doesMembersToBeRemovedDosentExistsAlready.length){
       return next(new CustomError("Please provide valid members to remove",400))
     }
 
-    const isAdminLeaving = members.findIndex(member=>member === chat.adminId);
-    
-    if(isAdminLeaving!==-1){
-        // if admin is leaving the chat
-        // then assign the admin role to the first member
-        chat.adminId = existingMemberIds[0]
+    let adminLeavingId : string | null = null;
+
+    for(const member of members){
+      if(member===chat.adminId){
+        adminLeavingId = member;
+      }
     }
 
-    await prisma.chat.update({
-      where: {
-        id: id,
-      },
-      data: {
-        members: {
-          disconnect: members.map(memberId => ({ id: memberId })) // Corrected
+    
+    if(adminLeavingId){
+        let nextAdminId:string | null = null;
+        // if admin is leaving the chat
+        // then assign the admin role to the next member
+        for(const memberId of existingMemberIds){
+          if(memberId!==adminLeavingId){
+            nextAdminId = memberId;
+            break;
+          }
+        }
+
+        if(nextAdminId){
+          await prisma.chat.update({
+            where:{id},
+            data:{
+              adminId:nextAdminId
+            }
+          })
+        }
+    }
+
+    await prisma.chatMembers.deleteMany({
+      where:{
+        chatId:id,
+        userId:{
+          in:members
         }
       }
-    });
+    })
 
     const io:Server = req.app.get("io");
 
     disconnectMembersFromChatRoom({io,memberIds:members,roomToLeave:id})
-
     emitEvent({io,event:Events.DELETE_CHAT,users:members,data:{chatId:id}})
 
-    const remainingMembers = existingMemberIds.filter(member=>!members.includes(member))
+    const remainingMembers = existingMemberIds.filter(id=>!members.includes(id))
     emitEvent({io,event:Events.MEMBER_REMOVED,data:{chatId:id,membersId:members},users:remainingMembers})
 
     return res.status(200);

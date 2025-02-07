@@ -2,7 +2,6 @@ import { useCloseReactionsMenuWhenZeroReactions } from "@/hooks/useMessages/useC
 import { useEmojiClickReactionFeature } from "@/hooks/useMessages/useEmojiClickReactionFeature";
 import { useHandleContextMenuClick } from "@/hooks/useMessages/useHandleContextMenuClick";
 import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
-import type { ChatWithUnreadMessages } from "@/interfaces/chat.interface";
 import type { Message } from "@/interfaces/message.interface";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -11,12 +10,13 @@ import { ContextMenu } from "../shared/ContextMenu";
 import { MessageDisplay } from "./MessageDisplay";
 import { MessageReactionsInfo } from "./MessageReactionsInfo";
 import { MessageReactions } from "./MessageReactions";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 
 type PropTypes = {
   editMessageId: string | undefined;
   message: Message;
   loggedInUserId: string;
-  selectedChatDetails: ChatWithUnreadMessages;
+  selectedChatDetails: fetchUserChatsResponse;
   reactionMenuMessageId: string | undefined;
   openContextMenuMessageId: string | undefined;
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -57,7 +57,7 @@ export const MessageListItem = ({
   });
 
   const { handleEmojiClick } = useEmojiClickReactionFeature({
-    chatId: selectedChatDetails._id,
+    chatId: selectedChatDetails.id,
     loggedInUserId,
     messageId: message._id,
     message,
