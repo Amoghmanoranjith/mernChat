@@ -54,7 +54,7 @@ export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
                 }
             </div>
 
-            <SharedMedia totalAttachments={sharedMedia?.totalAttachments || 0}/> 
+            {/* <SharedMedia totalAttachments={sharedMedia?.totalAttachments || 0}/>  */}
                        
         </div>
 

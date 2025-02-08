@@ -3,7 +3,6 @@ import { Server } from "socket.io";
 import { ACCEPTED_FILE_MIME_TYPES } from "../constants/file.constant.js";
 import { Events } from "../enums/event/event.enum.js";
 import { AuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
-import { IUnreadMessageEventPayload } from "../interfaces/unread-message/unread-message.interface.js";
 import { prisma } from "../lib/prisma.lib.js";
 import { uploadAttachmentSchemaType } from "../schemas/message.schema.js";
 import { uploadFilesToCloudinary } from "../utils/auth.util.js";
@@ -22,6 +21,9 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
     if(!chatId){
         return next(new CustomError("ChatId is required",400))
     }
+
+    console.log('chatId', chatId);
+    console.log('attachments',req.files);
 
     const isExistingChat = await prisma.chat.findUnique({
         where:{
@@ -51,59 +53,65 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
 
     const uploadResults =  await uploadFilesToCloudinary({files:attachments})
 
+    console.log("Cloudinary Upload Results:", uploadResults);
+
+
     if(!uploadResults){
         return next(new CustomError("Failed to upload files",500))
     }
 
-    const attachmentsArray = uploadResults.map(({secureUrl,publicId})=>({cloudinaryPublicId:publicId,secureUrl}))
+    const attachmentsArray = uploadResults.map(({secure_url,public_id})=>({cloudinaryPublicId:public_id,secureUrl:secure_url}))
 
-    const newMessage =  await prisma.message.create({
+    const newMessage = await prisma.message.create({
         data:{
             chatId:chatId,
             senderId:req.user.id,
             attachments:{
-                create:attachmentsArray
+              createMany:{
+                data:attachmentsArray.map(attachment=>({cloudinaryPublicId:attachment.cloudinaryPublicId,secureUrl:attachment.secureUrl}))
+              }
             }
         },
         include:{
-            sender:{
-              select:{
-                id:true,
-                username:true,
-                avatar:true,
-              }
-            },
-            attachments:{
-              select:{
-                secureUrl:true,
-              }
-            },
-            poll:{
-              omit:{
-                id:true,
-              }
-            },
-            reactions:{
-              select:{
-                user:{
-                  select:{
-                    id:true,
-                    username:true,
-                    avatar:true
-                  }
-                },
-                reaction:true,
-              }
-            },
+          sender:{
+            select:{
+              id:true,
+              username:true,
+              avatar:true,
+            }
           },
-          omit:{
-            senderId:false,
+          attachments:{
+            select:{
+              secureUrl:true,
+            }
           },
+          poll:{
+            omit:{
+              id:true,
+            }
+          },
+          reactions:{
+            select:{
+              user:{
+                select:{
+                  id:true,
+                  username:true,
+                  avatar:true
+                }
+              },
+              reaction:true,
+            }
+          },
+        },
+        omit:{
+          senderId:true,
+          pollId:true,
+        },
     })
+
 
     const io:Server = req.app.get("io");
     emitEventToRoom({data:newMessage,event:Events.MESSAGE,io,room:chatId})
-
     const otherMembersOfChat = isExistingChat.ChatMembers.filter(({userId}) => req.user.id !== userId);
 
     const updateOrCreateUnreadMessagePromises = otherMembersOfChat.map(({ userId }) => {
@@ -127,7 +135,7 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
       
     await Promise.all(updateOrCreateUnreadMessagePromises);
 
-    const unreadMessageData:IUnreadMessageEventPayload = 
+    const unreadMessageData = 
     {
         chatId,
         message:{

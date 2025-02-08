@@ -12,7 +12,9 @@ export const useHandleUploadAttachment = ({
   selectedAttachments,
   setSelectedAttachments,
 }: PropTypes) => {
+
   const { uploadAttachment } = useSendAttachments();
+
   const handleUploadAttachments = () => {
     if (selectedChatDetails && selectedAttachments) {
       uploadAttachment({
@@ -22,5 +24,6 @@ export const useHandleUploadAttachment = ({
       setSelectedAttachments([]);
     }
   };
+  
   return { handleUploadAttachments };
 };
