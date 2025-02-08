@@ -1,54 +1,52 @@
 "use client";
+import { useGetFriendsQuery } from "@/lib/client/rtk-query/friend.api";
+import { fetchUserFriendsResponse } from "@/lib/server/services/userService";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useAddMember } from "../../hooks/useMember/useAddMember";
+import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm";
 import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 import { MemberList } from "./MemberList";
-import { motion } from "framer-motion";
-import { useToggleAddMemberForm } from "../../hooks/useUI/useToggleAddMemberForm";
-import { Friend } from "@/interfaces/friends.interface";
-import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 
 const AddMemberForm = () => {
-  const { data: friends } = useGetUserFriendRequestsQuery();
 
+  const { data: friends } = useGetFriendsQuery();
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
   const { toggleAddMemberForm } = useToggleAddMemberForm();
 
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [searchVal, setSearchVal] = useState<string>("");
-  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const [filteredFriends, setFilteredFriends] = useState<fetchUserFriendsResponse[]>([]);
 
   const { addMember } = useAddMember();
 
   const handleAddMember = () => {
     if (selectedChatDetails?.id) {
       toggleAddMemberForm();
-      addMember({ _id: selectedChatDetails?.id, members: selectedMembers });
+      addMember({chatId: selectedChatDetails.id, members: selectedMembers});
     }
   };
 
   useEffect(() => {
-    if (friends && searchVal) {
-      const filtered = friends.filter((friend) =>
-        friend.username.toLowerCase().includes(searchVal.toLowerCase())
-      );
+    if (friends && searchVal.trim().length) {
+      const filtered = friends.filter(friend =>friend.username.toLowerCase().includes(searchVal.toLowerCase()));
       setFilteredFriends(filtered);
     }
   }, [searchVal, friends]);
 
   const toggleSelection = (memberId: string) => {
     if (selectedMembers.includes(memberId)) {
-      setSelectedMembers((prev) =>
-        prev.filter((member) => member !== memberId)
-      );
-    } else {
-      setSelectedMembers((prev) => [...prev, memberId]);
+      setSelectedMembers(prev => prev.filter(member => member !== memberId));
+    }
+    else {
+      setSelectedMembers(prev => [...prev, memberId]);
     }
   };
 
   return (
     <div className="flex flex-col gap-y-5">
+
       <h4 className="text-xl">Add members to {selectedChatDetails?.name} </h4>
 
       <input
@@ -61,23 +59,24 @@ const AddMemberForm = () => {
       <div className="overflow-y-auto max-h-52">
         <MemberList
           selectable={true}
-          existingMembers={selectedChatDetails?.members || []}
+          existingMembers={selectedChatDetails?.ChatMembers || []}
           members={filteredFriends}
           selectedMembers={selectedMembers}
           toggleSelection={toggleSelection}
         />
       </div>
 
-      {selectedMembers.length !== 0 && (
+      {selectedMembers.length > 0 && (
         <motion.button
           initial={{ y: 5 }}
           animate={{ y: 0 }}
           onClick={handleAddMember}
           className="bg-primary text-white py-2 rounded-sm disabled:bg-gray-400"
         >
-          Add member
+          {selectedMembers.length  == 1 ? "Add Member" : `Add ${selectedMembers.length} Members`}
         </motion.button>
       )}
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { BasicUserInfo, ChatMember, fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { BasicUserInfo, fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store/store";
 
@@ -34,14 +34,20 @@ const chatSlice = createSlice({
           );
       }
     },
-    updateSelectedChatMembers: (state, action: PayloadAction<ChatMember[]>) => {
-      if (
-        state.selectedChatDetails &&
-        state.selectedChatDetails.ChatMembers.length
-      ) {
-        for (const member of action.payload) {
-          state.selectedChatDetails.ChatMembers.push({ user: member });
-        }
+    updateSelectedChatMembers: (state, action: PayloadAction<{
+      user: {
+        id: string;
+        username: string;
+        avatar: string;
+        isOnline: boolean;
+        publicKey: string | null;
+        lastSeen: Date | null;
+        verificationBadge: boolean;
+      };
+      }[]>
+    ) => {
+      if (state.selectedChatDetails && state.selectedChatDetails.ChatMembers.length) {
+        state.selectedChatDetails.ChatMembers.push(...action.payload);
       }
     },
     removeSelectedChatMembers: (

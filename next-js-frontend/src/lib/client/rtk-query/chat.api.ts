@@ -37,9 +37,9 @@ export const chatApi = createApi({
                 };
             }
         }),
-        addMember:builder.mutation<void,{members:string[],_id:string}>({
-            query:({_id,members})=>({
-                url:`/chat/${_id}/members`,
+        addMember:builder.mutation<void,{members:string[],chatId:string}>({
+            query:({chatId,members})=>({
+                url:`/chat/${chatId}/members`,
                 method:"PATCH",
                 body:{members}
             })

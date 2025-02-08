@@ -1,4 +1,3 @@
-import { NewMemberAddedEventPayloadData } from "@/interfaces/chat.interface";
 import { Event } from "@/interfaces/events.interface";
 import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
@@ -9,7 +8,21 @@ import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useEffect, useRef } from "react";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
+type NewMemberAddedEventReceivePayload = {
+  chatId: string;
+  members: {
+    id: string;
+    username: string;
+    avatar: string;
+    isOnline: boolean;
+    publicKey: string | null;
+    lastSeen: Date | null;
+    verificationBadge: boolean;
+  }[]
+}
+
 export const useNewMemberAddedListener = () => {
+
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
   const dispatch = useAppDispatch();
 
@@ -19,21 +32,22 @@ export const useNewMemberAddedListener = () => {
     selectedChatDetailsRef.current = selectedChatDetails;
   }, [selectedChatDetails]);
 
-  useSocketEvent(
-    Event.NEW_MEMBER_ADDED,
-    ({ chatId, members }: NewMemberAddedEventPayloadData) => {
-      const areNewMembersAddedInSelectedChat: boolean =
-        chatId === selectedChatDetailsRef.current?._id;
+  useSocketEvent(Event.NEW_MEMBER_ADDED,({chatId,members}: NewMemberAddedEventReceivePayload) => {
+
+      const areNewMembersAddedInActivelySelectedChat = chatId === selectedChatDetailsRef.current?.id;
+      const tranformedMembers = members.map(member=>({user: member}));
+      
       dispatch(
         chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find((draft) => draft._id === chatId);
-          if (chat) {
-            if (areNewMembersAddedInSelectedChat)
-              dispatch(updateSelectedChatMembers(members));
-            chat.members.push(...members);
-          }
+          const chat = draft.find(draft => draft.id === chatId);
+          if (chat) chat.ChatMembers.push(...tranformedMembers)
         })
       );
+
+      if(areNewMembersAddedInActivelySelectedChat){
+        dispatch(updateSelectedChatMembers(tranformedMembers));
+      }
+
     }
   );
 };

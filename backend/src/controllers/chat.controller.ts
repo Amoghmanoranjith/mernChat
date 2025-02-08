@@ -18,6 +18,19 @@ type GroupChatUpdateEventSendPayload = {
   chatName?: string;
 }
 
+type NewMemberAddedEventSendPayload = {
+  chatId: string;
+  members: {
+    id: string;
+    username: string;
+    avatar: string;
+    isOnline: boolean;
+    publicKey: string | null;
+    lastSeen: Date | null;
+    verificationBadge: boolean;
+  }[]
+}
+
 const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     let uploadResults:UploadApiResponse[] | void = []
@@ -355,7 +368,7 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
       }
     })
 
-    const updatedChat = await prisma.chat.findMany({
+    const updatedChat = await prisma.chat.findUnique({
       where:{
         id:chat.id
       },
@@ -381,36 +394,6 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
             chatId:true,
             userId:true,
             id:true,
-          }
-        },
-        UnreadMessages:{
-          select:{
-            count:true,
-            message:{
-              select:{
-                isTextMessage:true,
-                url:true,
-                attachments:{
-                  select:{
-                    secureUrl:true,
-                  }
-                },
-                isPollMessage:true,
-                createdAt:true,
-                textMessageContent:true,
-              }
-            },
-            sender:{
-              select:{
-                id:true,
-                username:true,
-                avatar:true,
-                isOnline:true,
-                publicKey:true,
-                lastSeen:true,
-                verificationBadge:true
-              }
-            },
           }
         },
         latestMessage:{
@@ -450,18 +433,18 @@ const addMemberToChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Res
         }
       },
     })
-    
+
     const io:Server = req.app.get("io");
 
     // join the new members in the chat room
     joinMembersInChatRoom({io,roomToJoin:chat.id,memberIds:members})
 
     // emitting the new chat event to the new members
-    emitEvent({event:Events.NEW_CHAT,data:updatedChat,io,users:members})
+    emitEvent({event:Events.NEW_CHAT,data:{...updatedChat,typingUsers:[],UnreadMessages:[]},io,users:members})
 
     // emitting the new member added event to the existing members
     // with new member details
-    const payload = {
+    const payload:NewMemberAddedEventSendPayload = {
       chatId:chat.id,
       members:newMemberDetails
     }
