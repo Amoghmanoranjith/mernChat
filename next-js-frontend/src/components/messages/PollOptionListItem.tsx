@@ -33,7 +33,7 @@ export const PollOptionListItem = ({option,optionIndex,messageId,loggedInUserId,
         </div>
         <Display2RecentVotesAndRemaningVotesCount optionIndexToVotesMap={optionIndexToVotesMap}  optionIndex={optionIndex} />
       </div>
-      <PollVotePercentageBar key={messageId} totalOptions={totalOptions} optionIndex={optionIndex} optionIndexToVotesMap={optionIndexToVotesMap}/>
+      <PollVotePercentageBar totalOptions={totalOptions} optionIndex={optionIndex} optionIndexToVotesMap={optionIndexToVotesMap}/>
     </div>
   );
 };

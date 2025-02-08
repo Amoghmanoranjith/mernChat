@@ -33,7 +33,7 @@ export const RenderAppropriateMessage = ({
           </p>
         )}
       {message.isPollMessage && (
-        <PollCard key={message.poll?.votes.length} messageId={message.id} pollData={message.poll!}/>
+        <PollCard messageId={message.id} pollData={message.poll!}/>
       )}
       {message.attachments.length > 0 && (
         <AttachmentList attachments={message.attachments} />

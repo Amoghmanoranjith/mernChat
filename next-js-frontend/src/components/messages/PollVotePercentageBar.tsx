@@ -14,13 +14,12 @@ export const PollVotePercentageBar = ({optionIndex,totalOptions,optionIndexToVot
 
   const calculateVotePercentage = () => {
     const percentage = (votesInThisOption/totalOptions) * 100;
-    return Math.round(percentage);
+    return Math.min(Math.round(percentage), 100)
   };
 
   return (
     <div
-      key={calculateVotePercentage()}
-      style={{ width: `${Math.min(calculateVotePercentage(), 100)}%` }}
+      style={{ width: `${calculateVotePercentage() || 0}%` }}
       className={`h-2 bg-green-500 self-start transition-all rounded-2xl`}
     />
   );
