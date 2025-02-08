@@ -32,6 +32,7 @@ export const PollCard = ({ pollData, messageId}: PropTypes) => {
         isMultipleAnswers={pollData.multipleAnswers}
         optionIndexToVotesMap={optionIndexToVotesMap}
       />
+      <span className="bg-white w-full h-[1px]"/>
       <button onClick={e=>{e.preventDefault(); e.stopPropagation(); handleViewVotesClick()}} className="text-center">
         View votes
       </button>
