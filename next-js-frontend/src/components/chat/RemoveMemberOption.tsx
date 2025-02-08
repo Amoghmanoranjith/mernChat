@@ -1,7 +1,7 @@
 import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemberForm";
 import { RemoveMemberIcon } from "../ui/icons/RemoveMemberIcon";
 
-export const RemoveMemberSection = () => {
+export const RemoveMemberOption = () => {
   const { toggleRemoveMember } = useToggleRemoveMemberForm();
 
   return (

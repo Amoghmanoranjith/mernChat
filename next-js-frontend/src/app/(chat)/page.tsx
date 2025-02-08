@@ -1,5 +1,5 @@
 import { ChatAreaWrapper } from "@/components/chat/ChatAreaWrapper";
-import { ChatDetailsLoaderWrapper } from "@/components/chat/ChatDetailsLoaderWrapper";
+import { ChatDetailsSkeletonWrapper } from "@/components/chat/ChatDetailsSkeletonWrapper";
 import { ChatDetailsWrapper } from "@/components/chat/ChatDetailsWrapper";
 import { ChatHeaderWrapper } from "@/components/chat/ChatHeaderWrapper";
 import { ChatListClientWrapper } from "@/components/chat/ChatListClientWrapper";
@@ -44,7 +44,7 @@ export default async function ChatPage() {
         </ChatAreaWrapper>
 
         <ChatDetailsWrapper>
-          <ChatDetailsLoaderWrapper loggedInUser={user} />
+          <ChatDetailsSkeletonWrapper loggedInUser={user} />
         </ChatDetailsWrapper>
       </div>
     </ChatWrapper>

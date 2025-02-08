@@ -12,13 +12,12 @@ export const useHandleSharedMediaScroll = ({containerRef,hasMore,setPage,isFetch
   const handleSharedMediaScroll = ()=>{
     const container = containerRef?.current;
     if(container){
-      const isCloseToBottom = container.scrollHeight - container.scrollTop <= container.clientHeight * 1.1; // Adjust multiplier if needed
-  
-        if(isCloseToBottom && hasMore && !isFetching){
-          setPage(prev=>prev+1);
-          // console.log('we have reached the bottom');
-        }
+      const isCloseToBottom = container.scrollHeight - container.scrollTop <= container.clientHeight * 1.1; // Adjust multiplier if needed  
+      if(isCloseToBottom && hasMore && !isFetching){
+        setPage(prev=>prev+1);
+      }
     }
   }
+
   return {handleSharedMediaScroll};
 }

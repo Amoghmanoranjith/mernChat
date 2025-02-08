@@ -7,13 +7,14 @@ type PropTypes = {
   members: fetchUserChatsResponse['ChatMembers']
 };
 
-export const DisplayGroupMembersAvatar = ({ members }: PropTypes) => {
+export const DisplayChatMembersAvatar = ({ members }: PropTypes) => {
+
   const top4Members = members.slice(0, 4);
   const remainingMembers = members.length - 4;
 
   return (
     <div className="flex items-center">
-      {top4Members.map((member) => (
+      {top4Members.map(member => (
         <Image
           className="size-8 rounded-full object-cover shrink-0"
           key={member.user.id}

@@ -1,6 +1,7 @@
 export interface Attachment {
-  id: string;
-  attachments: string[];
+  attachments: {
+    secureUrl: string;
+  }[];
+  totalAttachmentsCount: number;
   totalPages: number;
-  totalAttachments: number;
 }

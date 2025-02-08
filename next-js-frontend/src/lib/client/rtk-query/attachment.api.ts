@@ -9,10 +9,8 @@ export const attachmentApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    sendAttachments: builder.mutation<
-      void,
-      { chatId: string; attachments: Blob[] }
-    >({
+
+    sendAttachments: builder.mutation<void,{ chatId: string; attachments: Blob[] }>({
       query: ({ chatId, attachments }) => {
         const formData = new FormData();
         formData.append("chatId", chatId);
@@ -25,10 +23,8 @@ export const attachmentApi = createApi({
         };
       },
     }),
-    fetchAttachments: builder.query<
-      Attachment,
-      { chatId: string; page: number }
-    >({
+
+    fetchAttachments: builder.query<Attachment,{ chatId: string; page: number }>({
       query: ({ chatId, page }) => `/${chatId}?page=${page}`,
       serializeQueryArgs: ({ endpointName, queryArgs: { chatId } }) => {
         return `${endpointName}_${chatId}`;
@@ -38,6 +34,7 @@ export const attachmentApi = createApi({
         currentCache.totalPages = newItems.totalPages;
       },
     }),
+    
   }),
 });
 

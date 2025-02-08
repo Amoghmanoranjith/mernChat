@@ -1,7 +1,8 @@
 import { useToggleAddMemberForm } from "@/hooks/useUI/useToggleAddMemberForm";
 import { AddMemberIcon } from "../ui/icons/AddMemberIcon";
 
-export const AddMemberSection = () => {
+export const AddMemberOption = () => {
+  
   const {toggleAddMemberForm} = useToggleAddMemberForm();
 
   return (

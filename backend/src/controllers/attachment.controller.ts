@@ -166,26 +166,20 @@ export const fetchAttachments = asyncErrorHandler(async(req:AuthenticatedRequest
         }
       },
       omit:{
-        messageId:true,
+        id:true,
         cloudinaryPublicId:true,
+        messageId:true,
       },
       orderBy:{
         message:{
-          createdAt:"asc"
+          createdAt:"desc"
         }
       },
       skip:calculateSkip(Number(page),Number(limit)),
       take:Number(limit)
     })
 
-    const totalAttachmentsCount = await prisma.attachment.count({
-        where:{
-            message:{
-                chatId:id
-            }
-        }
-    })
-    
+    const totalAttachmentsCount = await prisma.attachment.count({where:{message:{chatId:id}}})
     const totalPages =  Math.ceil(totalAttachmentsCount/Number(limit))
 
     const payload = {
@@ -195,5 +189,4 @@ export const fetchAttachments = asyncErrorHandler(async(req:AuthenticatedRequest
     }
     
     res.status(200).json(payload);
-    
 })

@@ -8,7 +8,7 @@ type PropTypes = {
   loggedInUser: FetchUserInfoResponse;
 };
 
-export const ChatDetailsLoaderWrapper = ({ loggedInUser }: PropTypes) => {
+export const ChatDetailsSkeletonWrapper = ({ loggedInUser }: PropTypes) => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
   return (
     selectedChatDetails && (

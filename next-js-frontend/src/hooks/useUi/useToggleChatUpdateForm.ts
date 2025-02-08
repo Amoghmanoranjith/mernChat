@@ -8,7 +8,9 @@ export const useToggleChatUpdateForm = () => {
   const dispatch = useAppDispatch();
   const chatUpdateForm = useAppSelector(selectChatUpdateForm);
 
-  return () => {
+  const toggleChatUpdateForm = ()=>{
     dispatch(setChatUpdateForm(!chatUpdateForm));
-  };
+  }
+
+  return { toggleChatUpdateForm }
 };
