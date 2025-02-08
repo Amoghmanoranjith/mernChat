@@ -3,29 +3,29 @@ import { selectVotesData } from "../../lib/client/slices/uiSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 
 const ViewVotes = () => {
+
   const votesData = useAppSelector(selectVotesData);
 
-  
-
-  if(votesData){
-    const {optionIndexToVotesMap,options} = votesData
-  }
-
   return (
+    votesData && (
     <div className="flex flex-col gap-y-8 select-none">
-      <h6 className="font-medium text-xl">{votesData?.pollQuestion}</h6>
+
+      <h6 className="font-medium text-xl">{'demo poll question'}</h6>
 
       <div className="flex flex-col gap-y-6">
-        {votesData?.pollOptions?.map(({ option, votes }, index) => (
+
+        {votesData.options?.map((option,index) => (
+
           <div key={index} className="flex flex-col gap-y-4">
+            
             <div className="flex flex-col gap-y-1">
               <div className="flex justify-between">
-                <p className="text-base">{option.toString()}</p>
+                <p className="text-base">{option}</p>
                 <p>
-                  {votes.length
-                    ? votes.length === 1
+                  {votesData.optionIndexToVotesMap[index]?.length > 0
+                    ? votesData.optionIndexToVotesMap[index].length === 1
                       ? "1 vote"
-                      : `${votes.length} Votes`
+                      : `${votesData.optionIndexToVotesMap[index].length} Votes`
                     : "No votes"}
                 </p>
               </div>
@@ -33,8 +33,8 @@ const ViewVotes = () => {
             </div>
 
             <div className="flex flex-col gap-y-4 max-h-32 overflow-y-scroll">
-              {votes.map(({ _id, avatar, username }) => (
-                <div key={_id} className="flex gap-x-2 items-center">
+              {votesData.optionIndexToVotesMap[index]?.map(({id,username,avatar}) => (
+                <div key={id} className="flex gap-x-2 items-center">
                   <Image
                     width={100}
                     height={100}
@@ -46,10 +46,14 @@ const ViewVotes = () => {
                 </div>
               ))}
             </div>
+
           </div>
         ))}
+
       </div>
+
     </div>
+    )
   );
 };
 
