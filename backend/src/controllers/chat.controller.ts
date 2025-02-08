@@ -11,6 +11,13 @@ import { disconnectMembersFromChatRoom, joinMembersInChatRoom } from "../utils/c
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 import { emitEvent, emitEventToRoom } from "../utils/socket.util.js";
 
+
+type GroupChatUpdateEventSendPayload = {
+  chatId: string;
+  chatAvatar?: string;
+  chatName?: string;
+}
+
 const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     let uploadResults:UploadApiResponse[] | void = []
@@ -561,9 +568,7 @@ const updateChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
     }
 
     const chat = await prisma.chat.findUnique({
-      where:{
-        id
-      }
+      where:{id}
     })
 
     if (!chat) {
@@ -588,9 +593,7 @@ const updateChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
       }
 
       await prisma.chat.update({
-        where:{
-          id
-        },
+        where:{id},
         data:{
           avatarCloudinaryPublicId:uploadResult[0].public_id,
           avatar:uploadResult[0].secure_url
@@ -600,18 +603,30 @@ const updateChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
 
     if(name){
       await prisma.chat.update({
-        where:{
-          id
-        },
-        data:{
-          name
-        }
+        where:{id},
+        data:{name}
       })
     }
 
+    const updatedChat = await prisma.chat.findUnique({
+      where:{id},
+      select:{name:true,avatar:true,id:true}
+    })
+
+    if(!updatedChat){
+      return next(new CustomError("Error updating chat",404))
+    }
+
+    
+    const payload:GroupChatUpdateEventSendPayload = {
+      chatId:updatedChat.id,
+      chatAvatar:updatedChat.avatar,
+      chatName:updatedChat.name!
+    }
+    
     const io:Server = req.app.get("io");
-    const payload = {id,avatar,name}
-    emitEventToRoom({io,event:Events.GROUP_UPDATE,room:id,data:payload})
+    emitEventToRoom({io,event:Events.GROUP_CHAT_UPDATE,room:id,data:payload})
+
     return res.status(200)
 })
 

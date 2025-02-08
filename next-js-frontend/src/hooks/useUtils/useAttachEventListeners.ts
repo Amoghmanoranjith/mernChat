@@ -1,7 +1,7 @@
 import { useDeleteChatListener } from "../useEventListeners/useDeleteChatListener";
 import { useDeleteReactionListener } from "../useEventListeners/useDeleteReactionListener";
 import { useFriendRequestListener } from "../useEventListeners/useFriendRequestListener";
-import { useGroupUpdateEventListener } from "../useEventListeners/useGroupUpdateEventListener";
+import { useGroupChatUpdateEventListener } from "../useEventListeners/useGroupChatUpdateEventListener";
 import { useMemberRemovedListener } from "../useEventListeners/useMemberRemovedListener";
 import { useMessageDeleteListener } from "../useEventListeners/useMessageDeleteListener";
 import { useMessageEditListener } from "../useEventListeners/useMessageEditListener";
@@ -44,7 +44,7 @@ export const useAttachEventListeners = () => {
   
   // chats
   useNewChatListener();
-  useGroupUpdateEventListener();
+  useGroupChatUpdateEventListener();
   useNewMemberAddedListener();
   useMemberRemovedListener();
   useDeleteChatListener();

@@ -40,5 +40,5 @@ export const useToast = ({
         toast.success(successMessage);
       }
     }
-  }, [isLoading, isUninitialized, isSuccess]);
+  }, []);
 };

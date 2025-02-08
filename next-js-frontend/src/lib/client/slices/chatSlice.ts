@@ -1,6 +1,5 @@
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { BasicUserInfo, ChatMember, fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { BasicUserInfo, ChatMember } from "../../../interfaces/chat.interface";
 import { RootState } from "../store/store";
 
 type InitialState = {
