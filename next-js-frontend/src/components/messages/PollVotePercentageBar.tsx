@@ -19,6 +19,7 @@ export const PollVotePercentageBar = ({optionIndex,totalOptions,optionIndexToVot
 
   return (
     <div
+      key={calculateVotePercentage()}
       style={{ width: `${Math.min(calculateVotePercentage(), 100)}%` }}
       className={`h-2 bg-green-500 self-start transition-all rounded-2xl`}
     />

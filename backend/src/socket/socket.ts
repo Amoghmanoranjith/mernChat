@@ -460,6 +460,15 @@ const registerSocketHandlers = (io:Server)=>{
         
         socket.on(Events.NEW_REACTION,async({chatId,messageId,reaction}:NewReactionEventReceivePayload)=>{
             
+            const result =  await prisma.reactions.findFirst({
+                where:{
+                    userId:socket.user.id,
+                    messageId
+                }
+            })
+
+            if(result) return;
+
             await prisma.reactions.create({
                 data:{
                     reaction,
@@ -485,12 +494,10 @@ const registerSocketHandlers = (io:Server)=>{
 
         socket.on(Events.DELETE_REACTION,async({chatId,messageId}:DeleteReactionEventReceivePayload)=>{
 
-            await prisma.reactions.delete({
+            await prisma.reactions.deleteMany({
                 where:{
-                    userId_messageId:{
-                        userId:socket.user.id,
-                        messageId
-                    }
+                    userId:socket.user.id,
+                    messageId
                 }
             })
             const payload:DeleteReactionEventSendPayload = {
@@ -552,6 +559,8 @@ const registerSocketHandlers = (io:Server)=>{
         })
 
         socket.on(Events.VOTE_OUT,async({chatId,messageId,optionIndex}:VoteOutEventReceivePayload)=>{
+
+            console.log('vote out request received',chatId,messageId,optionIndex);
             
             const isValidPoll = await prisma.message.findFirst({
                 where:{chatId,id:messageId},
@@ -566,10 +575,20 @@ const registerSocketHandlers = (io:Server)=>{
 
             if(!isValidPoll?.poll?.id) return
 
+            const vote =  await prisma.vote.findFirst({
+                where:{
+                    userId:socket.user.id,
+                    pollId:isValidPoll.poll.id,
+                    optionIndex
+                }
+            })
+
+            if(!vote) return;
+
             await prisma.vote.deleteMany({
                 where: {
-                    userId: socket.user.id,
-                    pollId: isValidPoll.poll.id,
+                    userId:socket.user.id,
+                    pollId:isValidPoll.poll.id,
                     optionIndex
                 }
             });         
