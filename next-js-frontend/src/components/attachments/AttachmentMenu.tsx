@@ -4,6 +4,8 @@ import { useTogglePollForm } from "@/hooks/useUI/useTogglePollForm";
 import { motion } from "framer-motion";
 import { GalleryIcon } from "../ui/icons/GalleryIcon";
 import { PollingIcon } from "../ui/icons/PollingIcon";
+import { useRef } from "react";
+import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
 
 type PropTypes = {
   setAttachmentsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,6 +17,10 @@ export const AttachmentMenu = ({
   setSelectedAttachments,
 }: PropTypes) => {
   const { togglePollForm } = useTogglePollForm();
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  useHandleOutsideClick(ref,()=>setAttachmentsMenuOpen(false));
 
   const handlePollClick = () => {
     setAttachmentsMenuOpen(false);
@@ -28,6 +34,7 @@ export const AttachmentMenu = ({
 
   return (
     <motion.div
+      ref={ref}
       variants={{
         hide: { y: 40, opacity: 0 },
         show: { y: 0, opacity: 1 },
