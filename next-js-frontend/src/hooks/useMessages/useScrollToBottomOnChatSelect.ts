@@ -24,5 +24,5 @@ export const useScrollToBottomOnChatSelect = ({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [messageContainerRef, selectedChatId]);
+  }, [selectedChatId]);
 };

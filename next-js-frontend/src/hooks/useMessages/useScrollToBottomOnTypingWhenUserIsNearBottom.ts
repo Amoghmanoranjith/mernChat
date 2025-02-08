@@ -21,5 +21,5 @@ export const useScrollToBottomOnTypingWhenUserIsNearBottom = ({
     if (container.current && isAnyUserTyping && isNearBottom) {
       container.current.scrollTop = container.current.scrollHeight;
     }
-  }, [container, isAnyUserTyping, isNearBottom]);
+  }, [isAnyUserTyping, isNearBottom]);
 };

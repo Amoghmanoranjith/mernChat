@@ -37,5 +37,5 @@ export const useFetchMessagesOnPageChange = ({
     if (page === totalPages) {
       setHasMoreMessages(false);
     }
-  }, [getPreviousMessages, hasMoreMessages, isFetching, page, selectedChatId, setHasMoreMessages, totalPages]);
+  }, [page]);
 };
