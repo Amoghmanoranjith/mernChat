@@ -247,6 +247,13 @@ const getOtherMembersOfGroupChatThatAreActive = (
   return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
 };
 
+const getActiveMembersInChat = (
+  chat: fetchUserChatsResponse,
+  loggedInUserId: string
+) => {
+  return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
+};
+
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
@@ -261,6 +268,7 @@ export {
   getOtherMembersOfGroupChatThatAreActive,isErrorWithMessage,
   isFetchBaseQueryError,
   sortChats,
-  uint8ArrayToBase64
+  uint8ArrayToBase64,
+  getActiveMembersInChat
 };
 

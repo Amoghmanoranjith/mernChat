@@ -45,20 +45,16 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
           height={200}
         />
         <div className="flex flex-col gap-y-1 max-sm:gap-y-[.5px]">
-          <div className="flex items-center gap-x-1">
-            <ChatHeaderBasicInfo
-              loggedInUserId={loggedInUserId}
-              otherMemberOfPrivateChat={otherMemberOfPrivateChat}
-              selectedChatDetails={selectedChatDetails}
-            />
-          </div>
-          <div className="flex items-center gap-x-2">
-            <ChatHeaderSecondaryInfo
-              otherMemberOfPrivateChat={otherMemberOfPrivateChat}
-              selectedChatDetails={selectedChatDetails}
-              loggedInUserId={loggedInUserId}
-            />
-          </div>
+          <ChatHeaderBasicInfo
+            loggedInUserId={loggedInUserId}
+            otherMemberOfPrivateChat={otherMemberOfPrivateChat}
+            selectedChatDetails={selectedChatDetails}
+          />
+          <ChatHeaderSecondaryInfo
+            otherMemberOfPrivateChat={otherMemberOfPrivateChat}
+            selectedChatDetails={selectedChatDetails}
+            loggedInUserId={loggedInUserId}
+          />
         </div>
       </div>
     </div>
