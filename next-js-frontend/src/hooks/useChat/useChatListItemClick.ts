@@ -17,12 +17,12 @@ export const useChatListItemClick = () => {
   const isLg = useMediaQuery(1024);
 
   const handleChatListItemClick = (chatId: string) => {
-    if (selectedChatId !== chatId && chats && chats.length) {
+    if(chatId === selectedChatId) {
+      dispatch(updateSelectedChatDetails(null));
+    }
+    else if(chatId !== selectedChatId && chats && chats.length) {
       const selectedChatByUser = chats.find((chat) => chat.id === chatId);
       if (selectedChatByUser) dispatch(updateSelectedChatDetails(selectedChatByUser));
-    }
-    else if(selectedChatId === chatId) {
-      dispatch(updateSelectedChatDetails(null));
     }
     if (isLg) {
       toggleChatBar();

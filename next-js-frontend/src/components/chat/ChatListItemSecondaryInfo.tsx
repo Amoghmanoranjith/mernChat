@@ -1,18 +1,19 @@
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import {
   getAppropriateLastLatestMessageForGroupChats,
   getAppropriateLastLatestMessageForPrivateChats,
   getAppropriateUnreadMessageForGroupChats,
   getAppropriateUnreadMessageForPrivateChats,
 } from "@/lib/shared/helpers";
-import { TypingIndicatorAnimation } from "../ui/TypingIndicatorAnimation";
 import { DisplayDecryptedMessage } from "../messages/DisplayDecryptedMessage";
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { TypingIndicatorAnimation } from "../ui/TypingIndicatorAnimation";
 
 type PropTypes = {
   chat: fetchUserChatsResponse;
 };
 
 export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
+
   const renderHelper = () => {
     if (chat.typingUsers.length > 0) {
       // if any user is typing
@@ -22,7 +23,8 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
           <TypingIndicatorAnimation />
         </div>
       );
-    } else if (chat.UnreadMessages[0]?.count === 0) {
+    }
+    else if (chat.UnreadMessages[0]?.count === 0) {
       // that means are no unread messages
       // so we will display the last latest message of the conversation
 
@@ -36,21 +38,24 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
             {getAppropriateLastLatestMessageForGroupChats(chat.latestMessage)}
           </span>
         );
-      } else {
+      }
+      else {
         // if is is not a group chat
         // then for last latest text messages we have to decrypt the message, then only we can show that
         // as in private chats E2EE(end-to-end-enncrytion) is applied
-        if (chat.latestMessage?.textMessageContent?.length) {
+        if (chat.latestMessage?.isTextMessage) {
           // here we will decrypt the message and then show it
           return (
-            <DisplayDecryptedMessage
-              cipherText={chat.latestMessage.textMessageContent}
-              chat={chat}
-            />
+            <span className="text-sm text-secondary-darker">
+              <DisplayDecryptedMessage
+                cipherText={chat.latestMessage.textMessageContent!}
+                chat={chat}
+              />
+            </span>
           );
         } else {
           // but if the latest message is not a text message
-          // we can our utility function to get the appropriate message
+          // we can use our utility function to get the appropriate message
           return (
             <span className="text-sm text-secondary-darker">
               {getAppropriateLastLatestMessageForPrivateChats(chat.latestMessage)}
@@ -58,7 +63,8 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
           );
         }
       }
-    } else {
+    }
+    else {
       // if there are unread messages
       // then we cannot show the latest message as we have to show the latest unread message
       // again there are two cases
@@ -71,17 +77,20 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
             {getAppropriateUnreadMessageForGroupChats(chat.UnreadMessages)}
           </span>
         );
-      } else {
+      }
+      else {
         // if it is not a group chat
         // and the unreadMessage is a textMessage then we have to decrypt the message first as private chats are E2EE
         if (chat.UnreadMessages[0]?.message?.isTextMessage) {
           // here will have to decrypt the message
           // and then only we can show it
           return (
-            <DisplayDecryptedMessage
-              cipherText={chat.UnreadMessages[0].message.textMessageContent!}
-              chat={chat}
-            />
+            <span className="text-sm text-secondary-darker">
+              <DisplayDecryptedMessage
+                cipherText={chat.UnreadMessages[0].message.textMessageContent!}
+                chat={chat}
+              />
+            </span>
           );
         } else {
           // but if the unread message is not a text message
@@ -97,13 +106,13 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
   };
 
   return (
-    <>
+    <div className="flex justify-between items-center shrink-0">
       <div className=" w-full h-full">{renderHelper()}</div>
       {chat.UnreadMessages[0]?.count > 0 && (
         <p className="bg-primary flex items-center justify-center text-white rounded-full h-5 w-5 p-2">
           {chat.UnreadMessages[0]?.count}
         </p>
       )}
-    </>
+    </div>
   );
 };

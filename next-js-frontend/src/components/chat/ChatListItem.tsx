@@ -1,14 +1,14 @@
 "use client";
+import { DEFAULT_AVATAR } from "@/constants";
 import { useChatListItemClick } from "@/hooks/useChat/useChatListItemClick";
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { getChatAvatar } from "@/lib/shared/helpers";
+import Image from "next/image";
 import { ChatListItemBasicInfo } from "./ChatListItemBasicInfo";
 import { ChatListItemSecondaryInfo } from "./ChatListItemSecondaryInfo";
-import Image from "next/image";
-import { DEFAULT_AVATAR } from "@/constants";
-import { getChatAvatar } from "@/lib/shared/helpers";
 
 type PropTypes = {
   chat: fetchUserChatsResponse;
@@ -36,12 +36,8 @@ export const ChatListItem = ({ chat }: PropTypes) => {
       />
 
       <div className="w-full flex flex-col gap-y-1">
-        <div className="flex items-center gap-x-2 justify-between w-full shrink-0">
-          <ChatListItemBasicInfo chat={chat} />
-        </div>
-        <div className="flex justify-between items-center shrink-0">
-          <ChatListItemSecondaryInfo key={chat.id} chat={chat} />
-        </div>
+        <ChatListItemBasicInfo chat={chat} />
+        <ChatListItemSecondaryInfo key={chat.id} chat={chat} />
       </div>
     </div>
   );

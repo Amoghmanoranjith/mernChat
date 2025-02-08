@@ -19,7 +19,7 @@ export const SearchInputForChatList = ({
       <input
         value={searchVal}
         aria-label="Search chats"
-        onChange={(e) => setSearchVal(e.target.value)}
+        onChange={e => setSearchVal(e.target.value)}
         className="outline-none bg-inherit w-full  px-3 py-3"
         type="text"
         placeholder="Search"

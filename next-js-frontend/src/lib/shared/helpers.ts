@@ -1,4 +1,3 @@
-import { PollOption } from "@/interfaces/message.interface";
 import { fetchUserChatsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
@@ -217,7 +216,7 @@ const getAppropriateUnreadMessageForGroupChats = (
     : unreadMessage[0]?.message?.attachments
     ? "Sent an attachment"
     : unreadMessage[0]?.message?.isTextMessage
-    ? truncateTextMessage(unreadMessage[0]?.message.isTextMessage ? 'default-man': 'default-man')
+    ? truncateTextMessage(unreadMessage[0]?.message.textMessageContent)
     : null;
 };
 
@@ -240,13 +239,6 @@ const getOtherMemberOfPrivateChat = (
   return chat.ChatMembers.filter(({user:{id}}) => id !== loggedInUserId)[0];
 };
 
-const getOtherMembersOfGroupChatThatAreActive = (
-  chat: fetchUserChatsResponse,
-  loggedInUserId: string
-) => {
-  return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
-};
-
 const getActiveMembersInChat = (
   chat: fetchUserChatsResponse,
   loggedInUserId: string
@@ -257,18 +249,16 @@ const getActiveMembersInChat = (
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
-  formatRelativeTime,
-  getAppropriateLastLatestMessageForGroupChats,
+  formatRelativeTime, getActiveMembersInChat, getAppropriateLastLatestMessageForGroupChats,
   getAppropriateLastLatestMessageForPrivateChats,
   getAppropriateUnreadMessageForGroupChats,
   getAppropriateUnreadMessageForPrivateChats,
   getChatAvatar,
   getChatName,
   getOtherMemberOfPrivateChat,
-  getOtherMembersOfGroupChatThatAreActive,isErrorWithMessage,
+  isErrorWithMessage,
   isFetchBaseQueryError,
   sortChats,
-  uint8ArrayToBase64,
-  getActiveMembersInChat
+  uint8ArrayToBase64
 };
 

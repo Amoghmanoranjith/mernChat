@@ -3,9 +3,9 @@ import { useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import {
   formatRelativeTime,
+  getActiveMembersInChat,
   getChatName,
-  getOtherMemberOfPrivateChat,
-  getOtherMembersOfGroupChatThatAreActive,
+  getOtherMemberOfPrivateChat
 } from "@/lib/shared/helpers";
 import { ActiveDot } from "../ui/ActiveDot";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
@@ -20,7 +20,7 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
 
   const renderOnlineStatus = () => {
     if (chat.isGroupChat) {
-      const otherActiveMembers = getOtherMembersOfGroupChatThatAreActive(chat,loggedInUserId);
+      const otherActiveMembers = getActiveMembersInChat(chat,loggedInUserId);
       if (otherActiveMembers?.length) {
         return (
           <div className="text-sm text-secondary-darker flex items-center gap-x-1 ml-1">
@@ -46,15 +46,13 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
   const chatName = getChatName(chat, loggedInUserId) as string;
 
   return (
-    <>
+    <div className="flex items-center gap-x-2 justify-between w-full shrink-0">
       <div className="flex items-center gap-x-1">
         <p className="font-medium break-words">{chatName}</p>
-        <span>
-          {!chat.isGroupChat && getOtherMemberOfPrivateChat(chat, loggedInUserId).user.verificationBadge && <VerificationBadgeIcon />}
-        </span>
+        <span>{!chat.isGroupChat && getOtherMemberOfPrivateChat(chat, loggedInUserId).user.verificationBadge && <VerificationBadgeIcon />}</span>
         <div>{renderOnlineStatus()}</div>
       </div>
       <p className="text-sm text-secondary-darker">{time}</p>
-    </>
+    </div>
   );
 };

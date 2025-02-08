@@ -19,10 +19,10 @@ export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
   });
 
   return (
-    <span>
+    <>
       {decryptedMessage.length > 16
         ? decryptedMessage.substring(0, 20) + "..."
         : decryptedMessage}
-    </span>
+    </>
   );
 };

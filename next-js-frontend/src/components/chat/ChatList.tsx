@@ -13,7 +13,7 @@ export const ChatList = ({ chats, isFiltered }: PropTypes) => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      {sortedChats.map((chat) => (
+      {sortedChats.map(chat => (
         <ChatListItem
           key={`${chat.id}-${chat.latestMessage?.id}`}
           chat={chat}
