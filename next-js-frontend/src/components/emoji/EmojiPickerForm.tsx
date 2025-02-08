@@ -24,7 +24,7 @@ export const EmojiPickerForm = ({
 
   return (
     <EmojiPicker
-      emojiStyle={EmojiStyle.GOOGLE}
+      emojiStyle={EmojiStyle.APPLE}
       reactionsDefaultOpen={reactionsDefaultOpen}
       onEmojiClick={onEmojiClick}
       onReactionClick={onEmojiClick}

@@ -1,5 +1,4 @@
 "use client";
-import { useHandleRemoveSelectedAttachment } from "@/hooks/useAttachment/useHandleRemoveSelectedAttachment";
 import { Dispatch, SetStateAction } from "react";
 import { SelectedAttachmentPreviewItem } from "./SelectedAttachmentsPreviewItem";
 
@@ -15,19 +14,18 @@ export const SelectedAttachmentsPreviewList = ({
   selectedAttachments,
 }: PropTypes) => {
   
-  const { handleRemoveSelectedAttachment } = useHandleRemoveSelectedAttachment({
-    selectedAttachments,
-    setSelectedAttachments,
-  });
+  const handleRemoveSelectedAttachment = (indexToBeRemoved: number) => {
+    setSelectedAttachments(selectedAttachments?.filter((_, index) => index !== indexToBeRemoved));
+  };
 
   return (
     <div className="flex flex-wrap gap-2 mb-5">
       {attachmentsPreview.map((preview, index) => (
         <SelectedAttachmentPreviewItem
+          key={index}
           handleRemoveSelectedAttachment={handleRemoveSelectedAttachment}
           index={index}
           preview={preview}
-          key={index}
         />
       ))}
     </div>

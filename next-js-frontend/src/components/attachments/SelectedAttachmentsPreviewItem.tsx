@@ -14,7 +14,7 @@ export const SelectedAttachmentPreviewItem = ({
   index,
 }: PropTypes) => {
   return (
-    <motion.div whileHover={{ scale: 1.05, y: -5 }} className="relative">
+    <motion.div whileHover={{y: -2 }} className="relative cursor-pointer">
       <button
         onClick={() => handleRemoveSelectedAttachment(index)}
         className="absolute bg-gray-300 rounded-full w-7 h-7 -right-2 -top-2"

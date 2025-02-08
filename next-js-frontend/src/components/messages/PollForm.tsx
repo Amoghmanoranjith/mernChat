@@ -7,7 +7,7 @@ import { useState } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useSendMessage } from "../../hooks/useMessages/useSendMessage";
-import { useTogglePoolForm } from "../../hooks/useUI/useTogglePoolForm";
+import { useTogglePollForm } from "../../hooks/useUI/useTogglePollForm";
 import { FormInput } from "../ui/FormInput";
 import { SubmitButton } from "../ui/SubmitButton";
 import { ToggleSwitch } from "../ui/ToggleSwitch";
@@ -15,7 +15,7 @@ import { PlusIconWithoutCircle } from "../ui/icons/PlusIconWithoutCircle";
 
 const PollForm = () => {
   const { sendMessage } = useSendMessage();
-  const { togglePollForm } = useTogglePoolForm();
+  const { togglePollForm } = useTogglePollForm();
 
   const [isMultipleAnswers, setIsMultipleAnswers] = useState<boolean>(false);
 

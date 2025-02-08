@@ -1,16 +1,17 @@
 "use client";
 import { useGenerateAttachmentsPreview } from "@/hooks/useAttachment/useGenerateAttachmentsPreview";
+import { useHandleUploadAttachment } from "@/hooks/useAttachment/useHandleUploadAttachment";
 import { useHandleSendMessage } from "@/hooks/useMessages/useHandleSendMessage";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useEmitTypingEvent } from "../../hooks/useChat/useEmitTypingEvent";
-import { useToggleGif } from "../../hooks/useUI/useToggleGif";
 import { useDebounce } from "../../hooks/useUtils/useDebounce";
-import { AttachmentPreviewListAndUploadButton } from "../attachments/AttachmentPreviewListAndUploadButton";
-import { AttachmentSelectionMenu } from "../attachments/AttachmentSelectionMenu";
-import { MessageInputAreaEmojiSelector } from "../messages/MessageInputAreaEmojiSelector";
+import { AttachmentMenu } from "../attachments/AttachmentMenu";
+import { SelectedAttachmentsPreviewList } from "../attachments/SelectedAttachmentsPreviewList";
+import { EmojiSelector } from "../messages/EmojiSelector";
 import { MessageInput } from "../ui/MessageInput";
+import { UploadIcon } from "../ui/icons/UploadIcon";
 
 type PropTypes = {
   selectedChatDetails: fetchUserChatsResponse;
@@ -20,12 +21,10 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
   const [selectedAttachments, setSelectedAttachments] = useState<Blob[]>([]);
   const { attachmentsPreview } = useGenerateAttachmentsPreview({selectedAttachments});
 
-  const [attachmentsMenu, setAttachmentsMenu] = useState<boolean>(false);
-  const [emojiForm, setEmojiForm] = useState<boolean>(false);
+  const [attachmentsMenuOpen, setAttachmentsMenuOpen] = useState<boolean>(false);
+  const [emojiFormOpen, setEmojiFormOpen] = useState<boolean>(false);
 
   const [messageVal, setMessageVal] = useState<string>("");
-
-  const { toggleGifForm } = useToggleGif();
 
   const isTyping = useDebounce(messageVal, 200);
   useEmitTypingEvent(isTyping);
@@ -35,6 +34,8 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
     setMessageVal,
   });
 
+  const {handleUploadAttachments} = useHandleUploadAttachment({selectedAttachments,selectedChatDetails,setSelectedAttachments});
+
   return (
     <form
       onSubmit={handleMessageSubmit}
@@ -42,44 +43,45 @@ export const MessageInputArea = ({ selectedChatDetails }: PropTypes) => {
       autoComplete="off"
     >
       {attachmentsPreview.length > 0 && (
-        <AttachmentPreviewListAndUploadButton
-          attachmentsPreview={attachmentsPreview}
-          selectedAttachments={selectedAttachments}
-          selectedChatDetails={selectedChatDetails}
-          setSelectedAttachments={setSelectedAttachments}
-        />
+        <div className="flex items-center flex-wrap gap-4 ml-auto w-fit">
+            <SelectedAttachmentsPreviewList
+              attachmentsPreview={attachmentsPreview}
+              selectedAttachments={selectedAttachments}
+              setSelectedAttachments={setSelectedAttachments}
+            />
+          <motion.button
+            type="button"
+            onClick={handleUploadAttachments}
+            className="p-4 bg-primary text-white rounded-full shadow-xl"
+          >
+            <UploadIcon/>
+          </motion.button>
+        </div>
       )}
 
       <AnimatePresence>
-        {attachmentsMenu && (
-          <AttachmentSelectionMenu
-            setAttachmentsMenu={setAttachmentsMenu}
+        {attachmentsMenuOpen && (
+          <AttachmentMenu
+            setAttachmentsMenuOpen={setAttachmentsMenuOpen}
             setSelectedAttachments={setSelectedAttachments}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {emojiForm && (
-          <MessageInputAreaEmojiSelector
-            setEmojiForm={setEmojiForm}
+        {emojiFormOpen && (
+          <EmojiSelector
+            setEmojiFormOpen={setEmojiFormOpen}
             setMessageVal={setMessageVal}
           />
         )}
       </AnimatePresence>
 
       <MessageInput
-        toggleGif={toggleGifForm}
         messageVal={messageVal}
         setMessageVal={setMessageVal}
-        toggleAttachmentsMenu={setAttachmentsMenu}
-        toggleEmojiForm={(
-          e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-        ) => {
-          e.stopPropagation();
-          e.preventDefault();
-          setEmojiForm((prev) => !prev);
-        }}
+        setAttachmentsMenuOpen={setAttachmentsMenuOpen}
+        setEmojiFormOpen={setEmojiFormOpen}
       />
     </form>
   );

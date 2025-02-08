@@ -2,16 +2,17 @@ import { ACCEPTED_FILE_MIME_TYPES } from "@/constants";
 import toast from "react-hot-toast";
 
 type PropTypes = {
-  setAttachmentsMenu: React.Dispatch<React.SetStateAction<boolean>>;
+  setAttachmentsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedAttachments: React.Dispatch<React.SetStateAction<Blob[]>>;
 };
 
 export const useHandleSelectFileAttachments = ({
-  setAttachmentsMenu,
+  setAttachmentsMenuOpen,
   setSelectedAttachments,
 }: PropTypes) => {
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAttachmentsMenu(false);
+    setAttachmentsMenuOpen(false);
     const files = e.target.files;
     if (files) {
       if (files.length > 5) {
@@ -35,6 +36,6 @@ export const useHandleSelectFileAttachments = ({
       e.target.value = "";
     }
   };
-
+  
   return { handleFileChange };
 };

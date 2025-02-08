@@ -4,16 +4,17 @@ import { Dispatch, SetStateAction, useRef } from "react";
 import { EmojiPickerForm } from "../emoji/EmojiPickerForm";
 
 type PropTypes = {
-  setEmojiForm: Dispatch<SetStateAction<boolean>>;
+  setEmojiFormOpen: Dispatch<SetStateAction<boolean>>;
   setMessageVal: Dispatch<SetStateAction<string>>;
 };
 
-export const MessageInputAreaEmojiSelector = ({
-  setEmojiForm,
+export const EmojiSelector = ({
+  setEmojiFormOpen,
   setMessageVal,
 }: PropTypes) => {
+
   const emojiPickerRef = useRef<HTMLDivElement>(null);
-  useHandleOutsideClick(emojiPickerRef, () => setEmojiForm(false));
+  useHandleOutsideClick(emojiPickerRef, () => setEmojiFormOpen(false));
 
   return (
     <motion.div
@@ -28,7 +29,7 @@ export const MessageInputAreaEmojiSelector = ({
       className="absolute bottom-20 left-0"
     >
       <EmojiPickerForm
-        onEmojiClick={(e) => setMessageVal((val) => val + e.emoji)}
+        onEmojiClick={(e) => setMessageVal(prev=>prev+=e.emoji)}
       />
     </motion.div>
   );
