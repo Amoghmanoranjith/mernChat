@@ -146,9 +146,9 @@ const sortChats = (chats: fetchUserChatsResponse[]) => {
     // The purpose is to show the chat with more unread messages at the top
     // If chat 'b' has more unread messages than chat 'a', the comparison returns a positive number, moving 'b' higher in the list
     // If chat 'a' has more unread messages than chat 'b', the comparison returns a negative number, moving 'a' higher in the list
-    if (b.UnreadMessages[0].count != a.UnreadMessages[0].count){
+    if (b.UnreadMessages[0]?.count != a.UnreadMessages[0]?.count){
       // Sorting in descending order, so we subtract 'a' unread count from 'b' unread count
-      return b.UnreadMessages[0].count - a.UnreadMessages[0].count;
+      return b.UnreadMessages[0]?.count - a.UnreadMessages[0]?.count;
     } else {
       // If the unread message counts are the same, we move to the next sorting criteria:
       // We compare the timestamp of the latest messages to display the most recent one at the top

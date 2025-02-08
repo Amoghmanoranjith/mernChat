@@ -37,7 +37,7 @@ export const ChatListItemBasicInfo = ({ chat }: PropTypes) => {
 
   const time = formatRelativeTime(
     JSON.stringify(
-      chat.UnreadMessages[0]?.message?.createdAt ||
+      (chat.UnreadMessages.length>0 && chat.UnreadMessages[0]?.message?.createdAt) ||
         chat.latestMessage?.createdAt ||
         chat.createdAt
     )

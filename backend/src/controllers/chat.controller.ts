@@ -15,7 +15,7 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
 
     let uploadResults:UploadApiResponse[] | void = []
 
-    const {isGroupChat,members,avatar,name}:createChatSchemaType = req.body
+    const {isGroupChat,members,name}:createChatSchemaType = req.body
 
     if(isGroupChat==='true'){
 
@@ -84,6 +84,9 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
               }
             },
             UnreadMessages:{
+              where:{
+                userId:req.user.id
+              },
               select:{
                 count:true,
                 message:{
@@ -153,14 +156,12 @@ const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response
         
         const io:Server = req.app.get("io");
         joinMembersInChatRoom({memberIds,roomToJoin:newChat.id,io})
-        emitEventToRoom({event:Events.NEW_CHAT,io,room:newChat.id,data:populatedChat});
+        emitEventToRoom({event:Events.NEW_CHAT,io,room:newChat.id,data:{...populatedChat,typingUsers:[]}});
         return res.status(201);
     }
 })
 
 const getUserChats = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-
       const chats = await prisma.chat.findMany({
           where:{
             ChatMembers:{

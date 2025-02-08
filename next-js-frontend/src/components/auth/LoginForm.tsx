@@ -5,6 +5,7 @@ import {
   loginSchemaType,
 } from "@/lib/shared/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
@@ -14,12 +15,16 @@ import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const LoginForm = () => {
   const [state, loginAction] = useActionState(login, undefined);
+  const router = useRouter()
 
-  useEffect(() => {
-    if (state?.errors.message) {
-      toast.error(state.errors.message);
+  useEffect(()=>{
+    if(state?.redirect){
+      router.push('/')
     }
-  }, [state]);
+    else if(state?.errors.message){
+      toast.error(state.errors.message)
+    }
+  },[state,router])
 
   const {
     register,

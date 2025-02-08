@@ -15,6 +15,7 @@ export async function login(prevState: any, formData: FormData) {
         errors: {
           message: "Invalid Credentails",
         },
+        redirect:false
       };
     }
 
@@ -27,16 +28,24 @@ export async function login(prevState: any, formData: FormData) {
         errors: {
           message: "Invalid Credentials",
         },
+        redirect:false,
       };
     }
 
     if (await bcrypt.compare(password, user.hashedPassword)) {
       await createSession(user.id);
+      return {
+        errors: {
+          message:null,
+        },
+        redirect: true,
+      }
     } else {
       return {
         errors: {
           message: "Invalid Credentials",
         },
+        redirect:false,
       };
     }
   } catch (error) {
@@ -59,7 +68,6 @@ export async function signup(prevState: any, formData: FormData) {
       errors: {
         message: "User already exists",
       },
-      data: null,
     };
   }
 
@@ -72,7 +80,6 @@ export async function signup(prevState: any, formData: FormData) {
       errors: {
         message: "Username is already taken",
       },
-      data: null,
     };
   }
 
@@ -107,7 +114,7 @@ export async function signup(prevState: any, formData: FormData) {
 
   return {
     errors: null,
-    data: newUser,
+    data:newUser
   };
 }
 

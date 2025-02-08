@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { decrypt } from "./lib/server/session";
+import { decrypt, deleteSession } from "./lib/server/session";
 
 const publicRoutes = [
   "/auth/login",
@@ -29,6 +29,7 @@ export async function middleware(req: NextRequest) {
   const session = await decrypt(cookie);
 
   if (!session) {
+    await deleteSession();
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     } else {

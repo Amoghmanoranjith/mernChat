@@ -24,7 +24,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
         </div>
       );
     }
-    else if (chat.UnreadMessages[0]?.count === 0) {
+    else if (chat.UnreadMessages.length > 0 && chat.UnreadMessages[0]?.count === 0) {
       // that means are no unread messages
       // so we will display the last latest message of the conversation
 
@@ -81,7 +81,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
       else {
         // if it is not a group chat
         // and the unreadMessage is a textMessage then we have to decrypt the message first as private chats are E2EE
-        if (chat.UnreadMessages[0]?.message?.isTextMessage) {
+        if (chat.UnreadMessages.length>0 && chat.UnreadMessages[0]?.message?.isTextMessage) {
           // here will have to decrypt the message
           // and then only we can show it
           return (
@@ -108,7 +108,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
   return (
     <div className="flex justify-between items-center shrink-0">
       <div className=" w-full h-full">{renderHelper()}</div>
-      {chat.UnreadMessages[0]?.count > 0 && (
+      {chat.UnreadMessages.length>0 && chat.UnreadMessages[0]?.count > 0 && (
         <p className="bg-primary flex items-center justify-center text-white rounded-full h-5 w-5 p-2">
           {chat.UnreadMessages[0]?.count}
         </p>

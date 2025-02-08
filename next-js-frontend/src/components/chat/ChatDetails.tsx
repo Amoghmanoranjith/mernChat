@@ -49,7 +49,7 @@ export const ChatDetails = ({selectedChatDetails,loggedInUser}:PropTypes) => {
                 </>
               }
           </div>
-          <SharedMedia/>  
+          <SharedMedia key={selectedChatDetails.id}/>  
         </div>
 
     </div>

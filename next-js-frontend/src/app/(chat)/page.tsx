@@ -22,6 +22,9 @@ export default async function ChatPage() {
     fetchUserChats({loggedInUserId}),
   ]);
 
+  console.log(chats);
+  console.log('friends',friends);
+
   return (
     (friends && chats && friendRequest && user) ? (
     <ChatWrapper 

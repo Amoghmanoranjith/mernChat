@@ -1,12 +1,14 @@
 "use client";
 import { useCreateGroupChatSubmit } from "@/hooks/useChat/useCreateGroupChatSubmit";
 import { useFilteredFriends } from "@/hooks/useFriend/useFilteredFriends";
+import { useGetFriendsQuery } from "@/lib/client/rtk-query/friend.api";
 import {
   GroupChatSchemaType,
   groupChatSchema,
 } from "@/lib/shared/zod/schemas/chat.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -15,8 +17,6 @@ import { useCreateGroupChat } from "../../hooks/useChat/useCreateGroupChat";
 import { CrossIcon } from "../ui/icons/CrossIcon";
 import { SubmitButton } from "../ui/SubmitButton";
 import { FriendList } from "./FriendList";
-import Image from "next/image";
-import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 
 const GroupChatForm = () => {
 
@@ -28,7 +28,7 @@ const GroupChatForm = () => {
   const [searchVal, setSearchVal] = useState<string>("");
   const { filteredFriends } = useFilteredFriends({ searchVal });
 
-  const { data: friends } = useGetUserFriendRequestsQuery();
+  const { data: friends } = useGetFriendsQuery();
   const { isLoading } = useCreateGroupChat();
 
   const {

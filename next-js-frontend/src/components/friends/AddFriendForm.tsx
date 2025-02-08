@@ -1,3 +1,5 @@
+import { useDebounce } from "@/hooks/useUtils/useDebounce";
+import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 import { useEffect, useState } from "react";
 import { useSendFriendRequest } from "../../hooks/useFriend/useSendFriendRequest";
 import { useSearchUser } from "../../hooks/useSearch/useSearchUser";
@@ -5,7 +7,6 @@ import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 import { UserListSkeleton } from "../ui/skeleton/UserListSkeleton";
 import { UserList } from "./UserList";
-import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
 
 const AddFriendForm = () => {
   const [inputVal, setInputVal] = useState<string>("");
@@ -16,19 +17,13 @@ const AddFriendForm = () => {
   const { sendFriendRequest } = useSendFriendRequest();
   const { searchUser, searchResults, isFetching } = useSearchUser();
 
+  const debouncedInputVal = useDebounce(inputVal, 600);
+
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    if (inputVal?.trim().length) {
-      timeoutId = setTimeout(() => {
-        searchUser(inputVal.trim());
-      }, 600);
+    if (debouncedInputVal) {
+      searchUser(debouncedInputVal, true);
     }
-
-    return () => {
-      clearInterval(timeoutId);
-    };
-  }, [inputVal, searchUser]);
+  }, [debouncedInputVal, searchUser]);
 
   const hanldeSendFriendRequest = (receiverId: string) => {
     sendFriendRequest({ receiverId });
@@ -44,7 +39,7 @@ const AddFriendForm = () => {
         placeholder="Search username"
       />
 
-      <div className="">
+      <div>
         {!isFetching &&
         searchResults &&
         searchResults.length > 0 &&

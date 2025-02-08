@@ -9,14 +9,17 @@ import { useUpdateLoggedInUserPublicKeyInState } from "@/hooks/useAuth/useUpdate
 import type { signupSchemaType } from "@/lib/shared/zod/schemas/auth.schema";
 import { signupSchema } from "@/lib/shared/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { CircleLoading } from "../shared/CircleLoading";
 import { AuthRedirectLink } from "./AuthRedirectLink";
 
 export const SignupForm = () => {
   const [state, signupAction] = useActionState(signup, undefined);
+  const router = useRouter();
 
   const {
     register,
@@ -26,6 +29,12 @@ export const SignupForm = () => {
   } = useForm<signupSchemaType>({ resolver: zodResolver(signupSchema) });
 
   const password = watch("password");
+
+  useEffect(()=>{
+    if(state?.errors?.message){
+      toast.error(state.errors.message)
+    }
+  },[state,router])
 
   const { privateKey, publicKey } = useGenerateKeyPair({ user: state?.data });
   const { privateKeyJWK, publicKeyJWK } =

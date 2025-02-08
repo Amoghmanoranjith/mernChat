@@ -55,21 +55,34 @@ export const useUnreadMessageListener = () => {
 
             // if valid chat id
             if (chat) {
-              // chat.UnreadMessages[0].message.poll = false;
-              // chat.unreadMessages.message.content = "";
-              // chat.unreadMessages.message.attachments = false;
-              // chat.unreadMessages.message.url = false;
 
-              // firstly increment the unread message count
-              chat.UnreadMessages[0].count += 1;
+              if(chat.UnreadMessages.length === 0){
 
-              // update the sender of the unread message
-              chat.UnreadMessages[0].sender = sender;
-
-              if (message?.poll) chat.UnreadMessages[0].message.isPollMessage = true;
-              else if (message?.textMessageContent?.length) chat.UnreadMessages[0].message.textMessageContent = message.textMessageContent;
-              else if (message?.attachments) chat.UnreadMessages[0].message.attachments = [{secureUrl:"demo-url"}];
-              else if (message?.url) chat.UnreadMessages[0].message.url = 'yes it is a gif';
+                chat.UnreadMessages.push({
+                  count:1,
+                  message:{
+                    createdAt: new Date(),
+                    attachments: [{secureUrl:"demo-url"}],
+                    isTextMessage: true,
+                    textMessageContent: message?.textMessageContent || null,
+                    isPollMessage: message?.poll || false,
+                    url: message?.url ? 'asdf' : null
+                  },
+                  sender
+                });
+              }
+              else{
+                // firstly increment the unread message count
+                chat.UnreadMessages[0].count += 1;
+  
+                // update the sender of the unread message
+                chat.UnreadMessages[0].sender = sender;
+  
+                if (message?.poll) chat.UnreadMessages[0].message.isPollMessage = true;
+                else if (message?.textMessageContent?.length) chat.UnreadMessages[0].message.textMessageContent = message.textMessageContent;
+                else if (message?.attachments) chat.UnreadMessages[0].message.attachments = [{secureUrl:"demo-url"}];
+                else if (message?.url) chat.UnreadMessages[0].message.url = 'yes it is a gif';
+              }
             }
           })
         );

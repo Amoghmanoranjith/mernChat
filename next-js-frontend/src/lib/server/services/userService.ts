@@ -107,6 +107,10 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
             }
           },
           UnreadMessages:{
+            where:{
+              userId:loggedInUserId
+              
+            },
             select:{
               count:true,
               message:{

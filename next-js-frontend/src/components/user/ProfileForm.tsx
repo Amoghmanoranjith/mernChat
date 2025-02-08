@@ -6,6 +6,7 @@ import { useAppSelector } from "../../lib/client/store/hooks";
 import { formatRelativeTime } from "../../lib/shared/helpers";
 import { useUpdateProfileMutation } from "@/lib/client/rtk-query/user.api";
 import Image from "next/image";
+import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
 export const ProfileForm = () => {
   const loggedInUser = useAppSelector(selectLoggedInUser);
@@ -26,9 +27,7 @@ export const ProfileForm = () => {
     successToast: true,
   });
 
-  const [preview, setPreview] = useState<string>(
-    loggedInUser?.avatar || DEFAULT_AVATAR
-  );
+  const [preview, setPreview] = useState<string>(loggedInUser?.avatar || DEFAULT_AVATAR);
   const [image, setImage] = useState<Blob>();
   const [editActive, setEditActive] = useState<boolean>(false);
 
@@ -79,23 +78,9 @@ export const ProfileForm = () => {
               <div className="flex items-center gap-x-1">
                 <h4 className="font-medium text-xl">{loggedInUser.username}</h4>
                 {loggedInUser.verificationBadge && (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
-                    />
-                  </svg>
+                  <VerificationBadgeIcon/>
                 )}
               </div>
-
               <p>{loggedInUser?.email}</p>
             </div>
           </div>

@@ -176,7 +176,30 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
             avatarCloudinaryPublicId:true,
           },
           include:{
+            ChatMembers:{
+              include:{
+                user:{
+                  select:{
+                    id:true,
+                    username:true,
+                    avatar:true,
+                    isOnline:true,
+                    publicKey: true,
+                    lastSeen:true,
+                    verificationBadge:true,
+                  }
+                },
+              },
+              omit:{
+                chatId:true,
+                userId:true,
+                id:true,
+              }
+            },
             UnreadMessages:{
+              where:{
+                userId:req.user.id
+              },
               select:{
                 count:true,
                 message:{
@@ -190,6 +213,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                     },
                     isPollMessage:true,
                     createdAt:true,
+                    textMessageContent:true,
                   }
                 },
                 sender:{
@@ -203,21 +227,6 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                     verificationBadge:true
                   }
                 },
-              }
-            },
-            ChatMembers:{
-              select:{
-                user:{
-                  select:{
-                    id:true,
-                    username:true,
-                    avatar:true,
-                    isOnline:true,
-                    publicKey:true,
-                    lastSeen:true,
-                    verificationBadge:true
-                  }
-                }
               }
             },
             latestMessage:{
@@ -243,7 +252,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                         username:true,
                         avatar:true
                       }
-                    }
+                    },
                   },
                   omit:{
                     id: true,
@@ -255,9 +264,9 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
                 },
               }
             }
-          }
+          },
         })
-        
+       
         const newFriendEntry =  await prisma.friends.create({
           data:{
             user1:{
@@ -296,7 +305,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
           }
         })
         
-        emitEventToRoom({data:newChat,event:Events.NEW_CHAT,io,room:newChat.id})
+        emitEventToRoom({data:{...newChat,typingUsers:[]},event:Events.NEW_CHAT,io,room:newChat.id})
         return res.status(200)
     }
 

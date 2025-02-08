@@ -27,7 +27,9 @@ export const useMessageSeenListener = () => {
       dispatch(
         chatApi.util.updateQueryData("getChats", undefined, (draft) => {
           const chat = draft.find((draft) => draft.id === chatId);
-          if (chat && isOwnMessageSeenUpdate) chat.UnreadMessages[0].count = 0;
+          if (chat && isOwnMessageSeenUpdate && chat.UnreadMessages.length > 0 && chat.UnreadMessages[0]?.count){
+            chat.UnreadMessages[0].count = 0;
+          } 
         })
       );
     }
