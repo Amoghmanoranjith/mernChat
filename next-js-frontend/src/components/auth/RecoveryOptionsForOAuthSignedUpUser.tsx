@@ -8,8 +8,8 @@ type PropTypes = {
 };
 
 export const RecoveryOptionsForOAuthSignedUpUser = ({loggedInUser}:PropTypes) => {
-  const { sendPrivateKeyRecoveryEmail, isLoading, isSuccess } = useSendPrivateKeyRecoveryEmail();
 
+  const { sendPrivateKeyRecoveryEmail, isLoading, isSuccess } = useSendPrivateKeyRecoveryEmail();
   useStoreLoggedInUserInfoInLocalStorageIfRecoveryEmailSentSuccessful({isPrivateKeyRecoveryEmailSentSuccessful:isSuccess,loggedInUser});
 
   return (

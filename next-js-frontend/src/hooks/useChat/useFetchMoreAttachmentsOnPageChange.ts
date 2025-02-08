@@ -22,7 +22,7 @@ export const useFetchMoreAttachmentsOnPageChange = ({chatId}:PropTypes) => {
     
     useEffect(()=>{
         if(hasMore && !isFetching){
-            fetchAttachments({chatId,page})
+            fetchAttachments({chatId,page},true);
         }
         if(page==totalPage){
             setHasMore(false)

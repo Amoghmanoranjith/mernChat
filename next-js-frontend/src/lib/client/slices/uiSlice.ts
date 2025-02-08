@@ -89,7 +89,7 @@ const uiSlice = createSlice({
       state.attachments = action.payload;
     },
     resetAttachments: (state) => {
-      state.attachments = [];
+      state.attachments = null;
     },
     setChatBar: (state, action: PayloadAction<boolean>) => {
       state.chatBar = action.payload;

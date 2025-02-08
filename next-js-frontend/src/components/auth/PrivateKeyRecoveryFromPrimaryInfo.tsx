@@ -9,6 +9,7 @@ type PropTypes = {
 export const PrivateKeyRecoveryFromPrimaryInfo = ({
   hasUserSignedUpViaOAuth,
 }: PropTypes) => {
+  
   const { handleLogoutClick } = useHandleLogoutClickOnKeyRecoveryForm();
 
   return (
