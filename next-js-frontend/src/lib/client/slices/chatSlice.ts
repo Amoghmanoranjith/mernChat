@@ -50,18 +50,9 @@ const chatSlice = createSlice({
         state.selectedChatDetails.ChatMembers.push(...action.payload);
       }
     },
-    removeSelectedChatMembers: (
-      state,
-      action: PayloadAction<fetchUserChatsResponse["id"][]>
-    ) => {
-      if (
-        state.selectedChatDetails &&
-        state.selectedChatDetails.ChatMembers.length
-      ) {
-        state.selectedChatDetails.ChatMembers =
-          state.selectedChatDetails.ChatMembers.filter(
-            ({ user: { id } }) => !action.payload.includes(id)
-          );
+    removeSelectedChatMembers: (state,action: PayloadAction<string[]>) => {
+      if (state.selectedChatDetails && state.selectedChatDetails.ChatMembers.length) {
+        state.selectedChatDetails.ChatMembers = state.selectedChatDetails.ChatMembers.filter(member => !action.payload.includes(member.user.id));
       }
     },
     updateChatNameOrAvatar: (

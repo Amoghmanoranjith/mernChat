@@ -559,9 +559,7 @@ const registerSocketHandlers = (io:Server)=>{
         })
 
         socket.on(Events.VOTE_OUT,async({chatId,messageId,optionIndex}:VoteOutEventReceivePayload)=>{
-
-            console.log('vote out request received',chatId,messageId,optionIndex);
-            
+           
             const isValidPoll = await prisma.message.findFirst({
                 where:{chatId,id:messageId},
                 include:{

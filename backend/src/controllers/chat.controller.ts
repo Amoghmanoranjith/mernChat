@@ -31,6 +31,15 @@ type NewMemberAddedEventSendPayload = {
   }[]
 }
 
+type MemberRemovedEventSendPayload = {
+  chatId: string;
+  membersId: string[];
+}
+
+type DeleteChatEventSendPayload = {
+  chatId: string;
+}
+
 const createChat = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     let uploadResults:UploadApiResponse[] | void = []
@@ -487,7 +496,7 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
     const doesMembersToBeRemovedDosentExistsAlready = members.filter(memberId=>!existingMemberIds.includes(memberId));
 
     if(doesMembersToBeRemovedDosentExistsAlready.length){
-      return next(new CustomError("Please provide valid members to remove",400))
+      return next(new CustomError("Provided members to be removed dosen't exists in chat",404))
     }
 
     let adminLeavingId : string | null = null;
@@ -495,6 +504,7 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
     for(const member of members){
       if(member===chat.adminId){
         adminLeavingId = member;
+        break;
       }
     }
 
@@ -504,7 +514,7 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
         // if admin is leaving the chat
         // then assign the admin role to the next member
         for(const memberId of existingMemberIds){
-          if(memberId!==adminLeavingId){
+          if(memberId!==adminLeavingId && !members.includes(memberId)){
             nextAdminId = memberId;
             break;
           }
@@ -513,9 +523,7 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
         if(nextAdminId){
           await prisma.chat.update({
             where:{id},
-            data:{
-              adminId:nextAdminId
-            }
+            data:{adminId:nextAdminId}
           })
         }
     }
@@ -523,19 +531,27 @@ const removeMemberFromChat = asyncErrorHandler(async(req:AuthenticatedRequest,re
     await prisma.chatMembers.deleteMany({
       where:{
         chatId:id,
-        userId:{
-          in:members
-        }
+        userId:{in:members}
       }
     })
 
     const io:Server = req.app.get("io");
 
     disconnectMembersFromChatRoom({io,memberIds:members,roomToLeave:id})
-    emitEvent({io,event:Events.DELETE_CHAT,users:members,data:{chatId:id}})
+
+    const deletedChatPayload:DeleteChatEventSendPayload = {
+      chatId:id
+    }
+
+    emitEvent({io,event:Events.DELETE_CHAT,users:members,data:deletedChatPayload})
 
     const remainingMembers = existingMemberIds.filter(id=>!members.includes(id))
-    emitEvent({io,event:Events.MEMBER_REMOVED,data:{chatId:id,membersId:members},users:remainingMembers})
+
+    const payload:MemberRemovedEventSendPayload = {
+      chatId:id,
+      membersId:members
+    }
+    emitEvent({io,event:Events.MEMBER_REMOVED,data:payload,users:remainingMembers})
 
     return res.status(200);
 })

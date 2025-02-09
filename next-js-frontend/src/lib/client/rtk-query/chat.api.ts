@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const chatApi = createApi({
     reducerPath:"chatApi",
@@ -44,11 +44,11 @@ export const chatApi = createApi({
                 body:{members}
             })
         }),
-        removeMember:builder.mutation<void,{chatId:string,memberIds:string[]}>({
-            query:({chatId,memberIds})=>({
+        removeMember:builder.mutation<void,{chatId:string,members:string[]}>({
+            query:({chatId,members})=>({
                 url:`/chat/${chatId}/members`,
                 method:"DELETE",
-                body:{members:memberIds}
+                body:{members}
             })
         })
     })

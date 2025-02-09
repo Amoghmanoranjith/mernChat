@@ -2,13 +2,13 @@ import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemb
 import { RemoveMemberIcon } from "../ui/icons/RemoveMemberIcon";
 
 export const RemoveMemberOption = () => {
-  const { toggleRemoveMember } = useToggleRemoveMemberForm();
+  const { toggleRemoveMemberForm } = useToggleRemoveMemberForm();
 
   return (
     <div className="flex items-center justify-between">
       <p>Remove member</p>
       <button
-        onClick={toggleRemoveMember}
+        onClick={toggleRemoveMemberForm}
         className="w-8 h-8 flex justify-center items-center rounded-full text-white"
       >
         <RemoveMemberIcon />

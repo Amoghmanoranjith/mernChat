@@ -1,3 +1,4 @@
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -6,51 +7,42 @@ import { useToggleRemoveMemberForm } from "../../hooks/useUI/useToggleRemoveMemb
 import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
-import { MemberList } from "./MemberList";
-import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { RemoveMemberFormUserList } from "./RemoveMemberFormUserList";
 
 const RemoveMemberForm = () => {
+
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
 
-  const { toggleRemoveMember } = useToggleRemoveMemberForm();
+  const { toggleRemoveMemberForm } = useToggleRemoveMemberForm();
 
   const loggedInUserId = useAppSelector(selectLoggedInUser);
+  const { removeMember } = useRemoveMember();
 
-  const isMemberLength3 =
-    selectedChatDetails && selectedChatDetails?.members.length <= 3;
+  const isMemberLength3 = selectedChatDetails && selectedChatDetails.ChatMembers.length === 3;
 
   const [searchVal, setSearchVal] = useState<string>("");
-  const [filteredMembers, setFilteredMembers] = useState<fetchUserChatsResponse["ChatMembers"]>([]);
+  const [filteredMembers, setFilteredMembers] = useState<fetchUserChatsResponse['ChatMembers']>([]);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
   useEffect(() => {
     if (!searchVal.trim().length && selectedChatDetails) {
-      setFilteredMembers(
-        selectedChatDetails.members.filter(
-          (member) => member._id !== loggedInUserId?._id
-        )
-      );
-    } else {
-      setFilteredMembers(
-        filteredMembers.filter((member) =>
-          member.username.toLowerCase().includes(searchVal.toLowerCase())
-        )
-      );
+      setFilteredMembers(selectedChatDetails.ChatMembers.filter(member => member.user.id !== loggedInUserId?.id))
     }
-  }, [filteredMembers, loggedInUserId?._id, searchVal, selectedChatDetails]);
-
-  const { removeMember } = useRemoveMember();
+    else {
+      setFilteredMembers(filteredMembers.filter(member =>member.user.username.toLowerCase().includes(searchVal.toLowerCase())));
+    }
+  }, [searchVal]);
 
   const toggleSelection = (memberId: string) => {
     if (selectedChatDetails) {
       if (selectedMembers.includes(memberId)) {
-        setSelectedMembers((prev) =>
-          prev.filter((member) => member !== memberId)
-        );
-      } else {
-        if (selectedChatDetails.members.length - selectedMembers.length > 3) {
+        setSelectedMembers(prev =>prev.filter(member => member !== memberId));
+      }
+      else {
+        if (selectedChatDetails.ChatMembers.length - selectedMembers.length > 3) {
           setSelectedMembers((prev) => [...prev, memberId]);
-        } else {
+        }
+        else {
           toast.error("Group cannot have less than 3 members");
         }
       }
@@ -59,16 +51,17 @@ const RemoveMemberForm = () => {
 
   const handleRemoveMember = () => {
     if (selectedChatDetails) {
-      toggleRemoveMember();
+      toggleRemoveMemberForm();
       removeMember({
-        chatId: selectedChatDetails?._id,
-        memberIds: selectedMembers,
+        chatId:selectedChatDetails.id,
+        members:selectedMembers
       });
     }
   };
 
   return (
     <div className="flex flex-col gap-y-5">
+
       <div className="flex flex-col gap-y-1">
         <h4 className="text-xl">Remove Member</h4>
         {isMemberLength3 && (
@@ -80,6 +73,7 @@ const RemoveMemberForm = () => {
       </div>
 
       <div className="flex flex-col gap-y-4">
+
         {!isMemberLength3 && (
           <input
             value={searchVal}
@@ -88,9 +82,10 @@ const RemoveMemberForm = () => {
             placeholder="Search Members"
           />
         )}
+
         <div className="overflow-y-auto max-h-52 ">
           {selectedChatDetails && (
-            <MemberList
+            <RemoveMemberFormUserList
               selectable={isMemberLength3 ? false : true}
               members={filteredMembers}
               selectedMembers={selectedMembers}
@@ -98,6 +93,7 @@ const RemoveMemberForm = () => {
             />
           )}
         </div>
+
       </div>
 
       {selectedMembers.length > 0 && (
