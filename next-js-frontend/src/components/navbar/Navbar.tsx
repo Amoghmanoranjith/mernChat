@@ -13,6 +13,7 @@ import { NavMenu } from "./NavMenu";
 import { ToggleThemeButton } from "./ToggleThemeButton";
 import { User } from "@/interfaces/auth.interface";
 import { DEFAULT_AVATAR } from "@/constants";
+import { GithubIcon } from "../ui/icons/GithubIcon";
 
 export const Navbar = () => {
   const { data: friendRequests } = useGetUserFriendRequestsQuery();
@@ -27,9 +28,14 @@ export const Navbar = () => {
         <HamburgerIcon />
       </button>
 
-      <h4 className="text-3xl font-Shantell-Sans font-medium max-sm:text-xl">
-        Mern Chat
-      </h4>
+      <div className="flex items-center gap-x-2 justify-center">
+        <h4 className="text-3xl font-Shantell-Sans font-medium max-sm:text-xl">
+          Mern Chat
+        </h4>
+        <a href="https://github.com/RishiBakshii/mern-chat" target="_blank">
+          <GithubIcon/>
+        </a>
+      </div>
 
       <div className="flex item-center gap-x-10">
         {friendRequests && friendRequests.length > 0 && (
