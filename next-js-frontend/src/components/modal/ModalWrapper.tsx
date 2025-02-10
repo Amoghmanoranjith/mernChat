@@ -13,7 +13,6 @@ import {
   selectProfileForm,
   selectRecoverPrivateKeyForm,
   selectRemoveMemberForm,
-  selectSettingsForm,
   selectViewVotes,
   setAddFriendForm,
   setAddMemberForm,
@@ -25,8 +24,7 @@ import {
   setPollForm,
   setProfileForm,
   setRemoveMemberForm,
-  setSettingsForm,
-  setViewVotes,
+  setViewVotes
 } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import dynamic from "next/dynamic";
@@ -71,9 +69,6 @@ const NotificationPermissionForm = dynamic(
 const ProfileForm = dynamic(() => import("../user/ProfileForm"), {
   ssr: false,
 });
-const SettingsForm = dynamic(() => import("../user/SettingsForm"), {
-  ssr: false,
-});
 
 export const ModalWrapper = () => {
   const dispatch = useAppDispatch();
@@ -89,7 +84,6 @@ export const ModalWrapper = () => {
   const isPollFormOpen = useAppSelector(selectPollForm);
   const isViewVotesOpen = useAppSelector(selectViewVotes);
   const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);
-  const isSettingsFormOpen = useAppSelector(selectSettingsForm);
   const isNotificationPermissionFormOpen = useAppSelector(
     selectNotificationPermissionForm
   );
@@ -171,13 +165,6 @@ export const ModalWrapper = () => {
         onClose={() => dispatch(setChatUpdateForm(false))}
       >
         <ChatUpdateForm />
-      </Modal>
-
-      <Modal
-        isOpen={isSettingsFormOpen}
-        onClose={() => dispatch(setSettingsForm(false))}
-      >
-        <SettingsForm />
       </Modal>
 
       <Modal

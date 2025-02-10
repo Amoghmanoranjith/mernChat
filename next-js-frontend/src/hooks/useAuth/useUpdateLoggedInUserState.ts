@@ -1,12 +1,12 @@
 "use client";
-import type { User } from "@/interfaces/auth.interface";
+import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { useEffect } from "react";
 import { updateLoggedInUser } from "../../lib/client/slices/authSlice";
 import { useAppDispatch } from "../../lib/client/store/hooks";
 
 type PropTypes = {
   isSuccess: boolean;
-  user: User | null | undefined;
+  user: FetchUserInfoResponse | null | undefined;
 };
 
 export const useUpdateLoggedInUserState = ({ user, isSuccess }: PropTypes) => {

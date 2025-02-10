@@ -37,4 +37,5 @@ export interface Message {
     isEdited: boolean;
     createdAt: Date;
     updatedAt: Date;
+    isNew?:boolean
 }

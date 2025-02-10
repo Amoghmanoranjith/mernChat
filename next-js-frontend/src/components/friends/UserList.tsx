@@ -1,9 +1,9 @@
-import { fetchUserFriendsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService"
+import { fetchUserFriendRequestResponse, FetchUserInfoResponse } from "@/lib/server/services/userService"
 import { UserItem } from "./UserItem"
 
 type PropTypes = {
     users:Array<Pick<FetchUserInfoResponse , "id" | 'name' | "username" | 'avatar'>>
-    friends:fetchUserFriendsResponse[]
+    friends:fetchUserFriendRequestResponse[]
     loggedInUserId: string
     sendFriendRequest:(receiverId:string)=>void
 }

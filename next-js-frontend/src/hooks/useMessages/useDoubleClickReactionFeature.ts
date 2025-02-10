@@ -20,13 +20,13 @@ export const useDoubleClickReactionFeature = ({
 
   const handleDoubleClick = () => {
     const userReaction = reactions.find(
-      (reaction) => reaction?.user?._id === loggedInUserId
+      (reaction) => reaction?.user?.id === loggedInUserId
     );
 
-    if (userReaction?.emoji !== "❤️") {
+    if (userReaction?.reaction !== "❤️") {
       deleteReaction({ chatId, messageId });
       sendNewReaction({ chatId, messageId, reaction: "❤️" });
-    } else if (userReaction.emoji === "❤️") {
+    } else if (userReaction.reaction === "❤️") {
       deleteReaction({ chatId, messageId });
     } else {
       sendNewReaction({ chatId, messageId, reaction: "❤️" });

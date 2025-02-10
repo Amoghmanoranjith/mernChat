@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { useToast } from "../useUI/useToast";
-import { useAppDispatch } from "../../lib/client/store/hooks";
 // import { updateLoggedInUserFcmTokenStatus } from "../../services/redux/slices/authSlice"
 import { useUpdateFcmTokenMutation } from "@/lib/client/rtk-query/auth.api";
 
 export const useUpdateFcmToken = () => {
-  const dispatch = useAppDispatch();
+
 
   const [
     updateFcmToken,
