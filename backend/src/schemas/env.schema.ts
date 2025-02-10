@@ -1,12 +1,11 @@
-import { ZodError, z } from "zod";
 import { config } from "dotenv";
+import { z } from "zod";
 config()
 
 const envSchema = z.object({
     NODE_ENV:z.enum(['DEVELOPMENT','PRODUCTION']).default("DEVELOPMENT"),
     PORT:z.string({required_error:"PORT is required"}).max(4,'Port cannot be more than 4 digits').min(4,'Port number cannot be lesser than 4 digits'),
     JWT_SECRET:z.string({required_error:"JWT_SECRET is required"}),
-    MONGO_URI:z.string({required_error:"MONGO_URI is required"}),
     JWT_TOKEN_EXPIRATION_DAYS:z.string({required_error:"JWT_TOKEN_EXPIRATION_DAYS is required"}).min(1,'JWT_TOKEN_EXPIRATION_DAYS cannot be less than 1'),
     EMAIL:z.string().email("Please provide a valid email"),
     PASSWORD:z.string({required_error:"Password for email is required"}),
@@ -17,29 +16,20 @@ const envSchema = z.object({
     CLOUDINARY_API_SECRET:z.string({required_error:"CLOUDINARY_API_SECRET is required"}),
     GOOGLE_CLIENT_ID:z.string({required_error:"GOOGLE_CLIENT_ID is required"}),
     GOOGLE_CLIENT_SECRET:z.string({required_error:"GOOGLE_CLIENT_SECRET is required"}),
-    GITHUB_CLIENT_ID:z.string({required_error:"GITHUB_CLIENT_ID is required"}),
-    GITHUB_CLIENT_SECRET:z.string({required_error:"GITHUB_CLIENT_SECRET is required"}),
     PRIVATE_KEY_RECOVERY_SECRET:z.string({required_error:"PRIVATE_KEY_RECOVERY_SECRET is required"})
 })
 
-type envType = z.infer<typeof envSchema>
-
-let env:envType
-
-try {
-    env=envSchema.parse(process.env)
-} catch (error) {
-    if(error instanceof ZodError){
-        console.log(error.flatten().fieldErrors);
+export const checkEnvVariables = () => {
+    const parsedEnv = envSchema.safeParse(process.env);
+    if (!parsedEnv.success) {
+        console.error("❌ Invalid environment variables:", parsedEnv.error.flatten().fieldErrors);
+        process.exit(1);
     }
-    if(error instanceof Error){
-        console.log(error.message);
-    }
-}
+    return parsedEnv.data;
+};
 
-export {
-    env
-}
+export const env = checkEnvVariables();
+
 
 
 

@@ -9,7 +9,7 @@ import './config/cloudinary.config.js';
 import { config } from './config/env.config.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import './passport/google.strategy.js';
-import { env } from './schemas/env.schema.js';
+import { checkEnvVariables, env } from './schemas/env.schema.js';
 import attachmentRoutes from './routes/attachment.router.js';
 import authRoutes from './routes/auth.router.js';
 import chatRoutes from './routes/chat.router.js';
@@ -18,6 +18,8 @@ import requestRoutes from './routes/request.router.js';
 import userRoutes from './routes/user.router.js';
 import { socketAuthenticatorMiddleware } from './middlewares/socket-auth.middleware.js';
 import registerSocketHandlers from './socket/socket.js';
+// environment variables validation
+checkEnvVariables();
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { credentials: true, origin: config.clientUrl } });
