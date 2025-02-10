@@ -1,13 +1,12 @@
 "use client";
-import { FormInput } from "../ui/FormInput";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForgotPassword } from "../../hooks/useAuth/useForgotPassword";
-import { SubmitButton } from "../ui/SubmitButton";
 import {
   forgotPasswordSchema,
   forgotPasswordSchemaType,
 } from "@/lib/shared/zod/schemas/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useForgotPassword } from "../../hooks/useAuth/useForgotPassword";
+import { SubmitButton } from "../ui/SubmitButton";
 
 export const ForgotPasswordForm = () => {
   const {
@@ -28,12 +27,12 @@ export const ForgotPasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-      <FormInput
-        autoComplete="email"
-        placeholder="Registered email"
-        register={{ ...register("email") }}
-        error={errors.email?.message}
+      <input
+        {...register("email")}
+        className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
+        placeholder="Registered Email"
       />
+      {errors.email?.message && <p className="text-red-500 text-sm">{errors.email.message}</p>}
       <SubmitButton
         isLoading={isLoading}
         btnText="Send reset link"
