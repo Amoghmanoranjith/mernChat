@@ -233,34 +233,6 @@ const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,r
     return res.status(200).json(payload)
 })
 
-const sendPrivateKeyRecoveryEmail = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    if(req.user){
-        const privateKeyRecoveryToken =  jwt.sign({user:req.user.id},env.JWT_SECRET);
-        const privateKeyRecoveryHashedToken = await bcrypt.hash(privateKeyRecoveryToken,10);
-
-        await prisma.privateKeyRecoveryToken.deleteMany({
-            where:{
-                userId:req.user.id
-            }
-        })
-
-        await prisma.privateKeyRecoveryToken.create({
-            data:{
-                userId:req.user.id,
-                hashedToken:privateKeyRecoveryHashedToken,
-                expiresAt:new Date(Date.now()+env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
-            }
-        })
-
-        const privateKeyRecoveryUrl = `${config.clientUrl}/auth/private-key-recovery-token-verification?token=${privateKeyRecoveryToken}`
-
-        await sendMail(req.user.email,req.user.username,'privateKeyRecovery',undefined,undefined,privateKeyRecoveryUrl)
-
-        return res.status(200).json({message:"We have sent you an email with verification link, please check spam if not received"})
-    }
-})
-
 const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
     console.log('request reached');
@@ -334,7 +306,7 @@ export {
     forgotPassword,
     logout,
     redirectHandler,
-    resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, updateFcmToken, updateUserKeys,
+    resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys,
     verifyOtp,
     verifyPassword,
     verifyPrivateKeyToken

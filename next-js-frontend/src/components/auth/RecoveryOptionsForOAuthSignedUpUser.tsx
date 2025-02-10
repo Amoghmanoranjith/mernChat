@@ -1,4 +1,3 @@
-import { useSendPrivateKeyRecoveryEmail } from "@/hooks/useAuth/useSendPrivateKeyRecoveryEmail";
 import { useStoreLoggedInUserInfoInLocalStorageIfRecoveryEmailSentSuccessful } from "@/hooks/useAuth/useStoreLoggedInUserInfoInLocalStorageIfRecoveryEmailSentSuccessful";
 import { User } from "@/interfaces/auth.interface";
 import { CircleLoading } from "../shared/CircleLoading";
@@ -9,7 +8,7 @@ type PropTypes = {
 
 export const RecoveryOptionsForOAuthSignedUpUser = ({loggedInUser}:PropTypes) => {
 
-  const { sendPrivateKeyRecoveryEmail, isLoading, isSuccess } = useSendPrivateKeyRecoveryEmail();
+
   useStoreLoggedInUserInfoInLocalStorageIfRecoveryEmailSentSuccessful({isPrivateKeyRecoveryEmailSentSuccessful:isSuccess,loggedInUser});
 
   return (

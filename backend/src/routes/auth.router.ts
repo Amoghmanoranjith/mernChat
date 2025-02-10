@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from 'passport';
 import { config } from "../config/env.config.js";
-import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, sendPrivateKeyRecoveryEmail, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword, verifyPrivateKeyToken } from "../controllers/auth.controller.js";
+import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword, verifyPrivateKeyToken } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyToken } from "../middlewares/verify-token.middleware.js";
 import { fcmTokenSchema, forgotPasswordSchema, keySchema, resetPasswordSchema, setAuthCookieSchema, verifyOtpSchema, verifyPasswordSchema, verifyPrivateKeyTokenSchema } from "../schemas/auth.schema.js";
@@ -21,4 +21,3 @@ export default Router()
 .get("/logout",logout)
 .get("/google",passport.authenticate("google",{session:false,scope:["email","profile"]}))
 .get("/google/callback",passport.authenticate("google",{session:false,failureRedirect:`${config.clientUrl}/auth/login`}),redirectHandler)
-.get("/send-private-key-recovery-email",verifyToken,sendPrivateKeyRecoveryEmail)

@@ -2,7 +2,7 @@ type Params = {
   username: string;
 };
 
-const welcomeEmailBody = ({ username }: Params) => `
+const welcomeEmailContent = ({ username }: Params) => `
       <p>Hi ${username},</p>
       <p>Welcome to <strong>MernChat</strong>! 🎉 We're thrilled to have you on board.</p>
       <p>MernChat is designed to provide a seamless and secure messaging experience. Here’s what you can do:</p>
@@ -51,4 +51,4 @@ const welcomeEmailBody = ({ username }: Params) => `
 
 const welcomeEmailSubject = "Welcome to MernChat! Get Started Today 🚀";
 
-export { welcomeEmailBody, welcomeEmailSubject };
+export { welcomeEmailContent, welcomeEmailSubject };

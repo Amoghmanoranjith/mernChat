@@ -53,10 +53,6 @@ export const authApi = createApi({
       }),
     }),
 
-    sendPrivateKeyRecoveryEmail: builder.query<void, void>({
-      query: () => "/send-private-key-recovery-email",
-    }),
-
     updateUserKeysInDatabase: builder.mutation<{ publicKey: string },{ publicKey: string; privateKey: string }>({
       query: ({ publicKey, privateKey }) => ({
         url: "/user/keys",
@@ -106,6 +102,5 @@ export const {
   useVerifyPasswordMutation,
   useVerifyPrivateKeyTokenMutation,
   useUpdateFcmTokenMutation,
-  useLazySendPrivateKeyRecoveryEmailQuery,
   useVerifyOAuthTokenMutation,
 } = authApi;
