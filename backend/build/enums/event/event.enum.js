@@ -1,0 +1,22 @@
+export var Events;
+(function (Events) {
+    Events["MESSAGE"] = "MESSAGE";
+    Events["MESSAGE_SEEN"] = "MESSAGE_SEEN";
+    Events["MESSAGE_DELETE"] = "MESSAGE_DELETE";
+    Events["NEW_CHAT"] = "NEW_CHAT";
+    Events["GROUP_CHAT_UPDATE"] = "GROUP_CHAT_UPDATE";
+    Events["DELETE_CHAT"] = "DELETE_CHAT";
+    Events["USER_TYPING"] = "USER_TYPING";
+    Events["UNREAD_MESSAGE"] = "UNREAD_MESSAGE";
+    Events["NEW_FRIEND_REQUEST"] = "NEW_FRIEND_REQUEST";
+    Events["NEW_MEMBER_ADDED"] = "NEW_MEMBER_ADDED";
+    Events["MEMBER_REMOVED"] = "MEMBER_REMOVED";
+    Events["ONLINE_USER"] = "ONLINE_USER";
+    Events["OFFLINE_USER"] = "OFFLINE_USER";
+    Events["MESSAGE_EDIT"] = "MESSAGE_EDIT";
+    Events["VOTE_IN"] = "VOTE_IN";
+    Events["VOTE_OUT"] = "VOTE_OUT";
+    Events["ONLINE_USERS_LIST"] = "ONLINE_USERS_LIST";
+    Events["NEW_REACTION"] = "NEW_REACTION";
+    Events["DELETE_REACTION"] = "DELETE_REACTION";
+})(Events || (Events = {}));

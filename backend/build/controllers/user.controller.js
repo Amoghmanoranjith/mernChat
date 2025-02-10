@@ -1,0 +1,106 @@
+import { prisma } from "../lib/prisma.lib.js";
+import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
+import { sendMail } from "../utils/email.util.js";
+import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
+export const getUserByUsername = asyncErrorHandler(async (req, res, next) => {
+    const { username } = req.query;
+    if (!username || !username?.toString().trim()) {
+        return next(new CustomError("Username cannot be empty"));
+    }
+    const searchTerm = username.toString().trim();
+    const users = await prisma.user.findMany({
+        where: {
+            username: {
+                contains: searchTerm,
+                mode: "insensitive"
+            }
+        },
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            avatar: true
+        }
+    });
+    return res.status(200).json(users);
+});
+export const udpateUser = asyncErrorHandler(async (req, res, next) => {
+    if (!req.file) {
+        return next(new CustomError("Please provide an image", 400));
+    }
+    let uploadResults;
+    const existingAvatarPublicId = req.user.avatarCloudinaryPublicId;
+    if (!existingAvatarPublicId) {
+        uploadResults = await uploadFilesToCloudinary({ files: [req.file] });
+        if (!uploadResults) {
+            return next(new CustomError("Some error occured", 500));
+        }
+    }
+    else {
+        const cloudinaryFilePromises = [
+            deleteFilesFromCloudinary({ publicIds: [existingAvatarPublicId] }),
+            uploadFilesToCloudinary({ files: [req.file] })
+        ];
+        const [_, result] = await Promise.all(cloudinaryFilePromises);
+        if (!result)
+            return next(new CustomError("Some error occured", 500));
+        uploadResults = result;
+    }
+    const user = await prisma.user.update({
+        where: {
+            id: req.user.id
+        },
+        data: {
+            avatar: uploadResults[0].secure_url,
+            avatarCloudinaryPublicId: uploadResults[0].public_id
+        }
+    });
+    const secureUserInfo = {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        avatar: user.avatar,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        emailVerified: user.emailVerified,
+        publicKey: user.publicKey,
+        notificationsEnabled: user.notificationsEnabled,
+        verificationBadge: user.verificationBadge,
+        fcmToken: user.fcmToken,
+        oAuthSignup: user.oAuthSignup
+    };
+    return res.status(200).json(secureUserInfo);
+});
+export const updateNotifications = asyncErrorHandler(async (req, res, next) => {
+    const { isEnabled } = req.body;
+    const user = await prisma.user.update({
+        where: {
+            id: req.user.id
+        },
+        data: {
+            notificationsEnabled: isEnabled
+        }
+    });
+    return res.status(200).json({ notificationsEnabled: user.notificationsEnabled });
+});
+export const testEmailHandler = asyncErrorHandler(async (req, res, next) => {
+    const { emailType } = req.query;
+    if (emailType === 'welcome') {
+        await sendMail(req.user.email, req.user.username, 'welcome', undefined, undefined, undefined);
+        return res.status(200).json({ message: `sent ${emailType}` });
+    }
+    if (emailType === 'resetPassword') {
+        await sendMail(req.user.email, req.user.username, 'resetPassword', 'https://mernchat.online', undefined, undefined);
+        return res.status(200).json({ message: `sent ${emailType}` });
+    }
+    if (emailType === 'otpVerification') {
+        await sendMail(req.user.email, req.user.username, 'OTP', undefined, "3412", undefined);
+        return res.status(200).json({ message: `sent ${emailType}` });
+    }
+    if (emailType === 'privateKeyRecovery') {
+        await sendMail(req.user.email, req.user.username, 'privateKeyRecovery', undefined, undefined, 'https://mernchat.online');
+        return res.status(200).json({ message: `sent ${emailType}` });
+    }
+    res.status(200);
+});

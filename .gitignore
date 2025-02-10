@@ -1,4 +1,3 @@
-build
 /backend/dist
 /frontend/dist
 node_modules
