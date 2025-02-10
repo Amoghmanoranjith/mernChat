@@ -39,6 +39,7 @@ export async function middleware(req: NextRequest) {
 
   const response = NextResponse.next();
 
+
   if(session.userId){
     response.cookies.set("loggedInUserId",session.userId,{
       httpOnly:true,

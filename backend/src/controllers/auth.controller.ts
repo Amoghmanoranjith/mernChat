@@ -263,6 +263,7 @@ const sendPrivateKeyRecoveryEmail = asyncErrorHandler(async(req:AuthenticatedReq
 
 const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
+    console.log('request reached');
     const {token}:setAuthCookieSchemaType = req.body
     const {oAuthNewUser,user} = jwt.verify(token,env.JWT_SECRET) as {user:string,oAuthNewUser:boolean}
     
@@ -275,9 +276,15 @@ const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:Ne
         return next(new CustomError("User not found",400))
     }
 
+    console.log('user is',existingUser);
+
     let responsePayload:{combinedSecret?:string} = {};
-    const jwtToken=jwt.sign({id:req.user},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`})
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    const jwtToken=jwt.sign({userId:existingUser.id,expiresAt},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`,algorithm:"HS256"})
+    
     res.cookie('token',jwtToken,cookieOptions)
+    
     if(oAuthNewUser){
         const combinedSecret = existingUser.googleId+env.PRIVATE_KEY_RECOVERY_SECRET
         responsePayload['combinedSecret'] = combinedSecret

@@ -41,8 +41,9 @@ function OAuthRedirectPageContent(){
 
       // so basically for this OAuth flow we only need to generate keys for that user if combinedSecret is sent to us
       // as combinedSecret is only sent by the server when the user is a new user
-      
+      console.log('data of user is',data);
       if(data.combinedSecret){
+        console.log('signed up using oAuth');
         setOAuthNewUser(true);
       }
     }
@@ -61,7 +62,7 @@ function OAuthRedirectPageContent(){
   const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
   const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
   const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user.id});
+  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user?.id});
   useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
   
   return (

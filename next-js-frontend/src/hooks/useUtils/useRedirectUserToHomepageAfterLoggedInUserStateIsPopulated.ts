@@ -10,7 +10,7 @@ export const useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated =
 
     useEffect(() => {
       if (loggedInUser) {
-        router.replace("/");
+        router.push("/");
       }
     }, [loggedInUser, router]);
   };

@@ -20,5 +20,5 @@ export const useCheckUserPrivateKeyInIndexedDB = ({loggedInUser}: PropTypes) => 
 
   useEffect(() => {
     checkPrivateKeyInIndexedDB();
-  }, [checkPrivateKeyInIndexedDB]);
+  }, []);
 };

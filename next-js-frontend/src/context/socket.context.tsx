@@ -27,24 +27,28 @@ export const SocketProvider = ({ children }: PropTypes) => {
   useEffect(() => {
     if (typeof window != "undefined") {
       if (loggedInUser && !socket) {
-        socket = io(process.env.NEXT_PUBLIC_ABSOLUTE_BASE_URL, {
-          withCredentials: true,
-          reconnection: true,
-          reconnectionAttempts: 10,
-          reconnectionDelay: 1000,
-        });
-
-        socket.on("connect", () => {
-          setIsConnected(true);
-        });
-
-        socket.on("disconnect", () => {
-          setIsConnected(false);
-        });
-
-        socket.on("connect_error", (error) => {
-          console.error("Socket connection error:", error);
-        });
+        try {
+          socket = io(process.env.NEXT_PUBLIC_ABSOLUTE_BASE_URL, {
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: 10,
+            reconnectionDelay: 1000,
+          });
+  
+          socket.on("connect", () => {
+            setIsConnected(true);
+          });
+  
+          socket.on("disconnect", () => {
+            setIsConnected(false);
+          });
+  
+          socket.on("connect_error", (error) => {
+            console.error("Socket connection error:", error);
+          });
+        } catch (error) {
+          console.log(error);
+        }
 
         return () => {
           socket?.disconnect();

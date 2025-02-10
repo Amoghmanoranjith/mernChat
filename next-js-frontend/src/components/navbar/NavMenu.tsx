@@ -12,6 +12,7 @@ import { PlusIcon } from "../ui/icons/PlusIcon";
 import { SettingIcon } from "../ui/icons/SettingIcon";
 import { UserIcon } from "../ui/icons/UserIcon";
 import { logout } from "@/actions/auth.actions";
+import { useRouter } from "next/navigation";
 
 export const NavMenu = () => {
   const { openProfileForm } = useOpenProfileForm();
@@ -23,6 +24,13 @@ export const NavMenu = () => {
 
   const navMenuRef = useRef<HTMLDivElement>(null);
   useHandleOutsideClick(navMenuRef, closeNavMenu);
+
+  const router = useRouter();
+
+  const handleLogoutClick = ()=>{
+    logout();
+    router.push("/auth/login");
+  }
 
   return (
     <motion.div
@@ -65,7 +73,7 @@ export const NavMenu = () => {
           <p>Settings</p>
         </li>
         <li
-          onClick={logout}
+          onClick={handleLogoutClick}
           className="cursor-pointer flex items-center gap-x-2 hover:bg-secondary-dark p-2 rounded"
         >
           <LogoutIcon />

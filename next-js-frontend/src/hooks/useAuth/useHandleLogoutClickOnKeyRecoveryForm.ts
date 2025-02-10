@@ -5,9 +5,9 @@ import { useToggleRecoverPrivateKeyForm } from "../useUI/useToggleRecoverPrivate
 export const useHandleLogoutClickOnKeyRecoveryForm = () => {
   const { toggleRecoverPrivateKeyForm } = useToggleRecoverPrivateKeyForm();
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async() => {
     toggleRecoverPrivateKeyForm();
-    logout();
+    await logout();
   };
 
   return { handleLogoutClick };

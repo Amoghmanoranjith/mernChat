@@ -4,7 +4,7 @@ import { useEffect } from "react";
 type PropTypes = {
   userKeysStoredInDatabaseSuccess: boolean;
   privateKey: JsonWebKey | null;
-  userId: string | undefined;
+  userId: string | undefined | null;
 };
 
 export const useStoreUserPrivateKeyInIndexedDB = ({
@@ -12,6 +12,7 @@ export const useStoreUserPrivateKeyInIndexedDB = ({
   privateKey,
   userId,
 }: PropTypes) => {
+  
   useEffect(() => {
     if (userKeysStoredInDatabaseSuccess && privateKey && userId) {
       storeUserPrivateKeyInIndexedDB({ privateKey, userId });

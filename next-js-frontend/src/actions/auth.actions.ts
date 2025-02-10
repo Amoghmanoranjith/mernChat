@@ -3,7 +3,6 @@ import { DEFAULT_AVATAR } from "@/constants";
 import { prisma } from "@/lib/server/prisma";
 import { createSession, deleteSession } from "@/lib/server/session";
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
 
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
@@ -120,5 +119,4 @@ export async function signup(prevState: any, formData: FormData) {
 
 export async function logout(){
   await deleteSession();
-  redirect("/");
 }
