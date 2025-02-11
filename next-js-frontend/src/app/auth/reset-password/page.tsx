@@ -7,13 +7,10 @@ function ResetPasswordPageContent (){
 
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const token = searchParams.get("token");
 
   useEffect(() => {
-    if (!token) {
-      router.push("/auth/login");
-    }
+    if (!token)router.push("/auth/login");
   }, [token,router]);
 
   return (
@@ -29,7 +26,7 @@ function ResetPasswordPageContent (){
 
       <div>
         {token && (
-          <ResetPasswordForm token={token as string}/>
+          <ResetPasswordForm token={token}/>
         )}
       </div>
     </div>

@@ -6,30 +6,6 @@ import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
-const resetPassword = asyncErrorHandler(async (req, res, next) => {
-    const { token, newPassword } = req.body;
-    const { id: decodedUserId } = jwt.verify(token, env.JWT_SECRET);
-    const doesResetPasswordRequestExistsForThisUser = await prisma.resetPasswordToken.findFirst({
-        where: {
-            userId: decodedUserId
-        }
-    });
-    if (!doesResetPasswordRequestExistsForThisUser) {
-        return next(new CustomError("Password reset link is invalid", 404));
-    }
-    if (doesResetPasswordRequestExistsForThisUser.expiresAt < new Date) {
-        return next(new CustomError("Password reset link has been expired", 400));
-    }
-    const user = await prisma.user.update({
-        where: {
-            id: decodedUserId
-        },
-        data: {
-            hashedPassword: await bcrypt.hash(newPassword, 10)
-        }
-    });
-    return res.status(200).json({ message: `Dear ${user.username}, your password has been reset successfuly` });
-});
 const sendOtp = asyncErrorHandler(async (req, res, next) => {
     await prisma.otp.deleteMany({
         where: {
@@ -147,4 +123,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
 const logout = asyncErrorHandler(async (req, res, next) => {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
 });
-export { checkAuth, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp };
+export { checkAuth, logout, redirectHandler, sendOtp, updateFcmToken, updateUserKeys, verifyOtp };

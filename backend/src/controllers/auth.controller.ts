@@ -4,44 +4,12 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, keySchemaType, resetPasswordSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, keySchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 
-
-const resetPassword = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-
-    const {token,newPassword}:resetPasswordSchemaType = req.body;
-
-    const {id:decodedUserId} = jwt.verify(token,env.JWT_SECRET) as {id:string};
-
-    const doesResetPasswordRequestExistsForThisUser = await prisma.resetPasswordToken.findFirst({
-        where:{
-            userId:decodedUserId
-        }
-    })
-
-    if(!doesResetPasswordRequestExistsForThisUser){
-        return next(new CustomError("Password reset link is invalid",404))
-    }
-
-    if(doesResetPasswordRequestExistsForThisUser.expiresAt < new Date){
-        return next(new CustomError("Password reset link has been expired",400))
-    }
-
-    const user = await prisma.user.update({
-        where:{
-            id:decodedUserId
-        },
-        data:{
-            hashedPassword:await bcrypt.hash(newPassword,10)
-        }
-    })
-    
-    return res.status(200).json({message:`Dear ${user.username}, your password has been reset successfuly`})
-})
 
 const sendOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
@@ -182,7 +150,7 @@ export {
     checkAuth,
     logout,
     redirectHandler,
-    resetPassword, sendOtp, updateFcmToken, updateUserKeys,
+    sendOtp, updateFcmToken, updateUserKeys,
     verifyOtp
 };
 

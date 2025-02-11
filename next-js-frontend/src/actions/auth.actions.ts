@@ -3,7 +3,7 @@ import { DEFAULT_AVATAR } from "@/constants";
 import { sendEmail } from "@/lib/server/email/SendEmail";
 import { prisma } from "@/lib/server/prisma";
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
-import { createSession, decrypt, deleteSession, encrypt } from "@/lib/server/session";
+import { createSession, decrypt, deleteSession, encrypt, SessionPayload } from "@/lib/server/session";
 import bcrypt from "bcryptjs";
 
 export async function login(prevState: any, formData: FormData) {
@@ -417,3 +417,77 @@ export async function sendResetPasswordLink(prevState:any,email:string){
     }
   }
 }
+
+export async function resetPassword(prevState:any,data:{token:string,newPassword:string}){
+  try {
+    const {newPassword,token} = data;
+
+    const {userId} = await decrypt(token) as SessionPayload;
+
+    const resetPasswordTokenExists = await prisma.resetPasswordToken.findFirst({where:{userId}});
+
+    if(!resetPasswordTokenExists){
+      return {
+        errors:{
+          message:'Password reset link is invalid'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    if(resetPasswordTokenExists.expiresAt < new Date){
+       return {
+        errors:{
+          message:'Password reset link has been expired'
+        },
+        success:{
+          message:null
+        }
+       }
+    }
+
+    const user = await prisma.user.findUnique({where:{id:userId}});
+
+    if(!user){
+      return {
+        errors:{
+          message:'User not found'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    await prisma.user.update({
+        where:{id:user.id},
+        data:{hashedPassword:await bcrypt.hash(newPassword,10)}
+    })
+
+    await prisma.resetPasswordToken.delete({where:{id:resetPasswordTokenExists.id}});
+  
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:`Dear ${user.username}, your password has been reset successfuly`
+      }
+    }
+
+  } catch (error) {
+    console.log('error resetting password',error);
+    return {
+      errors:{
+        message:'Error resetting password'
+      },
+      success:{
+        message:null
+     }
+  }
+ }
+}
+
+

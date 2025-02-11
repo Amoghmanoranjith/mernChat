@@ -4,11 +4,6 @@ const passwordValidation = z.string({required_error:"Password is required"}).min
 .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,'Password must contain 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number')
 
 
-export const resetPasswordSchema = z.object({
-    token:z.string({required_error:"password reset token is required"}),
-    newPassword:passwordValidation
-})
-
 export const verifyOtpSchema = z.object({
     otp:z.string({required_error:"otp is required"})
 })
@@ -23,7 +18,6 @@ export const fcmTokenSchema = z.object({
 })
 
 
-export type resetPasswordSchemaType = z.infer<typeof resetPasswordSchema>
 export type verifyOtpSchemaType = z.infer<typeof verifyOtpSchema>
 export type keySchemaType = z.infer<typeof keySchema>
 export type fcmTokenSchemaType = z.infer<typeof fcmTokenSchema>
