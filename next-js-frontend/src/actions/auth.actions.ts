@@ -138,12 +138,28 @@ export async function sendPrivateKeyRecoveryEmail(prevState:any,user:Pick<FetchU
       data:{userId:id,hashedToken:privateKeyRecoveryHashedToken,expiresAt:new Date(Date.now()+1000*60*60*24*30)}
     })
   
-    const privateKeyRecoveryUrl = `${process.env.CLIENT_URL}/auth/private-key-recovery-token-verification?token=${privateKeyRecoveryToken}`
+    const privateKeyRecoveryUrl = `${process.env.NEXT_PUBLIC_CLIENT_URL}/auth/private-key-recovery-token-verification?token=${privateKeyRecoveryToken}`
   
     await sendEmail({emailType:"privateKeyRecovery",to:email,username,verificationUrl:privateKeyRecoveryUrl})
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:"Private key recovery email sent successfully"
+      }
+    }
   }
   catch (error) {
-    console.log(error);
+    console.log('error sending private key recovery email',error);
+    return {
+      errors:{
+        message:"Error sending private key recovery email"
+      },
+      success:{
+        message:null
+      }
+    }
   }
 
 }
