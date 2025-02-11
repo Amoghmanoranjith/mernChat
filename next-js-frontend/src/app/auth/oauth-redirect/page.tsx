@@ -5,9 +5,7 @@ import { useGenerateKeyPair } from '@/hooks/useAuth/useGenerateKeyPair';
 import { useStoreUserKeysInDatabase } from '@/hooks/useAuth/useStoreUserKeysInDatabase';
 import { useStoreUserPrivateKeyInIndexedDB } from '@/hooks/useAuth/useStoreUserPrivateKeyInIndexedDB';
 import { useUpdateLoggedInUserPublicKeyInState } from '@/hooks/useAuth/useUpdateLoggedInUserPublicKeyInState';
-import { useUpdateLoggedInUserState } from '@/hooks/useAuth/useUpdateLoggedInUserState';
 import { useVerifyOAuthToken } from '@/hooks/useAuth/useVerifyOAuthToken';
-import { useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated } from '@/hooks/useUtils/useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated';
 import { useSearchParams } from 'next/navigation';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -16,16 +14,14 @@ function OAuthRedirectPageContent(){
 
   const searchParams = useSearchParams()
   const token = searchParams.get('token');
-
-  useRedirectUserToHomepageAfterLoggedInUserStateIsPopulated();
   
   const {verifyOAuthToken,isTokenVerificationSucessfull,data} = useVerifyOAuthToken()
-  useUpdateLoggedInUserState({isSuccess:isTokenVerificationSucessfull,user:data?.user})
 
   const [isOAuthNewUser,setOAuthNewUser] = useState<boolean>(false);
 
   useEffect(()=>{
     if(token){
+      console.log('token is',token);
       verifyOAuthToken({token});
     }
   },[token, verifyOAuthToken])
@@ -62,11 +58,11 @@ function OAuthRedirectPageContent(){
   const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
   const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
   const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user?.id});
+  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user.id});
   useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
   
   return (
-    <div className="bg-background w-full h-full text-text text-xl">Redirecting...</div>
+    <div className="bg-background w-full h-full text-text text-xl">Redirecting please wait...</div>
   )
 }
 

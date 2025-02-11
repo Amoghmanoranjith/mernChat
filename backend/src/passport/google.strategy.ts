@@ -20,7 +20,6 @@ passport.use(new GoogleStrategy({
           const isExistingUser = await prisma.user.findUnique({where:{email:profile.emails[0].value}})
 
           if(isExistingUser){
-
             const transformedUser = {
               id:isExistingUser.id,
               username:isExistingUser.username,
@@ -31,18 +30,13 @@ passport.use(new GoogleStrategy({
               newUser:false,
               googleId:profile.id
             }
-
             done(null,transformedUser)
           }
-
           else{
-
             let avatarUrl = DEFAULT_AVATAR
-
             if(profile.photos && profile.photos[0].value){
               avatarUrl=profile.photos[0].value
             }
-            
             const newUser = await prisma.user.create({
               data:{
                 username:profile.displayName,

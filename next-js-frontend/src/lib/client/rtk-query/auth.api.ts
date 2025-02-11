@@ -57,7 +57,7 @@ export const authApi = createApi({
       query: () => "/send-otp",
     }),
 
-    verifyOAuthToken: builder.mutation<{ combinedSecret?: string; user: FetchUserInfoResponse },{ token: string }>({
+    verifyOAuthToken: builder.mutation<{ combinedSecret?: string; user:{id:string}},{ token: string }>({
       query: ({ token }) => ({
         url: "/verify-oauth-token",
         method: "POST",

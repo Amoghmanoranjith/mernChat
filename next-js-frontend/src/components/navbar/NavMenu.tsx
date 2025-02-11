@@ -24,8 +24,8 @@ export const NavMenu = () => {
 
   const router = useRouter();
 
-  const handleLogoutClick = ()=>{
-    logout();
+  const handleLogoutClick = async()=>{
+    await logout();
     router.push("/auth/login");
   }
 

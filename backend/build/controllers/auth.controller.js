@@ -149,13 +149,17 @@ const sendOAuthCookie = asyncErrorHandler(async (req, res, next) => {
     const existingUser = await prisma.user.findUnique({
         where: {
             id: user
+        },
+        select: {
+            id: true,
+            googleId: true,
         }
     });
     if (!existingUser) {
         return next(new CustomError("User not found", 400));
     }
     console.log('user is', existingUser);
-    let responsePayload = {};
+    let responsePayload = { user: { id: existingUser.id } };
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     const jwtToken = jwt.sign({ userId: existingUser.id, expiresAt }, env.JWT_SECRET, { expiresIn: `${env.JWT_TOKEN_EXPIRATION_DAYS}d`, algorithm: "HS256" });
     res.cookie('token', jwtToken, cookieOptions);
