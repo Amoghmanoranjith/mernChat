@@ -6,34 +6,6 @@ import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
-const forgotPassword = asyncErrorHandler(async (req, res, next) => {
-    const { email } = req.body;
-    const user = await prisma.user.findUnique({
-        where: {
-            email
-        }
-    });
-    if (!user)
-        return next(new CustomError("User with this email does not exists", 404));
-    // deleting previous reset password tokens for this user, if they exists
-    await prisma.resetPasswordToken.deleteMany({
-        where: {
-            userId: user.id
-        }
-    });
-    const resetPasswordToken = jwt.sign({ _id: user.id }, env.JWT_SECRET);
-    const hashedResetPasswordToken = await bcrypt.hash(resetPasswordToken, 10);
-    await prisma.resetPasswordToken.create({
-        data: {
-            userId: user.id,
-            hashedToken: hashedResetPasswordToken,
-            expiresAt: new Date(Date.now() + env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
-        }
-    });
-    const resetPasswordUrl = `${config.clientUrl}/auth/reset-password?token=${resetPasswordToken}`;
-    await sendMail(email, user.username, "resetPassword", resetPasswordUrl, undefined);
-    res.status(200).json({ message: `We have sent a password reset link on ${email}, please check spam if not received` });
-});
 const resetPassword = asyncErrorHandler(async (req, res, next) => {
     const { token, newPassword } = req.body;
     const { id: decodedUserId } = jwt.verify(token, env.JWT_SECRET);
@@ -175,4 +147,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
 const logout = asyncErrorHandler(async (req, res, next) => {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
 });
-export { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, };
+export { checkAuth, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp };

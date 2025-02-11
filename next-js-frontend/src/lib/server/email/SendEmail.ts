@@ -9,12 +9,12 @@ type Params = {
     to: string,
     username: string,
     emailType: EmailType,
-    resetUrl?: string,
+    resetPasswordUrl?: string,
     otp?: string,
     verificationUrl?: string
 }
 
-export const sendEmail = async ({to,emailType,username,otp,resetUrl,verificationUrl}:Params) => {
+export const sendEmail = async ({to,emailType,username,otp,resetPasswordUrl,verificationUrl}:Params) => {
 
   const transporter = getTransporter();
   if (!transporter) throw new Error("Failed to initialize email transporter");
@@ -29,7 +29,7 @@ export const sendEmail = async ({to,emailType,username,otp,resetUrl,verification
       break;
     case "resetPassword":
       subject = resetPasswordEmailSubject;
-      content = resetPasswordEmailContent({resetUrl:resetUrl as string,username})
+      content = resetPasswordEmailContent({resetUrl:resetPasswordUrl as string,username})
       break;
     case "privateKeyRecovery":
       subject = privateKeyRecoveryEmailSubject;

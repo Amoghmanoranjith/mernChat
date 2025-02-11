@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { decrypt, deleteSession } from "./lib/server/session";
+import { decrypt, deleteSession, SessionPayload } from "./lib/server/session";
 
 const publicRoutes = [
   "/auth/login",
@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const session = await decrypt(cookie);
+  const session = await decrypt(cookie) as SessionPayload;
 
   if (!session) {
     await deleteSession();
@@ -40,13 +40,13 @@ export async function middleware(req: NextRequest) {
   const response = NextResponse.next();
 
 
-  if(session.userId){
-    response.cookies.set("loggedInUserId",session.userId,{
-      httpOnly:true,
-      sameSite:"strict",
-      path:"/",
-      secure:process.env.NODE_ENV === 'production'
-    })
+  if (session.userId) {
+    response.cookies.set("loggedInUserId", session.userId, {
+      httpOnly: true,
+      sameSite: "strict",
+      path: "/",
+      secure: process.env.NODE_ENV === 'production'
+    });
   }
 
   // const {userId} = session;

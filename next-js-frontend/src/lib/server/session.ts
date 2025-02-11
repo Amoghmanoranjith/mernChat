@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
-type SessionPayload = {
+export type SessionPayload = {
   userId: string;
   expiresAt: Date;
 };

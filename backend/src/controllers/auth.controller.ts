@@ -4,41 +4,12 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, keySchemaType, resetPasswordSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 
-const forgotPassword = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-
-    const {email}:forgotPasswordSchemaType = req.body
-
-    const user = await prisma.user.findUnique({
-        where:{
-            email
-        }
-    })
-    if(!user) return next(new CustomError("User with this email does not exists",404))
-    // deleting previous reset password tokens for this user, if they exists
-    await prisma.resetPasswordToken.deleteMany({
-        where:{
-            userId:user.id
-        }
-    })
-    const resetPasswordToken = jwt.sign({_id:user.id},env.JWT_SECRET)
-    const hashedResetPasswordToken = await bcrypt.hash(resetPasswordToken,10)
-    await prisma.resetPasswordToken.create({
-        data:{
-            userId:user.id,
-            hashedToken:hashedResetPasswordToken,
-            expiresAt:new Date(Date.now()+env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
-        }
-    })
-    const resetPasswordUrl = `${config.clientUrl}/auth/reset-password?token=${resetPasswordToken}`
-    await sendMail(email,user.username,"resetPassword",resetPasswordUrl,undefined)
-    res.status(200).json({message:`We have sent a password reset link on ${email}, please check spam if not received`})
-})
 
 const resetPassword = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
@@ -209,10 +180,9 @@ const logout = asyncErrorHandler(async(req:Request,res:Response,next:NextFunctio
 
 export {
     checkAuth,
-    forgotPassword,
     logout,
     redirectHandler,
     resetPassword, sendOtp, updateFcmToken, updateUserKeys,
-    verifyOtp,
+    verifyOtp
 };
 

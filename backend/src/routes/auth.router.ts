@@ -1,14 +1,13 @@
 import { Router } from "express";
 import passport from 'passport';
 import { config } from "../config/env.config.js";
-import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp } from "../controllers/auth.controller.js";
+import { checkAuth, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyToken } from "../middlewares/verify-token.middleware.js";
-import { fcmTokenSchema, forgotPasswordSchema, keySchema, resetPasswordSchema, verifyOtpSchema } from "../schemas/auth.schema.js";
+import { fcmTokenSchema, keySchema, resetPasswordSchema, verifyOtpSchema } from "../schemas/auth.schema.js";
 
 export default Router()
 
-.post("/forgot-password",validate(forgotPasswordSchema),forgotPassword)
 .post("/reset-password",validate(resetPasswordSchema),resetPassword)
 .get("/send-otp",verifyToken,sendOtp)
 .post("/verify-otp",verifyToken,validate(verifyOtpSchema),verifyOtp)

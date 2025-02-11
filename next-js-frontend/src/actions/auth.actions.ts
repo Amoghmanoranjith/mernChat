@@ -361,3 +361,59 @@ export async function verifyOAuthToken(prevState:any,token:string){
     }
   }
 }
+
+export async function sendResetPasswordLink(prevState:any,email:string){
+
+  try {
+
+    const user = await prisma.user.findUnique({where:{email}});
+
+    if(!user){
+      return {
+        errors:{
+          message:'Email does not exists'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    // deleting previous reset password tokens for this user, if they exists
+    await prisma.resetPasswordToken.deleteMany({where:{userId:user.id}})
+
+    const resetPasswordToken = await encrypt({expiresAt:new Date(Date.now()+1000*60*60*24*30),userId:user.id})
+    const hashedResetPasswordToken = await bcrypt.hash(resetPasswordToken,10)
+
+    await prisma.resetPasswordToken.create({
+        data:{
+            userId:user.id,
+            hashedToken:hashedResetPasswordToken,
+            expiresAt:new Date(Date.now()+1000*60*60*24*30)
+        }
+    })
+
+    const resetPasswordUrl = `${process.env.NEXT_PUBLIC_CLIENT_URL}/auth/reset-password?token=${resetPasswordToken}`
+    await sendEmail({emailType:"resetPassword",to:user.email,username:user.username,resetPasswordUrl})
+    
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:`We have sent a password reset link on ${email}, please check spam if not received`
+      }
+    }
+
+  } catch (error) {
+    console.log('error sending reset password link',error);
+    return {
+      errors:{
+        message:'Error sending reset password link'
+      },
+      success:{
+        message:null
+      }
+    }
+  }
+}
