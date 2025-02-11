@@ -13,9 +13,9 @@ const RecoverPrivateKeyForm = () => {
 
   const router = useRouter();
 
-  const handleLogoutClick = () => {
-    logout();
-    router.push("/auth/login");
+  const handleLogoutClick = async() => {
+    await logout();
+    router.push("/auth/login")
   };
 
   return (

@@ -15,9 +15,6 @@ export const keySchema = z.object({
     publicKey: z.string({ required_error: "Public key is required" }),
     privateKey: z.string({ required_error: "Private key is required" })
 });
-export const verifyPasswordSchema = z.object({
-    password: z.string({ required_error: "Password is required" })
-});
 export const fcmTokenSchema = z.object({
     fcmToken: z.string({ required_error: "fcm token is required" })
 });

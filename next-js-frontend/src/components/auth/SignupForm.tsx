@@ -106,6 +106,7 @@ export const SignupForm = () => {
         </div>
         <div className="flex flex-col gap-y-1">
           <input
+            type="password"
             {...register("password")}
             className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Password"
@@ -116,6 +117,7 @@ export const SignupForm = () => {
         </div>
         <div className="flex flex-col gap-y-1">
           <input
+            type="password"
             {...register("confirmPassword")}
             className="p-3 rounded outline outline-1 outline-secondary-dark text-text bg-background hover:outline-primary"
             placeholder="Confirm Password"

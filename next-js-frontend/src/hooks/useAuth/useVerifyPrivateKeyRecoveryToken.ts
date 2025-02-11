@@ -2,7 +2,7 @@ import { verifyPrivateKeyRecoveryToken } from "@/actions/auth.actions";
 import { storeUserPrivateKeyInIndexedDB } from "@/lib/client/indexedDB";
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { useRouter } from "next/navigation";
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { startTransition, useActionState, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { decryptPrivateKey } from "../../lib/client/encryption";
 
@@ -45,15 +45,17 @@ export const useVerifyPrivateKeyRecoveryToken = ({recoveryToken}: PropTypes) => 
   
   useEffect(() => {
     if (loggedInUser && recoveryToken){
-      verifyPrivateKeyRecoveryTokenAction({recoveryToken,userId:loggedInUser.id});
+      startTransition(()=>{
+        verifyPrivateKeyRecoveryTokenAction({recoveryToken,userId:loggedInUser.id});
+      })
     }
   }, [loggedInUser]);
 
   useEffect(()=>{
-    if((state?.data?.combinedSecret || state?.data?.privateKey) && !state.errors.message){
+    if((state?.data?.combinedSecret || state?.data?.privateKey)){
       setIsSuccess(true);
     }
-    else{
+    else if(state?.errors.message?.length){
       toast.error(state?.errors.message);
       router.push("/auth/login");
     }
@@ -121,7 +123,7 @@ export const useVerifyPrivateKeyRecoveryToken = ({recoveryToken}: PropTypes) => 
       toast.error("Some error occured while recovering");
       router.push("/auth/login");
     }
-  },[]);
+  },[loggedInUser]);
 
   return {
     isPrivateKeyRestoredInIndexedDB: isPrivateKeyRestoredInIndexedDB && isSuccess,

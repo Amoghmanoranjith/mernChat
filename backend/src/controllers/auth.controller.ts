@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType, verifyPasswordSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
@@ -170,34 +170,6 @@ const updateFcmToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Resp
     return res.status(200).json({fcmToken:user.fcmToken})
 })
 
-const verifyPassword = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const {password}:verifyPasswordSchemaType = req.body
-
-    if(req.user.hashedPassword && (await bcrypt.compare(password,req.user.hashedPassword))){
-
-        const token = jwt.sign({user:req.user.id},env.JWT_SECRET)
-        const hashedToken = await bcrypt.hash(token,10)
-
-        await prisma.privateKeyRecoveryToken.deleteMany({
-            where:{
-                userId:req.user.id
-            }
-        })
-        await prisma.privateKeyRecoveryToken.create({
-            data:{
-                userId:req.user.id,
-                hashedToken,
-                expiresAt:new Date(Date.now()+env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES)
-            }
-        })
-        const verificationUrl = `${config.clientUrl}/auth/private-key-recovery-token-verification?token=${token}`
-        await sendMail(req.user.email,req.user.username,'privateKeyRecovery',undefined,undefined,verificationUrl)
-        return res.status(200).json({message:"We have sent you an email with verification link, please check spam if not received"})
-    }
-    return next(new CustomError("Password is incorrect",400))
-})
-
 const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
     console.log('request reached');
@@ -273,6 +245,5 @@ export {
     redirectHandler,
     resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys,
     verifyOtp,
-    verifyPassword
 };
 

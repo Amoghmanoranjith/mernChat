@@ -225,6 +225,8 @@ export async function verifyPrivateKeyRecoveryToken(prevState:any,data:{recovery
 
     if(user.oAuthSignup) payload['combinedSecret'] = user.googleId+process.env.PRIVATE_KEY_RECOVERY_SECRET;
 
+    await prisma.privateKeyRecoveryToken.deleteMany({where:{userId:data.userId}})
+
     return {
         errors:{
             message:null
@@ -241,4 +243,71 @@ export async function verifyPrivateKeyRecoveryToken(prevState:any,data:{recovery
         data:null
     }
   }
+}
+
+export async function verifyPassword(prevState:any,data:{userId:string,password:string}){
+
+  try {
+
+    const {password,userId} = data;
+
+    const user =  await prisma.user.findUnique({where:{id:userId}});
+
+    if(!user){
+      return {
+        errors:{
+          message:'User not found'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    if(!await bcrypt.compare(password,user.hashedPassword)){
+      return {
+        errors:{
+          message:'Invalid password'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    const privateKeyRecoveryToken =  await encrypt({userId,expiresAt:new Date(Date.now()+1000*60*60*24*30)});
+    const privateKeyRecoveryHashedToken = await bcrypt.hash(privateKeyRecoveryToken,10);
+  
+    await prisma.privateKeyRecoveryToken.deleteMany({
+      where:{userId}
+    })
+    await prisma.privateKeyRecoveryToken.create({
+      data:{userId,hashedToken:privateKeyRecoveryHashedToken,expiresAt:new Date(Date.now()+1000*60*60*24*30)}
+    })
+  
+    const privateKeyRecoveryUrl = `${process.env.NEXT_PUBLIC_CLIENT_URL}/auth/private-key-recovery-token-verification?token=${privateKeyRecoveryToken}`
+    await sendEmail({emailType:"privateKeyRecovery",to:user.email,username:user.username,verificationUrl:privateKeyRecoveryUrl})
+
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:`Private key recovery email sent successfully on ${user.email}`
+      }
+    }
+
+  }
+  catch (error) {
+    console.log('error verifying password',error);
+    return {
+      errors:{
+        message:'Error verifying password'
+      },
+      success:{
+        message:null
+      }
+    }
+  }
+
 }

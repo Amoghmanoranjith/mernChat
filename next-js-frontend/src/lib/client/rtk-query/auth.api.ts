@@ -37,14 +37,6 @@ export const authApi = createApi({
       }),
     }),
 
-    verifyPassword: builder.mutation<void, { password: string }>({
-      query: ({ password }) => ({
-        url: "/verify-password",
-        method: "POST",
-        body: { password },
-      }),
-    }),
-
     updateUserKeysInDatabase: builder.mutation<{ publicKey: string },{ publicKey: string; privateKey: string }>({
       query: ({ publicKey, privateKey }) => ({
         url: "/user/keys",
@@ -91,7 +83,6 @@ export const {
   useLazyLogoutQuery,
   useCheckAuthQuery,
   useUpdateUserKeysInDatabaseMutation,
-  useVerifyPasswordMutation,
   useUpdateFcmTokenMutation,
   useVerifyOAuthTokenMutation,
 } = authApi;

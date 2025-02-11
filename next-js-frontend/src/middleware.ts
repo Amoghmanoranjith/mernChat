@@ -63,5 +63,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
+  console.log('coming heree');
   return response;
 }
