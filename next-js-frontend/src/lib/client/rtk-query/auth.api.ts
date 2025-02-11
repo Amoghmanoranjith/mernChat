@@ -45,14 +45,6 @@ export const authApi = createApi({
       }),
     }),
 
-    verifyPrivateKeyToken: builder.mutation<{ privateKey: string; combinedSecret?: string },{ recoveryToken: string }>({
-      query: ({ recoveryToken }) => ({
-        url: "/verify-privatekey-token",
-        method: "POST",
-        body: { recoveryToken },
-      }),
-    }),
-
     updateUserKeysInDatabase: builder.mutation<{ publicKey: string },{ publicKey: string; privateKey: string }>({
       query: ({ publicKey, privateKey }) => ({
         url: "/user/keys",
@@ -100,7 +92,6 @@ export const {
   useCheckAuthQuery,
   useUpdateUserKeysInDatabaseMutation,
   useVerifyPasswordMutation,
-  useVerifyPrivateKeyTokenMutation,
   useUpdateFcmTokenMutation,
   useVerifyOAuthTokenMutation,
 } = authApi;

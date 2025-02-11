@@ -3,7 +3,7 @@ import { DEFAULT_AVATAR } from "@/constants";
 import { sendEmail } from "@/lib/server/email/SendEmail";
 import { prisma } from "@/lib/server/prisma";
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
-import { createSession, deleteSession, encrypt } from "@/lib/server/session";
+import { createSession, decrypt, deleteSession, encrypt } from "@/lib/server/session";
 import bcrypt from "bcryptjs";
 
 export async function login(prevState: any, formData: FormData) {
@@ -162,4 +162,83 @@ export async function sendPrivateKeyRecoveryEmail(prevState:any,user:Pick<FetchU
     }
   }
 
+}
+
+export async function verifyPrivateKeyRecoveryToken(prevState:any,data:{recoveryToken:string,userId:string}){
+  try {
+    
+    const recoveryTokenExists =  await prisma.privateKeyRecoveryToken.findFirst({
+        where:{userId:data.userId}
+    })
+
+    if(!recoveryTokenExists){
+        return {
+            errors:{
+                message:'Verification link is not valid'
+            },
+            data:null
+        }
+    }
+
+    if(recoveryTokenExists.expiresAt < new Date){
+        return {
+            errors:{
+                message:'Verification link has expired'
+            },
+            data:null
+        }
+    }
+    
+    if(!(await bcrypt.compare(data.recoveryToken,recoveryTokenExists.hashedToken))){
+        return {
+            errors:{
+                message:'Verification link is not valid'
+            },
+            data:null
+        }
+    }
+    const decodedData = await decrypt(data.recoveryToken);
+    
+    if(decodedData.userId !== data.userId){
+        return {
+            errors:{
+                message:'Verification link is not valid'
+            },
+            data:null
+        }
+    }
+
+    const user = await prisma.user.findUnique({where:{id:data.userId},select:{id:true,privateKey:true,oAuthSignup:true,googleId:true}});
+
+    if(!user){
+        return {
+            errors:{
+                message:'User not found, verification link is not valid'
+            },
+            data:null
+        }
+    }
+
+    const payload:{privateKey?:string,combinedSecret?:string} = {
+        privateKey:user.privateKey!
+    }
+
+    if(user.oAuthSignup) payload['combinedSecret'] = user.googleId+process.env.PRIVATE_KEY_RECOVERY_SECRET;
+
+    return {
+        errors:{
+            message:null
+        },
+        data:payload
+    }
+
+  } catch (error) {
+    console.log('error verifying private key recovery token',error);
+    return {
+        errors:{
+            message:'Error verifying private key recovery token'
+        },
+        data:null
+    }
+  }
 }

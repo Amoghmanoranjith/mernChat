@@ -18,9 +18,6 @@ export const keySchema = z.object({
 export const verifyPasswordSchema = z.object({
     password: z.string({ required_error: "Password is required" })
 });
-export const verifyPrivateKeyTokenSchema = z.object({
-    recoveryToken: z.string({ required_error: "Recovery token is required" })
-});
 export const fcmTokenSchema = z.object({
     fcmToken: z.string({ required_error: "fcm token is required" })
 });

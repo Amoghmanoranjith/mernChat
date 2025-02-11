@@ -15,21 +15,15 @@ type PropTypes = {
   loggedInUser: User | null;
 };
 
-export const RecoveryOptionsForManualSignedUpUser = ({
-  loggedInUser,
-}: PropTypes) => {
+export const RecoveryOptionsForManualSignedUpUser = ({loggedInUser}: PropTypes) => {
+
   const { verifyPassword, isLoading, isSuccess } = useVerifyPassword();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<keyRecoverySchemaType>({
+  const {register,handleSubmit,watch,formState: { errors },} = useForm<keyRecoverySchemaType>({
     resolver: zodResolver(keyRecoverySchema),
   });
-  const onSubmit: SubmitHandler<keyRecoverySchemaType> = ({ password }) =>
-    verifyPassword({ password });
+
+  const onSubmit: SubmitHandler<keyRecoverySchemaType> = ({ password }) => verifyPassword({ password });
 
   useStorePasswordInLocalStorageIfCorrectPasswordIsEntered({
     isSuccess,

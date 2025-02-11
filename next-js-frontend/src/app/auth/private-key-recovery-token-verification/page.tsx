@@ -12,7 +12,6 @@ function PrivateKeyRecoveryTokenVerificationPageContent() {
     const {isPrivateKeyRestoredInIndexedDB} = useVerifyPrivateKeyRecoveryToken({recoveryToken:token});
     useNavigateToRecoverySuccessfulPageOnPrivateKeyRestoration({isPrivateKeyRestoredInIndexedDB});
 
-
   return (
     <span>Verifying link....</span>
   )

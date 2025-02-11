@@ -16,5 +16,6 @@ declare namespace NodeJS {
         NEXT_PUBLIC_CLIENT_URL: string;
         EMAIL:string;
         PASSWORD:string;
+        PRIVATE_KEY_RECOVERY_SECRET:string;
     }
 }

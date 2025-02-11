@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType, verifyPasswordSchemaType, verifyPrivateKeyTokenSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType, verifyPasswordSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
@@ -198,41 +198,6 @@ const verifyPassword = asyncErrorHandler(async(req:AuthenticatedRequest,res:Resp
     return next(new CustomError("Password is incorrect",400))
 })
 
-const verifyPrivateKeyToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const {recoveryToken}:verifyPrivateKeyTokenSchemaType = req.body
-
-    const recoveryTokenExists =  await prisma.privateKeyRecoveryToken.findFirst({
-        where:{
-            userId:req.user.id
-        }
-    })
-    if(!recoveryTokenExists){
-        return next(new CustomError('Token does not exists',404))
-    }
-    if(recoveryTokenExists.expiresAt < new Date){
-        return next(new CustomError('Verification link has been expired',400))
-    }
-
-    if(!(await bcrypt.compare(recoveryToken,recoveryTokenExists.hashedToken))){
-        return next(new CustomError('Verification link is not valid',400))
-    }
-
-    const decodedData = jwt.verify(recoveryToken,env.JWT_SECRET) as {user:string}
-
-    if(decodedData.user !== req.user.id!.toString()){
-        return next(new CustomError('Verification link is not valid',400))
-    }
-
-    const payload:{privateKey?:string,combinedSecret?:string} = {
-        privateKey:req.user.privateKey || undefined
-    }
-    if(req.user.oAuthSignup){
-        payload['combinedSecret'] = req.user.googleId+env.PRIVATE_KEY_RECOVERY_SECRET
-    }
-    return res.status(200).json(payload)
-})
-
 const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
     console.log('request reached');
@@ -308,7 +273,6 @@ export {
     redirectHandler,
     resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys,
     verifyOtp,
-    verifyPassword,
-    verifyPrivateKeyToken
+    verifyPassword
 };
 

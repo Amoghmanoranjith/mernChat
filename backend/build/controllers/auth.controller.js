@@ -165,34 +165,6 @@ const verifyPassword = asyncErrorHandler(async (req, res, next) => {
     }
     return next(new CustomError("Password is incorrect", 400));
 });
-const verifyPrivateKeyToken = asyncErrorHandler(async (req, res, next) => {
-    const { recoveryToken } = req.body;
-    const recoveryTokenExists = await prisma.privateKeyRecoveryToken.findFirst({
-        where: {
-            userId: req.user.id
-        }
-    });
-    if (!recoveryTokenExists) {
-        return next(new CustomError('Token does not exists', 404));
-    }
-    if (recoveryTokenExists.expiresAt < new Date) {
-        return next(new CustomError('Verification link has been expired', 400));
-    }
-    if (!(await bcrypt.compare(recoveryToken, recoveryTokenExists.hashedToken))) {
-        return next(new CustomError('Verification link is not valid', 400));
-    }
-    const decodedData = jwt.verify(recoveryToken, env.JWT_SECRET);
-    if (decodedData.user !== req.user.id.toString()) {
-        return next(new CustomError('Verification link is not valid', 400));
-    }
-    const payload = {
-        privateKey: req.user.privateKey || undefined
-    };
-    if (req.user.oAuthSignup) {
-        payload['combinedSecret'] = req.user.googleId + env.PRIVATE_KEY_RECOVERY_SECRET;
-    }
-    return res.status(200).json(payload);
-});
 const sendOAuthCookie = asyncErrorHandler(async (req, res, next) => {
     console.log('request reached');
     const { token } = req.body;
@@ -249,4 +221,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
 const logout = asyncErrorHandler(async (req, res, next) => {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
 });
-export { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword, verifyPrivateKeyToken };
+export { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, verifyPassword };
