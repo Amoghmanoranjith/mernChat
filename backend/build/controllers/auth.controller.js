@@ -142,33 +142,6 @@ const updateFcmToken = asyncErrorHandler(async (req, res, next) => {
     });
     return res.status(200).json({ fcmToken: user.fcmToken });
 });
-const sendOAuthCookie = asyncErrorHandler(async (req, res, next) => {
-    console.log('request reached');
-    const { token } = req.body;
-    const { oAuthNewUser, user } = jwt.verify(token, env.JWT_SECRET);
-    const existingUser = await prisma.user.findUnique({
-        where: {
-            id: user
-        },
-        select: {
-            id: true,
-            googleId: true,
-        }
-    });
-    if (!existingUser) {
-        return next(new CustomError("User not found", 400));
-    }
-    console.log('user is', existingUser);
-    let responsePayload = { user: { id: existingUser.id } };
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const jwtToken = jwt.sign({ userId: existingUser.id, expiresAt }, env.JWT_SECRET, { expiresIn: `${env.JWT_TOKEN_EXPIRATION_DAYS}d`, algorithm: "HS256" });
-    res.cookie('token', jwtToken, cookieOptions);
-    if (oAuthNewUser) {
-        const combinedSecret = existingUser.googleId + env.PRIVATE_KEY_RECOVERY_SECRET;
-        responsePayload['combinedSecret'] = combinedSecret;
-    }
-    return res.status(oAuthNewUser ? 201 : 200).json(responsePayload);
-});
 const checkAuth = asyncErrorHandler(async (req, res, next) => {
     if (req.user) {
         const secureUserInfo = {
@@ -202,4 +175,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
 const logout = asyncErrorHandler(async (req, res, next) => {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
 });
-export { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, };
+export { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp, };

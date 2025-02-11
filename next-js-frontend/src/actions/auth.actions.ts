@@ -311,3 +311,53 @@ export async function verifyPassword(prevState:any,data:{userId:string,password:
   }
 
 }
+
+export async function verifyOAuthToken(prevState:any,token:string){
+
+  try {
+    
+    const decodedInfo =  await decrypt(token) as {user:string,oAuthNewUser:boolean}
+    const {oAuthNewUser,user} = decodedInfo;
+    
+    const existingUser =  await prisma.user.findUnique({
+        where:{id:user},
+        select:{
+            id:true,
+            googleId:true,
+        }
+    })
+    if(!existingUser){
+        return {
+            errors:{
+                message:'User not found'
+            },
+            data:null
+        }
+    }
+    
+    await createSession(existingUser.id);
+  
+    const responsePayload:{combinedSecret?:string,user:{id:string}} = {user:{id:existingUser.id}};
+  
+    if(oAuthNewUser){
+        const combinedSecret = existingUser.googleId+process.env.PRIVATE_KEY_RECOVERY_SECRET;
+        responsePayload['combinedSecret'] = combinedSecret
+    }
+
+    return {
+      errors:{
+        message:null
+      },
+      data:responsePayload
+    }
+
+  } catch (error) {
+    console.log('error verifying oAuth token',error);
+    return {
+      errors:{
+        message:'Error verifying oAuth token'
+      },
+      data:null
+    }
+  }
+}

@@ -57,18 +57,6 @@ export const authApi = createApi({
       query: () => "/send-otp",
     }),
 
-    verifyOAuthToken: builder.mutation<{ combinedSecret?: string; user:{id:string}},{ token: string }>({
-      query: ({ token }) => ({
-        url: "/verify-oauth-token",
-        method: "POST",
-        body: { token },
-      }),
-    }),
-
-    logout: builder.query<void, void>({
-      query: () => "/logout",
-    }),
-
     checkAuth: builder.query<FetchUserInfoResponse | null, void>({
       query: () => "/check-auth",
     }),
@@ -80,9 +68,7 @@ export const {
   useResetPasswordMutation,
   useVerifyOtpMutation,
   useLazySendOtpQuery,
-  useLazyLogoutQuery,
   useCheckAuthQuery,
   useUpdateUserKeysInDatabaseMutation,
   useUpdateFcmTokenMutation,
-  useVerifyOAuthTokenMutation,
 } = authApi;

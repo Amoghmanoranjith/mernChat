@@ -18,6 +18,3 @@ export const keySchema = z.object({
 export const fcmTokenSchema = z.object({
     fcmToken: z.string({ required_error: "fcm token is required" })
 });
-export const setAuthCookieSchema = z.object({
-    token: z.string({ required_error: "token is required" })
-});

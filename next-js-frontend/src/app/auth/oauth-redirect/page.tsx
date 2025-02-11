@@ -1,33 +1,35 @@
 'use client';
+import { verifyOAuthToken } from '@/actions/auth.actions';
 import { useConvertPrivateAndPublicKeyInJwkFormat } from '@/hooks/useAuth/useConvertPrivateAndPublicKeyInJwkFormat';
 import { useEncryptPrivateKeyWithUserPassword } from '@/hooks/useAuth/useEncryptPrivateKeyWithUserPassword';
 import { useGenerateKeyPair } from '@/hooks/useAuth/useGenerateKeyPair';
 import { useStoreUserKeysInDatabase } from '@/hooks/useAuth/useStoreUserKeysInDatabase';
 import { useStoreUserPrivateKeyInIndexedDB } from '@/hooks/useAuth/useStoreUserPrivateKeyInIndexedDB';
 import { useUpdateLoggedInUserPublicKeyInState } from '@/hooks/useAuth/useUpdateLoggedInUserPublicKeyInState';
-import { useVerifyOAuthToken } from '@/hooks/useAuth/useVerifyOAuthToken';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Suspense, useEffect, useState } from 'react';
+import { startTransition, Suspense, useActionState, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 function OAuthRedirectPageContent(){
+
+  const [state,verifyOAuthTokenAction] =  useActionState(verifyOAuthToken,undefined);
 
   const searchParams = useSearchParams()
   const token = searchParams.get('token');
   
-  const {verifyOAuthToken,isTokenVerificationSucessfull,data} = useVerifyOAuthToken()
-
   const [isOAuthNewUser,setOAuthNewUser] = useState<boolean>(false);
+
+  const router = useRouter();
 
   useEffect(()=>{
     if(token){
-      console.log('token is',token);
-      verifyOAuthToken({token});
+      startTransition(()=>{verifyOAuthTokenAction(token)});
     }
-  },[token, verifyOAuthToken])
+  },[token])
 
   useEffect(()=>{
-    if(data && isTokenVerificationSucessfull){
+    if(state?.data?.combinedSecret || state?.data?.user){
       // basically oAuth users dont have a password
       // so whenever any user registers via OAuth (i.e make a new account via OAuth)
       // so like the normal flow we need to generate their key pairs and store them in database
@@ -37,17 +39,20 @@ function OAuthRedirectPageContent(){
 
       // so basically for this OAuth flow we only need to generate keys for that user if combinedSecret is sent to us
       // as combinedSecret is only sent by the server when the user is a new user
-      console.log('data of user is',data);
-      if(data.combinedSecret){
-        console.log('signed up using oAuth');
+      if(state.data.combinedSecret){
+        toast.success("User signup successful");
         setOAuthNewUser(true);
       }
+      else{
+        toast.success("Welcome Back");
+        router.push("/");
+      }
     }
-  },[data,isTokenVerificationSucessfull])
+  },[state])
 
 
   // as discussed above, we are using the "combinedSecret" as the password to encrypt the private key for OAuth users
-  const password  = data?.combinedSecret;
+  const password  = state?.data?.combinedSecret;
 
   // and this generate key pair for the user will be called only if the user is a new user
   // and rest of all the flow is dependent on this "useGenerateKeyPair" hook
@@ -58,7 +63,7 @@ function OAuthRedirectPageContent(){
   const {privateKeyJWK,publicKeyJWK} = useConvertPrivateAndPublicKeyInJwkFormat({privateKey,publicKey});
   const {encryptedPrivateKey} = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
   const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({encryptedPrivateKey,publicKeyJWK});
-  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:data?.user.id});
+  useStoreUserPrivateKeyInIndexedDB({privateKey:privateKeyJWK,userKeysStoredInDatabaseSuccess,userId:state?.data?.user.id});
   useUpdateLoggedInUserPublicKeyInState({publicKey:publicKeyReturnedFromServerAfterBeingStored})
   
   return (

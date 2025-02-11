@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, setAuthCookieSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, forgotPasswordSchemaType, keySchemaType, resetPasswordSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
@@ -170,41 +170,6 @@ const updateFcmToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Resp
     return res.status(200).json({fcmToken:user.fcmToken})
 })
 
-const sendOAuthCookie = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-
-    console.log('request reached');
-    const {token}:setAuthCookieSchemaType = req.body
-    const {oAuthNewUser,user} = jwt.verify(token,env.JWT_SECRET) as {user:string,oAuthNewUser:boolean}
-    
-    const existingUser =  await prisma.user.findUnique({
-        where:{
-            id:user
-        },
-        select:{
-            id:true,
-            googleId:true,
-        }
-    })
-    if(!existingUser){
-        return next(new CustomError("User not found",400))
-    }
-
-    console.log('user is',existingUser);
-
-    let responsePayload:{combinedSecret?:string,user:{id:string}} = {user:{id:existingUser.id}};
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-    const jwtToken=jwt.sign({userId:existingUser.id,expiresAt},env.JWT_SECRET,{expiresIn:`${env.JWT_TOKEN_EXPIRATION_DAYS}d`,algorithm:"HS256"})
-    
-    res.cookie('token',jwtToken,cookieOptions)
-    
-    if(oAuthNewUser){
-        const combinedSecret = existingUser.googleId+env.PRIVATE_KEY_RECOVERY_SECRET
-        responsePayload['combinedSecret'] = combinedSecret
-    }
-    return res.status(oAuthNewUser?201:200).json(responsePayload)
-})
-
 const checkAuth = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
     if(req.user){
         const secureUserInfo = {
@@ -247,7 +212,7 @@ export {
     forgotPassword,
     logout,
     redirectHandler,
-    resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys,
+    resetPassword, sendOtp, updateFcmToken, updateUserKeys,
     verifyOtp,
 };
 

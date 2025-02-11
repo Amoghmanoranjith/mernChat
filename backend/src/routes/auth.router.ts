@@ -1,10 +1,10 @@
 import { Router } from "express";
 import passport from 'passport';
 import { config } from "../config/env.config.js";
-import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOAuthCookie, sendOtp, updateFcmToken, updateUserKeys, verifyOtp } from "../controllers/auth.controller.js";
+import { checkAuth, forgotPassword, logout, redirectHandler, resetPassword, sendOtp, updateFcmToken, updateUserKeys, verifyOtp } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyToken } from "../middlewares/verify-token.middleware.js";
-import { fcmTokenSchema, forgotPasswordSchema, keySchema, resetPasswordSchema, setAuthCookieSchema, verifyOtpSchema } from "../schemas/auth.schema.js";
+import { fcmTokenSchema, forgotPasswordSchema, keySchema, resetPasswordSchema, verifyOtpSchema } from "../schemas/auth.schema.js";
 
 export default Router()
 
@@ -12,7 +12,6 @@ export default Router()
 .post("/reset-password",validate(resetPasswordSchema),resetPassword)
 .get("/send-otp",verifyToken,sendOtp)
 .post("/verify-otp",verifyToken,validate(verifyOtpSchema),verifyOtp)
-.post("/verify-oauth-token",validate(setAuthCookieSchema),sendOAuthCookie)
 .get("/verify-token",verifyToken,checkAuth)
 .patch("/user/keys",verifyToken,validate(keySchema),updateUserKeys)
 .patch("/user/update-fcm-token",verifyToken,validate(fcmTokenSchema),updateFcmToken)
