@@ -1,12 +1,14 @@
-# **Next.js - E2EE Real-Time Chat App** 🗨️  
+# **Next.js Chat App – Secure, End-to-End Encrypted (E2EE) Real-Time Messaging** 🗨️  
 
-Next.js chat app is a modern, end-to-end encrypted (E2EE) real-time chat application designed for seamless and secure communication. Users can send messages, share files, react to messages, create group chats, and much more—all with robust security and privacy features.  
+**Next.js Chat App** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/1.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/3.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/4.png)  
 
 ---
+
+
 
 ## **🚀 Features**  
 
@@ -38,6 +40,16 @@ Next.js chat app is a modern, end-to-end encrypted (E2EE) real-time chat applica
 ### 🛠️ **Other Features**  
 - **OAuth Integration** – Sign in with Google & GitHub.  
 - **PWA Support** – Install next-js-chat-app as a Progressive Web App for a native-like experience.  
+
+---
+
+
+## **Who Can Use This Chat App?**  
+
+✔️ **Startups & Teams** – Secure & private team collaboration 🔐  
+✔️ **Developers** – Learn how to build a **real-time chat app** 👨‍💻  
+✔️ **Open-Source Enthusiasts** – Contribute & improve the project 🚀  
+✔️ **Personal Use** – Chat privately with friends & family 💬  
 
 ---
 
@@ -167,5 +179,13 @@ Contributions are welcome! To contribute:
 ## **📧 Contact**  
 For feedback or queries, reach out:  
 📩 **[rishibakshiofficial@gmail.com](mailto:rishibakshiofficial@gmail.com)**  
+
+---
+
+![GitHub Repo stars](https://img.shields.io/github/stars/RishiBakshii/nextjs-chat-app?style=social)  
+![GitHub forks](https://img.shields.io/github/forks/RishiBakshii/nextjs-chat-app?style=social)  
+![GitHub issues](https://img.shields.io/github/issues/RishiBakshii/nextjs-chat-app)  
+![GitHub license](https://img.shields.io/github/license/RishiBakshii/nextjs-chat-app)  
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)  
 
 ---
