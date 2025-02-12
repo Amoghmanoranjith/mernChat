@@ -20,6 +20,8 @@ export const ChatListItem = ({ chat }: PropTypes) => {
   const { handleChatListItemClick } = useChatListItemClick();
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
+  console.log(chat);
+
   return (
     <div
       onClick={() => handleChatListItemClick(chat.id)}
@@ -37,7 +39,7 @@ export const ChatListItem = ({ chat }: PropTypes) => {
 
       <div className="w-full flex flex-col gap-y-1">
         <ChatListItemBasicInfo chat={chat} />
-        <ChatListItemSecondaryInfo key={chat.id} chat={chat} />
+        <ChatListItemSecondaryInfo chat={chat} />
       </div>
     </div>
   );

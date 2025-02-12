@@ -108,8 +108,12 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
           },
           UnreadMessages:{
             where:{
-              userId:loggedInUserId
-              
+              userId:loggedInUserId,
+              message:{
+                senderId:{
+                  not:loggedInUserId
+                }
+              }
             },
             select:{
               count:true,
@@ -178,10 +182,13 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
         },
     })
 
-    return chats.map(chat => ({
+    const hello =  chats.map(chat => ({
       ...chat,
       typingUsers: [] as BasicUserInfo[]
-    }));    
+    }));  
+    
+    console.log('chat at serive level',chats);
+    return hello;
   } catch (error) {
     console.log(error);
   }

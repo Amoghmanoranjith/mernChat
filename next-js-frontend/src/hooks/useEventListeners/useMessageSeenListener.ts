@@ -1,6 +1,6 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { updateUnreadMessagesAsSeen } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
@@ -21,17 +21,7 @@ export const useMessageSeenListener = () => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
 
   useSocketEvent(Event.MESSAGE_SEEN,({chatId,user}: MessageSeenEventReceivePayload) => {
-
-      const isOwnMessageSeenUpdate = user.id === loggedInUserId;
-
-      dispatch(
-        chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find((draft) => draft.id === chatId);
-          if (chat && isOwnMessageSeenUpdate && chat.UnreadMessages.length > 0 && chat.UnreadMessages[0]?.count){
-            chat.UnreadMessages[0].count = 0;
-          } 
-        })
-      );
-    }
+    dispatch(updateUnreadMessagesAsSeen({chatId,userId:user.id,loggedInUserId:loggedInUserId!}));
+  }
   );
 };

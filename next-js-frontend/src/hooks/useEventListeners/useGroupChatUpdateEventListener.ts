@@ -1,5 +1,4 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
   selectSelectedChatDetails,
   updateChatNameOrAvatar,
@@ -27,19 +26,13 @@ export const useGroupChatUpdateEventListener = () => {
 
   useSocketEvent(Event.GROUP_CHAT_UPDATE,({chatId,chatAvatar,chatName}:GroupChatUpdateEventReceivePayload) => {
 
-      dispatch(
-        chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find(draft => draft.id === chatId);
-          if (chat) {
-            if (chatName) chat.name = chatName;
-            if (chatAvatar) chat.avatar = chatAvatar;
-          }
-        })
-      );
-
-      if(selectedChatDetailsRef.current?.id === chatId){
-        dispatch(updateChatNameOrAvatar({avatar:chatAvatar,name:chatName}));
-      }
+    
+    if(selectedChatDetailsRef.current?.id === chatId){
+      dispatch(updateChatNameOrAvatar({avatar:chatAvatar,name:chatName,selectedChat:true}));
+    }
+    else{
+        dispatch(updateChatNameOrAvatar({selectedChat:false,avatar:chatAvatar,name:chatName,chatId}));
+    }
     }
   );
 

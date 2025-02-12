@@ -1,7 +1,7 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
   selectSelectedChatDetails,
+  updateChatMembers,
   updateSelectedChatMembers,
 } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
@@ -37,12 +37,7 @@ export const useNewMemberAddedListener = () => {
       const areNewMembersAddedInActivelySelectedChat = chatId === selectedChatDetailsRef.current?.id;
       const tranformedMembers = members.map(member=>({user: member}));
       
-      dispatch(
-        chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find(draft => draft.id === chatId);
-          if (chat) chat.ChatMembers.push(...tranformedMembers)
-        })
-      );
+      dispatch(updateChatMembers({chatId,members:tranformedMembers}));
 
       if(areNewMembersAddedInActivelySelectedChat){
         dispatch(updateSelectedChatMembers(tranformedMembers));

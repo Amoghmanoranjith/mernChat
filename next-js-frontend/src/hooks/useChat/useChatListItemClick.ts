@@ -1,5 +1,5 @@
-import { useGetChatsQuery } from "@/lib/client/rtk-query/chat.api";
 import {
+  selectChats,
   selectSelectedChatDetails,
   updateSelectedChatDetails,
 } from "@/lib/client/slices/chatSlice";
@@ -12,7 +12,7 @@ export const useChatListItemClick = () => {
   const dispatch = useAppDispatch();
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
   const { toggleChatBar } = useToggleChatBar();
-  const { data: chats } = useGetChatsQuery();
+  const chats = useAppSelector(selectChats);
 
   const isLg = useMediaQuery(1024);
 

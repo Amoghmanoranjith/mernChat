@@ -1,6 +1,6 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import { friendApi } from "@/lib/client/rtk-query/friend.api";
+import { updateMembersActiveStatusInChats } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
 
@@ -22,14 +22,6 @@ export const useOnlineUsersListListener = () => {
       })
     );
 
-    dispatch(
-      chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-        draft.forEach(chat => {
-          chat.ChatMembers.forEach(member => {
-            member.user.isOnline = onlineUserIds.includes(member.user.id);
-          });
-        });
-      })
-    );
+    dispatch(updateMembersActiveStatusInChats(onlineUserIds));
   });
 };

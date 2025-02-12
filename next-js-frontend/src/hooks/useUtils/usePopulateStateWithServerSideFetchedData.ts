@@ -1,7 +1,7 @@
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import { friendApi } from "@/lib/client/rtk-query/friend.api";
 import { requestApi } from "@/lib/client/rtk-query/request.api";
 import { updateLoggedInUser } from "@/lib/client/slices/authSlice";
+import { setChats } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch } from "@/lib/client/store/hooks";
 import {
   fetchUserChatsResponse,
@@ -27,9 +27,11 @@ export const usePopulateStateWithServerSideFetchedData = ({
   
   const dispatch = useAppDispatch();
 
+  console.log('chat at hydrate client state hook level',chats);
+
   useEffect(() => {
     dispatch(updateLoggedInUser(user));
-    dispatch(chatApi.util.upsertQueryData("getChats", undefined, [...chats]));
+    dispatch(setChats(chats));
     dispatch(friendApi.util.upsertQueryData("getFriends", undefined, [...friends]));
     dispatch(requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [...friendRequest])
     );

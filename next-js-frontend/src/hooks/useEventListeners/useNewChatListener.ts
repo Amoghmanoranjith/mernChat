@@ -1,7 +1,7 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import { friendApi } from "@/lib/client/rtk-query/friend.api";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { addNewChat } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse, fetchUserFriendsResponse } from "@/lib/server/services/userService";
 import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
@@ -37,10 +37,6 @@ export const useNewChatListener = () => {
       }
     }
 
-    dispatch(
-      chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-        draft.push(newChat);
-      })
-    );
+    dispatch(addNewChat({newChat}));
   });
 };

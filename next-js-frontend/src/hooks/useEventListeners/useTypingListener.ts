@@ -1,9 +1,11 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
   removeUserTyping,
+  removeUserTypingFromChats,
+  selectChats,
   selectSelectedChatDetails,
   updateUserTyping,
+  updateUserTypingInChats,
 } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useEffect, useRef } from "react";
@@ -23,6 +25,8 @@ export const useTypingListener = () => {
 
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
   const selectedChatDetailsRef = useRef(selectedChatDetails);
+
+  const chats = useAppSelector(selectChats);
 
   useEffect(() => {
     selectedChatDetailsRef.current = selectedChatDetails;
@@ -48,33 +52,24 @@ export const useTypingListener = () => {
         }
         
       }
+      
       else {
 
         let isNewUserPushedInTypingArray: boolean = false;
+        
+        const chat = chats.find(draft => draft.id === chatId);
+        if (chat) {
+          const isUserAlreadyTyping = chat.typingUsers.some(typingUser => typingUser.id === user.id);
+          if (!isUserAlreadyTyping) {
+            dispatch(updateUserTypingInChats({chatId,user}))
+            isNewUserPushedInTypingArray = true;
+          }
+        }
 
-        dispatch(
-          chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-            const chat = draft.find(draft => draft.id === chatId);
-            if (chat) {
-              const isUserAlreadyTyping = chat.typingUsers.some(typingUser => typingUser.id === user.id);
-              if (!isUserAlreadyTyping) {
-                chat.typingUsers.push(user);
-                isNewUserPushedInTypingArray = true;
-              }
-            }
-          })
-        )
 
         if (isNewUserPushedInTypingArray) {
           setTimeout(() => {
-            dispatch(
-              chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-                const chat = draft.find(draft => draft.id === chatId);
-                if (chat) {
-                  chat.typingUsers = chat.typingUsers.filter(typingUser => typingUser.id !== user.id);
-                }
-              })
-            );
+            dispatch(removeUserTypingFromChats({chatId,userId:user.id}));
           }, 1000);
         }
 

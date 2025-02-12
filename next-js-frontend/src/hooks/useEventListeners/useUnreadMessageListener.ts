@@ -1,7 +1,6 @@
 import { useSocket } from "@/context/socket.context";
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
-import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
+import { selectSelectedChatDetails, updateUnreadMessages } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { useEffect, useRef } from "react";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
@@ -48,44 +47,7 @@ export const useUnreadMessageListener = () => {
       else {
         // if the message has come is in a chat, that the user has not opened actively currently
         // update the unread message count in the chat list
-        dispatch(
-          chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-            // find the chat in which the message has came
-            const chat = draft.find((draft) => draft.id === chatId);
-
-            // if valid chat id
-            if (chat) {
-
-              if(chat.UnreadMessages.length === 0){
-
-                chat.UnreadMessages.push({
-                  count:1,
-                  message:{
-                    createdAt: new Date(),
-                    attachments: [{secureUrl:"demo-url"}],
-                    isTextMessage: true,
-                    textMessageContent: message?.textMessageContent || null,
-                    isPollMessage: message?.poll || false,
-                    url: message?.url ? 'asdf' : null
-                  },
-                  sender
-                });
-              }
-              else{
-                // firstly increment the unread message count
-                chat.UnreadMessages[0].count += 1;
-  
-                // update the sender of the unread message
-                chat.UnreadMessages[0].sender = sender;
-  
-                if (message?.poll) chat.UnreadMessages[0].message.isPollMessage = true;
-                else if (message?.textMessageContent?.length) chat.UnreadMessages[0].message.textMessageContent = message.textMessageContent;
-                else if (message?.attachments) chat.UnreadMessages[0].message.attachments = [{secureUrl:"demo-url"}];
-                else if (message?.url) chat.UnreadMessages[0].message.url = 'yes it is a gif';
-              }
-            }
-          })
-        );
+        dispatch(updateUnreadMessages({chatId,sender,message}))
       }
     }
   );

@@ -1,6 +1,6 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
+  deleteChat,
   selectSelectedChatDetails,
   updateSelectedChatDetails,
 } from "@/lib/client/slices/chatSlice";
@@ -33,12 +33,7 @@ export const useDeleteChatListener = () => {
         toast.error("Sorry, the chat has been deleted, or you have been removed from this chat");
       }
 
-      dispatch(
-        chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const deletedChat = draft.findIndex(draft => draft.id === chatId);
-          draft.splice(deletedChat, 1);
-        })
-      );
+      dispatch(deleteChat(chatId));
     }
   );
 };

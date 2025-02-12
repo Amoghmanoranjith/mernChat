@@ -8,9 +8,6 @@ export const chatApi = createApi({
         credentials:"include"
     }),
     endpoints:(builder)=>({
-        getChats:builder.query<fetchUserChatsResponse[],void>({
-            query:()=>"/chat"
-        }),
         createChat:builder.mutation<void,Required<Pick<fetchUserChatsResponse,'name'> & {members:string[],isGroupChat:string}> & {avatar?:Blob}>({
             query:({name,members,isGroupChat,avatar})=>{
                 const formData = new FormData()
@@ -55,8 +52,6 @@ export const chatApi = createApi({
 })
 
 export const {
-    useLazyGetChatsQuery,
-    useGetChatsQuery,
     useCreateChatMutation,
     useAddMemberMutation,
     useRemoveMemberMutation,

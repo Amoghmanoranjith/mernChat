@@ -110,7 +110,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
       <div className=" w-full h-full">{renderHelper()}</div>
       {chat.UnreadMessages.length>0 && chat.UnreadMessages[0]?.count > 0 && (
         <p className="bg-primary flex items-center justify-center text-white rounded-full h-5 w-5 p-2">
-          {chat.UnreadMessages[0]?.count}
+          {chat.UnreadMessages[0].count}
         </p>
       )}
     </div>

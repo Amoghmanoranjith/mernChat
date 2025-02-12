@@ -1,6 +1,6 @@
 import { Event } from "@/interfaces/events.interface";
-import { chatApi } from "@/lib/client/rtk-query/chat.api";
 import {
+  removeChatMembers,
   removeSelectedChatMembers,
   selectSelectedChatDetails,
 } from "@/lib/client/slices/chatSlice";
@@ -28,12 +28,7 @@ export const useMemberRemovedListener = () => {
 
       const isMemberRemovedFromSelectedChatId = selectedChatDetailsRef.current?.id === chatId;
 
-      dispatch(
-        chatApi.util.updateQueryData("getChats", undefined, (draft) => {
-          const chat = draft.find(draft => draft.id === chatId);
-          if(chat) chat.ChatMembers = chat.ChatMembers.filter(member => !membersId.includes(member.user.id));
-        })
-      );
+      dispatch(removeChatMembers({chatId,membersIds:membersId}));
 
       if (isMemberRemovedFromSelectedChatId) dispatch(removeSelectedChatMembers(membersId));
 
