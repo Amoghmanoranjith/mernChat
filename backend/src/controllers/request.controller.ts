@@ -306,7 +306,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
         })
         
         emitEventToRoom({data:{...newChat,typingUsers:[]},event:Events.NEW_CHAT,io,room:newChat.id})
-        return res.status(200)
+        return res.status(200).json({id:isExistingRequest.id})
     }
 
     else if(action==='reject'){
@@ -331,7 +331,7 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
         if(!sender.isOnline && sender.fcmToken && sender.notificationsEnabled){
           sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has rejected your friend request ☹️`})
         }
-        return res.status(200)
+        return res.status(200).json({id:deletedRequest.id})
     }
     
 })

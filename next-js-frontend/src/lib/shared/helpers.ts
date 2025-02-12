@@ -142,34 +142,40 @@ const getChatAvatar = (selectedChatDetails: fetchUserChatsResponse | null,logged
 
 const sortChats = (chats: fetchUserChatsResponse[]) => {
   return [...chats].sort((a, b) => {
+    const unreadCountA = a.UnreadMessages?.[0]?.count || 0;
+    const unreadCountB = b.UnreadMessages?.[0]?.count || 0;
+
     // First, we compare the unread message counts for both chats
     // The purpose is to show the chat with more unread messages at the top
     // If chat 'b' has more unread messages than chat 'a', the comparison returns a positive number, moving 'b' higher in the list
     // If chat 'a' has more unread messages than chat 'b', the comparison returns a negative number, moving 'a' higher in the list
-    if (b.UnreadMessages[0]?.count != a.UnreadMessages[0]?.count){
+
+    if (unreadCountB !== unreadCountA){
       // Sorting in descending order, so we subtract 'a' unread count from 'b' unread count
-      return b.UnreadMessages[0]?.count - a.UnreadMessages[0]?.count;
-    } else {
+      return unreadCountB - unreadCountA;
+    } 
+
       // If the unread message counts are the same, we move to the next sorting criteria:
       // We compare the timestamp of the latest messages to display the most recent one at the top
+    
+            // Get the timestamp of the latest message in chat 'a' or the createdAt timestamp if latestMessage is undefined
+    const aTime = a.latestMessage?.createdAt
+      ? new Date(a.latestMessage.createdAt).getTime()
+      : new Date(a.createdAt).getTime();
 
-      // Get the timestamp of the latest message in chat 'a' or the createdAt timestamp if latestMessage is undefined
-      const aTime = new Date(
-        a.latestMessage?.createdAt || a.createdAt
-      ).getTime();
+            // Get the timestamp of the latest message in chat 'b' or the createdAt timestamp if latestMessage is undefined
+    const bTime = b.latestMessage?.createdAt
+      ? new Date(b.latestMessage.createdAt).getTime()
+      : new Date(b.createdAt).getTime();
 
-      // Get the timestamp of the latest message in chat 'b' or the createdAt timestamp if latestMessage is undefined
-      const bTime = new Date(
-        b.latestMessage?.createdAt || b.createdAt
-      ).getTime();
-
+      
       // The comparison here is again in descending order
       // If 'b' has a more recent message, the comparison returns a positive number and 'b' moves higher in the list
       // If 'a' has a more recent message, the comparison returns a negative number and 'a' moves higher in the list
-      return bTime - aTime;
-    }
+    return bTime - aTime;
   });
 };
+
 
 const truncateTextMessage = (text: string | null | undefined) => {
   if(text){

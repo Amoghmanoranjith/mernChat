@@ -20,8 +20,6 @@ export const ChatListItem = ({ chat }: PropTypes) => {
   const { handleChatListItemClick } = useChatListItemClick();
   const selectedChatId = useAppSelector(selectSelectedChatDetails)?.id;
 
-  console.log(chat);
-
   return (
     <div
       onClick={() => handleChatListItemClick(chat.id)}

@@ -52,7 +52,7 @@ export const TextMessage = ({
             className="font-medium cursor-pointer"
             onClick={() => setReadMore(!readMore)}
           >
-            {readMore ? " Read less" : " Read more"}...
+            {readMore ? " Read less" : " Read more..."}
           </span>
         )}
       </span>

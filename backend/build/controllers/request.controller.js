@@ -268,7 +268,7 @@ export const handleRequest = asyncErrorHandler(async (req, res, next) => {
             }
         });
         emitEventToRoom({ data: { ...newChat, typingUsers: [] }, event: Events.NEW_CHAT, io, room: newChat.id });
-        return res.status(200);
+        return res.status(200).json({ id: isExistingRequest.id });
     }
     else if (action === 'reject') {
         const deletedRequest = await prisma.friendRequest.delete({
@@ -289,6 +289,6 @@ export const handleRequest = asyncErrorHandler(async (req, res, next) => {
         if (!sender.isOnline && sender.fcmToken && sender.notificationsEnabled) {
             sendPushNotification({ fcmToken: sender.fcmToken, body: `${req.user.username} has rejected your friend request ☹️` });
         }
-        return res.status(200);
+        return res.status(200).json({ id: deletedRequest.id });
     }
 });

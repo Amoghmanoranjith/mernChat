@@ -22,7 +22,7 @@ export const requestApi = createApi({
       query: () => "/",
     }),
 
-    handleFriendRequest: builder.mutation<fetchUserFriendRequestResponse["id"],{ requestId: fetchUserFriendRequestResponse["id"]; action: "accept" | "reject" }>({
+    handleFriendRequest: builder.mutation<{id:string},{ requestId: fetchUserFriendRequestResponse["id"]; action: "accept" | "reject" }>({
       query: ({ requestId, action }) => ({
         url: `/${requestId}`,
         method: "DELETE",
@@ -30,14 +30,14 @@ export const requestApi = createApi({
       }),
       async onQueryStarted({}, { dispatch, queryFulfilled }) {
         try {
-          const { data: handledRequestId } = await queryFulfilled;
+          const { data:{id} } = await queryFulfilled;
           dispatch(
             requestApi.util.updateQueryData(
               "getUserFriendRequests",
               undefined,
               (draft) => {
                 const friendRequestIndexToBeRemoved = draft.findIndex(
-                  (draft) => draft.id === handledRequestId
+                  (draft) => draft.id === id
                 );
                 if (draft.length === 1) dispatch(setFriendRequestForm(false));
                 if (friendRequestIndexToBeRemoved !== -1)

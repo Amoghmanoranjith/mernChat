@@ -19,7 +19,7 @@ export const ChatListItemSecondaryInfo = ({ chat }: PropTypes) => {
       // if any user is typing
       // then show typing indicator animation
       return (
-        <div className="w-12">
+        <div className="w-14 bg-secondary-dark rounded-full">
           <TypingIndicatorAnimation />
         </div>
       );

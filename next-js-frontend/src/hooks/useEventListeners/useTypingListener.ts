@@ -27,6 +27,11 @@ export const useTypingListener = () => {
   const selectedChatDetailsRef = useRef(selectedChatDetails);
 
   const chats = useAppSelector(selectChats);
+  const chatsRef = useRef(chats);
+
+  useEffect(()=>{
+    chatsRef.current = chats;
+  },[chats])
 
   useEffect(() => {
     selectedChatDetailsRef.current = selectedChatDetails;
@@ -57,7 +62,7 @@ export const useTypingListener = () => {
 
         let isNewUserPushedInTypingArray: boolean = false;
         
-        const chat = chats.find(draft => draft.id === chatId);
+        const chat = chatsRef.current.find(draft => draft.id === chatId);
         if (chat) {
           const isUserAlreadyTyping = chat.typingUsers.some(typingUser => typingUser.id === user.id);
           if (!isUserAlreadyTyping) {
