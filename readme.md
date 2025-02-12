@@ -1,164 +1,171 @@
-# MERN CHAT E2EE 🗨️
+# **Next.js - E2EE Real-Time Chat App** 🗨️  
 
-## **Note** 🟢: I know currently there is an issue going on that we are not able to get logged-in, i am working on that and will fix that asap!! and congratulations we have crossed 250+ users on mern-chat
+Next.js chat app is a modern, end-to-end encrypted (E2EE) real-time chat application designed for seamless and secure communication. Users can send messages, share files, react to messages, create group chats, and much more—all with robust security and privacy features.  
 
-Mern-chat is a modern real-time chat application designed to facilitate seamless communication between users. With Baatchit, users can engage in conversations, share files, see when others are typing, and more, all in real-time.
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/1.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/3.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/4.png)  
 
-![MernChat](next-js-frontend/public/images/dekstop-screenshots/1.png)
-![MernChat](next-js-frontend/public/images/dekstop-screenshots/3.png)
-![MernChat](next-js-frontend/public/images/dekstop-screenshots/4.png)
+---
 
-## Features ✨
+## **🚀 Features**  
 
-- **🔒 End-to-End Encryption**: Ensure your private chats are secure with advanced encryption, protecting your messages from unauthorized access.
-- **🔑 Private Key Recovery**: Recover your private encryption key securely through a password-protected and MFA email verification process, ensuring you never lose access to your encrypted messages.
-- **📲 Push Notifications**: Stay updated with instant push notifications, ensuring you never miss a message even when the app is closed.
-- **💬 Real-time Messaging**: Instantly send and receive messages with other users.
-- **🤝 Friends Feature**: Connect with other users and engage in private chats or group conversations after adding them as friends.
-- **👥 Group Chats**: Create and participate in group chats with multiple users.
-- **🟢 User Presence**: See who's online and available for chat in real-time.
-- **⌨️ Typing Indicators**: See when other users are typing to enhance communication flow.
-- **✔️ Message Seen Status**: Know when your messages have been seen by other users.
-- **✏️ Edit Messages**: Edit your messages in real-time, with updates reflected instantly for all users and an indication that the message has been edited.
-- **😀 Message Reactions**: React to messages with emojis to express your feelings and engage more interactively, including double-tap to like or unlike a message.
-- **🗑️ Delete Message**: Delete messages after sending them ensuring full control over your conversation
-- **📁 File Sharing**: Share files and documents securely within chats.
-- **🎉 GIF Sending**: Express yourself with animated GIFs using the integrated Tenor GIF library.
-- **📊 Polling**: Send polls with either multiple votes set to true or false, allowing users to gather opinions and feedback.
-- **🔒 OAuth Integration**: Sign in easily using social login options like GitHub and Google.
-- **📱 Progressive Web App (PWA)**: Install the app on your phone or desktop and enjoy a native app-like experience.
+### 🔒 **Privacy & Security**  
+- **End-to-End Encryption (E2EE)** – Secure messages with advanced encryption.  
+- **Private Key Recovery** – Retrieve your encryption key with MFA-protected email verification.  
 
-## Technologies Used 🛠️
+### 💬 **Chat & Messaging**  
+- **Real-time Messaging** – Instantly send and receive messages.  
+- **Message Editing** – Edit messages after sending (with an edit indicator).  
+- **Message Reactions** – React to messages with emojis (double-tap to like/unlike).  
+- **Message Deletion** – Delete messages after sending.  
+- **Typing Indicators** – See when someone is typing.  
+- **Message Seen Status** – Know when your message is read.  
 
-### Frontend Technologies Used:
-- **⚛️ React**: A JavaScript library for building user interfaces.
-- **🔗 React Router Dom**: Declarative routing for React applications.
-- **🛠️ Redux Toolkit**: An opinionated, batteries-included toolset for efficient Redux development.
-- **🔄 Socket.IO Client**: Real-time bidirectional event-based communication library for web applications.
-- **📑 React Hook Form**: Performant, flexible, and extensible forms with easy-to-use validation.
-- **📝 Zod**: A TypeScript-first schema declaration and validation library.
-- **🎥 Framer Motion**: A production-ready motion library for React.
-- **🎬 Lottie React**: Render After Effects animations on React-based web apps.
-- **🖼️ Gif Picker React**: Provides a simple and easy-to-use UI for selecting GIFs.
-- **🔔 React Hot Toast**: Toast notifications for React applications.
-- **💅 Tailwind CSS**: A utility-first CSS framework for rapid UI development.
-- **🔥 Firebase**: A platform developed by Google for creating mobile and web applications, used in this project for push notifications only.
-- **🧠 Lodash**: A JavaScript library which provides utility functions for common programming tasks.
-- **📅 Date-fns**: Modern JavaScript date utility library.
-- **🛡️ React Helmet Async**: Handle changes to the document head in a React application.
-- **🦺 TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
-- **⚡ Vite**: A build tool that aims to provide a faster and leaner development experience for modern web projects.
-- **🔌 Vite Plugin PWA**: Plugin for adding PWA capabilities to Vite applications.
+### 📢 **Notifications & Presence**  
+- **Push Notifications** – Stay updated with real-time alerts.  
+- **User Presence** – See who’s online in real time.  
 
-### Backend Technologies Used:
-- **🟢 Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
-- **🌐 Express**: Fast, unopinionated, minimalist web framework for Node.js.
-- **🔄 Socket.IO**: Real-time bidirectional event-based communication library for Node.js.
-- **📂 MongoDB (with Mongoose)**: A NoSQL database for storing application data.
-- **🔒 Bcryptjs**: Library for hashing passwords.
-- **☁️ Cloudinary**: Cloud-based image and video management service.
-- **🔓 Cors**: Middleware for handling Cross-Origin Resource Sharing (CORS).
-- **🔧 Dotenv**: Module to load environment variables from a `.env` file.
-- **🛡️ Helmet**: Middleware to secure Express apps by setting various HTTP headers.
-- **🔐 Jsonwebtoken**: Library to create and verify JSON Web Tokens (JWTs).
-- **📈 Morgan**: HTTP request logger middleware for Node.js.
-- **📤 Multer**: Middleware for handling `multipart/form-data`, primarily used for file uploads.
-- **📧 Nodemailer**: Module for sending emails from Node.js applications.
-- **🔑 Passport**: Authentication middleware for Node.js.
-- **🔍 Passport-Google-Oauth20**: Passport strategy for authenticating with Google using OAuth 2.0.
-- **🔢 UUID**: Library for generating universally unique identifiers (UUIDs).
-- **🍪 Cookie**: Simple cookie parsing and serialization.
-- **🍪 Cookie-Parser**: Parse Cookie header and populate `req.cookies` with an object keyed by cookie names.
-- **🔥 Firebase Admin**: Firebase Admin SDK for access to Firebase services.
-- **🧩 Zod**: TypeScript-first schema declaration and validation library.
-- **🛠️ Typescript**: A typed superset of JavaScript that compiles to plain JavaScript.
-- **🔧 Concurrently**: Run multiple commands concurrently.
-- **🔧 Cross-Env**: Run scripts that set and use environment variables across platforms.
-- **♻️ Nodemon**: Automatically restart Node.js applications on code changes.
-- **🛠️ Pre-Commit**: Pre-commit hook runner.
-- **🚮 Rimraf**: A deep deletion module for Node.js.
+### 🤝 **Social Features**  
+- **Friends System** – Add friends and chat with them.  
+- **Group Chats** – Create and participate in group conversations.  
+- **Polling** – Create polls with single/multiple voting options.  
 
+### 📁 **Media & File Sharing**  
+- **GIF Support** – Send animated GIFs (powered by Tenor).  
+- **File Sharing** – Send and receive files securely.  
 
-### Getting Started 🚀
+### 🛠️ **Other Features**  
+- **OAuth Integration** – Sign in with Google & GitHub.  
+- **PWA Support** – Install next-js-chat-app as a Progressive Web App for a native-like experience.  
 
-To get started with Baatchit, follow these steps:
+---
 
-1. Clone the repository: `git clone https://github.com/RishiBakshii/Baatchit`
-2. Navigate to the project directory: `cd Baatchit`
+## **🛠️ Tech Stack**  
 
-### Setting Up Environment Variables 🌐
+### **Frontend**  
+- **⚛️ Next.js 15 + React 19** – Modern full-stack React framework.  
+- **🛠️ Redux Toolkit + React-Redux** – Efficient global state management.  
+- **🔗 React Hook Form + Zod** – Form handling & schema validation.  
+- **🔄 Socket.IO Client** – Real-time communication.  
+- **📅 Date-fns** – Date & time utilities.  
+- **🎥 Framer Motion + Lottie-React** – Animations & dynamic UI effects.  
+- **🔥 Firebase** – Push notifications & backend integration.  
+- **💅 Tailwind CSS** – Responsive & scalable UI.  
+- **🚀 Nodemailer** – Email handling.  
+- **🔐 bcryptjs + jose** – Authentication & encryption.  
+- **💬 Emoji-Picker-React + Gif-Picker-React** – Interactive media in chat.  
+- **🛠️ Prisma ORM** – Database management.  
 
-Before starting the application, ensure you set up the necessary environment variables. Both the frontend and backend have a `.env.example` file provided. Follow these steps:
+### **Backend**  
+- **🟢 Node.js + Express** – Scalable backend API.  
+- **🔄 Socket.IO** – Real-time bidirectional communication.  
+- **🗄️ Prisma ORM** – Type-safe database management.  
+- **🔐 JWT Authentication (jsonwebtoken)** – Secure authentication.  
+- **☁️ Cloudinary** – Cloud storage for images & files.  
+- **📧 Nodemailer** – Email notifications & MFA verification.  
+- **🔑 Passport.js + Google OAuth** – OAuth-based authentication.  
+- **🔥 Firebase Admin SDK** – Push notifications.  
+- **🛡️ Helmet** – Security headers for protection.  
+- **📝 Morgan** – HTTP request logging.  
+- **🍪 Cookie-Parser** – Secure cookie handling.  
+- **🛠️ Multer** – File uploads.  
+- **🔄 CORS** – Cross-origin requests.  
+- **🛠️ UUID** – Unique ID generation.  
+- **⚙️ dotenv** – Environment variable management.  
 
-1. **Copy the provided `.env.example` file**: Use this file to create your own `.env` file in both the frontend and backend directories.
-   
-2. **Update `.env` with your credentials**: Open the `.env` file in each directory (`frontend` and `backend`) and replace the placeholder values with your actual credentials and secrets. This includes API keys, database URLs, and any other sensitive information required by the application.
+---
 
-3. **Set up Firebase Admin credentials**:
-   - In the `backend/src` directory, create a file named `firebase-admin-cred.json`.
-   - Place your Firebase service account credentials in this file. Ensure the path to this file matches the `GOOGLE_APPLICATION_CREDENTIALS` environment variable in your `.env` file. For example:
-     ```
-     GOOGLE_APPLICATION_CREDENTIALS=src/firebase-admin-cred.json
-     ```
-   - If you choose a different name or path for the credentials file, make sure the `GOOGLE_APPLICATION_CREDENTIALS` variable reflects this.
+## **🚀 Getting Started**  
 
-4. **Save and verify**: Save the `.env` files once you have updated them with your details. Verify that all necessary variables are correctly set to ensure the application functions as intended.
+### **1️⃣ Clone the Repository**  
+```bash
+git clone https://github.com/RishiBakshii/nextjs-chat-app
+cd nextjs-chat-app
+```
 
-5. **Important**: Do not commit your `.env` files to version control systems like Git (ensure they are listed in your `.gitignore` files).
+### **2️⃣ Set Up Environment Variables**  
 
-### Installing Dependencies and Starting the Application 🛠️
+#### **Backend Configuration**  
+1. Navigate to the **backend** folder.  
+2. Copy `.env.example` and rename it to `.env`.  
+3. Replace the placeholder values with actual credentials.  
+4. Make sure `backend/src/firebase-admin-cred.json` is correctly set up for Firebase authentication.  
 
-Now that you have set up your environment variables, proceed with the following steps to install dependencies and start the frontend and backend servers:
+📝 **Example (`backend/.env`)**:  
+```ini
+NODE_ENV=DEVELOPMENT
+PORT=8000
+JWT_SECRET=your-secure-jwt-secret
+DATABASE_URL=your-database-url
+FIREBASE_CREDENTIALS_PATH=./src/firebase-admin-cred.json
+```
 
-1. **Frontend**:
-   - Open a terminal and navigate to the `frontend` directory: `cd frontend`
-   - Install dependencies: `npm install`
-   - Start the frontend development server: `npm run dev`
-   - Visit `http://localhost:5173` in your browser to access the frontend application.
+---
 
-2. **Backend**:
-   - Open another terminal (or split your terminal window if supported) and navigate to the `backend` directory: `cd ../backend`
-   - Install dependencies: `npm install`
-   - Start the backend server: `npm run dev`
-   - Ensure the backend server is running correctly to support the frontend functionalities.
+#### **Frontend Configuration**  
+1. Navigate to the **frontend** folder.  
+2. Copy `.env.development.example` and rename it to `.env.development`.  
+3. Copy `.env.production.example` and rename it to `.env.production`.  
+4. Fill in your API keys and URLs.  
 
-### Tip: Using Split Terminals
+📝 **Example (`frontend/.env.development`)**:  
+```ini
+NEXT_PUBLIC_TENOR_API_KEY=your-tenor-api-key
+NEXT_PUBLIC_FIREBASE_API_KEY=your-firebase-api-key
+NEXT_PUBLIC_BASE_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
+```
 
-To manage frontend and backend servers simultaneously:
+🚨 **Important Notes:**  
+- Never expose sensitive credentials in `NEXT_PUBLIC_` variables.  
+- Ensure the correct Firebase and API URLs are set.  
 
-- **VS Code**: Right-click on the terminal and choose "Split Terminal." Navigate to the frontend and backend directories in separate terminals for easy monitoring.
+---
 
+### **3️⃣ Install Dependencies & Run the Application**  
 
-### Running the Application with Docker 🐳
+#### **Start the Backend First**  
+```bash
+cd backend
+npm install
+npm run dev
+```
+The backend will start at **http://localhost:8000**.  
 
-You can also use Docker to containerize and run Baatchit. Follow these steps to set up and run the application using Docker:
+---
 
-1. **Build and Start Containers**:
-   - Ensure you have Docker and Docker Compose installed on your machine.
-   - Open a terminal and navigate to the project directory: `cd Baatchit`
-   - Build and start the containers: `docker-compose up --build`
+#### **Then Start the Frontend**  
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Visit **http://localhost:3000** in your browser.  
 
-2. **Access the Application**:
-   - The frontend will be available at `http://localhost:5173`
-   - The backend will be available at `http://localhost:8000`
-   - MongoDB will be available at `mongodb://localhost:27017`
+---
 
-3. **Stopping the Containers**:
-   - To stop the containers, press `Ctrl+C` in the terminal where `docker-compose` is running.
-   - Alternatively, you can run: `docker-compose down` to stop and remove the containers.
+## **💡 Contribution Guide**  
+Contributions are welcome! To contribute:  
+1. **Fork** the repository.  
+2. **Create a branch**:  
+   ```bash
+   git checkout -b feature-branch
+   ```  
+3. **Commit your changes**:  
+   ```bash
+   git commit -m "Add new feature"
+   ```  
+4. **Push to GitHub**:  
+   ```bash
+   git push origin feature-branch
+   ```  
+5. **Open a Pull Request** 🚀  
 
+---
 
-## Contributing 🤝
+## **📧 Contact**  
+For feedback or queries, reach out:  
+📩 **[rishibakshiofficial@gmail.com](mailto:rishibakshiofficial@gmail.com)**  
 
-Contributions are welcome! If you'd like to contribute to Baatchit, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature-name`
-3. Make your changes and commit them: `git commit -am 'Add new feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request.
-
-
-## Contact 📧
-
-For any inquiries or feedback, please contact me at [rishibakshiofficial@gmail.com](mailto:rishibakshiofficial@gmail.com).
+---
