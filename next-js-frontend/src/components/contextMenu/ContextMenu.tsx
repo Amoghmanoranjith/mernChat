@@ -12,6 +12,7 @@ type PropTypes = {
   messageId: string;
   myMessage: boolean;
   isTextMessage:boolean;
+  isAttachmentMessage:boolean;
 };
 
 export const ContextMenu = ({
@@ -20,7 +21,8 @@ export const ContextMenu = ({
   onEmojiClick,
   messageId,
   myMessage,
-  isTextMessage
+  isTextMessage,
+  isAttachmentMessage
 }: PropTypes) => {
   return (
     <motion.div
@@ -41,6 +43,7 @@ export const ContextMenu = ({
           setEditMessageId={setEditMessageId}
           setOpenContextMenuMessageId={setOpenContextMenuMessageId}
           isTextMessage={isTextMessage}
+          isAttachmentMessage={isAttachmentMessage}
         />
       )}
     </motion.div>

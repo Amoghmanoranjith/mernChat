@@ -1,5 +1,3 @@
-import { useDeleteMessage } from "@/hooks/useMessages/useDeleteMessage";
-import { DeleteIcon } from "../ui/icons/DeleteIcon";
 import { EditIcon } from "../ui/icons/EditIcon";
 
 type PropTypes = {
@@ -9,6 +7,7 @@ type PropTypes = {
   setEditMessageId: React.Dispatch<React.SetStateAction<string | undefined>>;
   messageId: string;
   isTextMessage:boolean;
+  isAttachmentMessage:boolean;
 };
 
 export const ContextMenuOptions = ({
@@ -16,8 +15,9 @@ export const ContextMenuOptions = ({
   setOpenContextMenuMessageId,
   messageId,
   isTextMessage,
+  isAttachmentMessage,
 }: PropTypes) => {
-  const { deleteMessage } = useDeleteMessage();
+  // const { deleteMessage } = useDeleteMessage();
 
   return (
     <div
@@ -25,7 +25,7 @@ export const ContextMenuOptions = ({
     >
       <div className="flex flex-col">
         {
-          isTextMessage &&
+          (isTextMessage || isAttachmentMessage) &&
           <div
             onClick={() => {
               setOpenContextMenuMessageId(undefined);
@@ -33,13 +33,13 @@ export const ContextMenuOptions = ({
             }}
             className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
           >
-            <p>Edit</p>
+            <p>{isAttachmentMessage ? "Caption" : "Edit"}</p>
             <span>
               <EditIcon />
             </span>
           </div>
         }
-        <div
+        {/* <div
           onClick={() => deleteMessage({ messageId })}
           className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
         >
@@ -47,7 +47,7 @@ export const ContextMenuOptions = ({
           <span>
             <DeleteIcon />
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

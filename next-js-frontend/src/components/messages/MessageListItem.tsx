@@ -88,6 +88,7 @@ export const MessageListItem = ({
           onEmojiClick={handleEmojiClick}
           myMessage={message.sender.id === loggedInUserId}
           isTextMessage={message.isTextMessage}
+          isAttachmentMessage={message.attachments.length > 0}
         />
       )}
       
