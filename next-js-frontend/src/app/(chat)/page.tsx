@@ -22,8 +22,6 @@ export default async function ChatPage() {
     fetchUserChats({loggedInUserId}),
   ]);
 
-  console.log('chat at page level',chats);
-
 
   return (
     (friends && chats && friendRequest && user) ? (

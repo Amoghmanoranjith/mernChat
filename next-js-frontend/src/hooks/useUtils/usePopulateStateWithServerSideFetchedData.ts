@@ -27,8 +27,6 @@ export const usePopulateStateWithServerSideFetchedData = ({
   
   const dispatch = useAppDispatch();
 
-  console.log('chat at hydrate client state hook level',chats);
-
   useEffect(() => {
     dispatch(updateLoggedInUser(user));
     dispatch(setChats(chats));

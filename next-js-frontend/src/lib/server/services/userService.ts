@@ -182,13 +182,11 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
         },
     })
 
-    const hello =  chats.map(chat => ({
+    return chats.map(chat => ({
       ...chat,
       typingUsers: [] as BasicUserInfo[]
     }));  
-    
-    console.log('chat at serive level',chats);
-    return hello;
+
   } catch (error) {
     console.log(error);
   }

@@ -14,10 +14,8 @@ export const userApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    searchUser: builder.query<
-      Pick<FetchUserInfoResponse, "id" | "name" | "username" | "avatar">[],
-      User["username"]
-    >({
+    
+    searchUser: builder.query<Pick<FetchUserInfoResponse, "id" | "name" | "username" | "avatar">[],User["username"]>({
       query: (username) => `/search?username=${username}`,
     }),
 
@@ -37,10 +35,7 @@ export const userApi = createApi({
       },
     }),
 
-    updateNotifications: builder.mutation<
-      Pick<User, "notificationsEnabled">,
-      { isEnabled: boolean }
-    >({
+    updateNotifications: builder.mutation<Pick<User, "notificationsEnabled">,{ isEnabled: boolean }>({
       query: ({ isEnabled }) => ({
         method: "PATCH",
         url: "/notifications",
@@ -53,6 +48,7 @@ export const userApi = createApi({
         );
       },
     }),
+    
   }),
 });
 

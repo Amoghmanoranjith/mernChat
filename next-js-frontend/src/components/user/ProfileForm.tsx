@@ -1,31 +1,19 @@
-import { useEffect, useState } from "react";
-import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
-import { useToast } from "../../hooks/useUI/useToast";
-import { ACCEPTED_IMAGE_TYPES, DEFAULT_AVATAR } from "../../constants";
-import { useAppSelector } from "../../lib/client/store/hooks";
-import { formatRelativeTime } from "../../lib/shared/helpers";
 import { useUpdateProfileMutation } from "@/lib/client/rtk-query/user.api";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { ACCEPTED_IMAGE_TYPES, DEFAULT_AVATAR } from "../../constants";
+import { useToast } from "../../hooks/useUI/useToast";
+import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
+import { useAppSelector } from "../../lib/client/store/hooks";
+import { formatRelativeTime } from "../../lib/shared/helpers";
 import { VerificationBadgeIcon } from "../ui/icons/VerificationBadgeIcon";
 
 export const ProfileForm = () => {
+
   const loggedInUser = useAppSelector(selectLoggedInUser);
 
-  const [
-    updateProfileTrigger,
-    { error, isError, isLoading, isSuccess, isUninitialized },
-  ] = useUpdateProfileMutation();
-
-  useToast({
-    error,
-    isError,
-    isLoading,
-    isSuccess,
-    isUninitialized,
-    loaderToast: true,
-    successMessage: "Profile Updated",
-    successToast: true,
-  });
+  const [updateProfileTrigger,{ error, isError, isLoading, isSuccess, isUninitialized }] = useUpdateProfileMutation();
+  useToast({error,isError,isLoading,isSuccess,isUninitialized,loaderToast: true,successMessage: "Profile Updated",successToast: true});
 
   const [preview, setPreview] = useState<string>(loggedInUser?.avatar || DEFAULT_AVATAR);
   const [image, setImage] = useState<Blob>();
@@ -34,7 +22,6 @@ export const ProfileForm = () => {
   useEffect(() => {
     if (preview !== loggedInUser?.avatar) {
       setEditActive(true);
-      return;
     }
   }, [preview]);
 
@@ -66,8 +53,9 @@ export const ProfileForm = () => {
                 type="file"
               />
               <Image
-                width={200}
-                height={200}
+                width={500}
+                height={500}
+                quality={100}
                 className="w-full h-full object-cover rounded-full"
                 src={preview}
                 alt={`${loggedInUser?.name} avatar`}
