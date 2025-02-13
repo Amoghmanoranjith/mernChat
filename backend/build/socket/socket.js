@@ -2,7 +2,6 @@ import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
 import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
-import { sendPushNotification } from "../utils/generic.js";
 const registerSocketHandlers = (io) => {
     io.on("connection", async (socket) => {
         console.log(socket.user.username, "connected");
@@ -153,7 +152,7 @@ const registerSocketHandlers = (io) => {
             const currentChatMembers = currentChat.ChatMembers.filter(({ user: { id } }) => id != socket.user.id);
             const updateOrCreateUnreadMessagePromises = currentChatMembers.map(async (member) => {
                 if (!member.user.isOnline && member.user.notificationsEnabled && member.user.fcmToken) {
-                    sendPushNotification({ fcmToken: member.user.fcmToken, body: `New message from ${socket.user.username}` });
+                    // sendPushNotification({fcmToken:member.user.fcmToken,body:`New message from ${socket.user.username}`})
                 }
                 const isExistingUnreadMessage = await prisma.unreadMessages.findUnique({
                     where: {
