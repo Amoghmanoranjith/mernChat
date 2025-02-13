@@ -1,6 +1,9 @@
 import { userSocketIds } from "../index.js";
 export const emitEvent = ({ data, event, io, users }) => {
-    io.to(getMemberSockets(users)).emit(event, data);
+    const sockets = getMemberSockets(users);
+    if (sockets) {
+        io.to(sockets).emit(event, data);
+    }
 };
 export const emitEventToRoom = ({ data, event, io, room }) => {
     io.to(room).emit(event, data);

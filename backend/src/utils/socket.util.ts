@@ -3,7 +3,10 @@ import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 
 export const emitEvent = ({data,event,io,users}:{io:Server,event:Events,users:Array<string>,data:unknown})=>{
-    io.to(getMemberSockets(users)).emit(event,data)
+    const sockets = getMemberSockets(users) as string[];
+    if(sockets){
+        io.to(sockets).emit(event,data)
+    }
 }
 
 export const emitEventToRoom = ({data,event,io,room}:{io:Server,event:Events,room:string,data:unknown})=>{
