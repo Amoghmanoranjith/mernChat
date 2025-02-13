@@ -4,7 +4,8 @@ import { Metadata } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
-export const metadata: Metadata = {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const metadata: Metadata = {
   title: "Reset Password - Mernchat",
   description: "Securely reset your password on Mernchat and regain access to your account.",
   keywords: [
