@@ -20,8 +20,7 @@ export const useStoreUserKeysInDatabase = ({encryptedPrivateKey,publicKeyJWK,log
     },[encryptedPrivateKey, publicKeyJWK,loggedInUserId]);
 
     return {
-        publicKeyReturnedFromServerAfterBeingStored:state?.data?.publicKey,
-        userKeysStoredInDatabaseSuccess:state?.success.message?.length ? true : false
+        publicKeyReturnedFromServerAfterBeingStored:state?.data?.publicKey
     }
 
 }

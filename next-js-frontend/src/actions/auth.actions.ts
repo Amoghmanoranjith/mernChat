@@ -492,6 +492,7 @@ export async function resetPassword(prevState:any,data:{token:string,newPassword
 
 export async function storeUserKeysInDatabase(prevState:any,data:{publicKey:JsonWebKey,privateKey:string,loggedInUserId:string}){
   try {
+    console.log('action called!!');
     const {privateKey,publicKey,loggedInUserId} = data;
 
     const user = await prisma.user.findUnique({where:{id:loggedInUserId}});

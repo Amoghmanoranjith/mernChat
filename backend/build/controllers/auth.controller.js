@@ -65,19 +65,6 @@ const verifyOtp = asyncErrorHandler(async (req, res, next) => {
     };
     return res.status(200).json(secureUserInfo);
 });
-const updateUserKeys = asyncErrorHandler(async (req, res, next) => {
-    const { publicKey, privateKey } = req.body;
-    const user = await prisma.user.update({
-        where: {
-            id: req.user?.id
-        },
-        data: {
-            publicKey,
-            privateKey
-        }
-    });
-    return res.status(200).json({ publicKey: user.publicKey });
-});
 const updateFcmToken = asyncErrorHandler(async (req, res, next) => {
     const { fcmToken } = req.body;
     const user = await prisma.user.update({
@@ -123,4 +110,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
 const logout = asyncErrorHandler(async (req, res, next) => {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
 });
-export { checkAuth, logout, redirectHandler, sendOtp, updateFcmToken, updateUserKeys, verifyOtp };
+export { checkAuth, logout, redirectHandler, sendOtp, updateFcmToken, verifyOtp };
