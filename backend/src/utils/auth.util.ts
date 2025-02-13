@@ -5,16 +5,16 @@ import { env } from '../schemas/env.schema.js';
 
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
 
-export const cookieOptions:CookieOptions = {
-    maxAge:thirtyDaysInMilliseconds,
-    httpOnly:true,
-    path:"/",
-    priority:"high",
-    secure:true,
-    sameSite:env.NODE_ENV==='DEVELOPMENT'?"lax":"none",
-    domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
-    partitioned:true,
-}
+// const cookieOptions:CookieOptions = {
+//     maxAge:thirtyDaysInMilliseconds,
+//     httpOnly:true,
+//     path:"/",
+//     priority:"high",
+//     secure:true,
+//     sameSite:env.NODE_ENV==='DEVELOPMENT'?"lax":"none",
+//     domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
+//     partitioned:true,
+// }
 
 export const uploadFilesToCloudinary = async({files}:{files:Express.Multer.File[]})=>{
     try {

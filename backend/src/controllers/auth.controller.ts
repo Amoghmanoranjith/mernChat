@@ -5,7 +5,6 @@ import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfa
 import { prisma } from '../lib/prisma.lib.js';
 import type { fcmTokenSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
-import { cookieOptions } from "../utils/auth.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 
 
@@ -77,12 +76,8 @@ const redirectHandler = asyncErrorHandler(async(req:OAuthAuthenticatedRequest,re
     }
 })
 
-const logout = asyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-    res.clearCookie("token",{...cookieOptions,maxAge:0}).status(200).json({message:"Logout successful"})
-})
-
 export {
-    checkAuth, getUserInfo, logout,
+    checkAuth, getUserInfo,
     redirectHandler,
     updateFcmToken
 };

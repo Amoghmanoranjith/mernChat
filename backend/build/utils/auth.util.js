@@ -1,16 +1,15 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { env } from '../schemas/env.schema.js';
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
-export const cookieOptions = {
-    maxAge: thirtyDaysInMilliseconds,
-    httpOnly: true,
-    path: "/",
-    priority: "high",
-    secure: true,
-    sameSite: env.NODE_ENV === 'DEVELOPMENT' ? "lax" : "none",
-    domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
-    partitioned: true,
-};
+// const cookieOptions:CookieOptions = {
+//     maxAge:thirtyDaysInMilliseconds,
+//     httpOnly:true,
+//     path:"/",
+//     priority:"high",
+//     secure:true,
+//     sameSite:env.NODE_ENV==='DEVELOPMENT'?"lax":"none",
+//     domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
+//     partitioned:true,
+// }
 export const uploadFilesToCloudinary = async ({ files }) => {
     try {
         const uploadPromises = files.map(file => cloudinary.uploader.upload(file.path));

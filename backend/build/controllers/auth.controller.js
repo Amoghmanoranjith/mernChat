@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import { prisma } from '../lib/prisma.lib.js';
 import { env } from "../schemas/env.schema.js";
-import { cookieOptions } from "../utils/auth.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 const getUserInfo = asyncErrorHandler(async (req, res, next) => {
     const user = req.user;
@@ -65,7 +64,4 @@ const redirectHandler = asyncErrorHandler(async (req, res, next) => {
         return res.redirect(`${config.clientUrl}/auth/login`);
     }
 });
-const logout = asyncErrorHandler(async (req, res, next) => {
-    res.clearCookie("token", { ...cookieOptions, maxAge: 0 }).status(200).json({ message: "Logout successful" });
-});
-export { checkAuth, getUserInfo, logout, redirectHandler, updateFcmToken };
+export { checkAuth, getUserInfo, redirectHandler, updateFcmToken };
