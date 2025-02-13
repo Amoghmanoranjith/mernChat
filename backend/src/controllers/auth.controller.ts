@@ -1,65 +1,16 @@
-import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
-import { cookieOptions, generateOtp } from "../utils/auth.util.js";
-import { sendMail } from "../utils/email.util.js";
+import { cookieOptions } from "../utils/auth.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 
 
-const sendOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    await prisma.otp.deleteMany({
-        where:{
-            userId:req.user.id
-        }
-    })
-    const otp = generateOtp()
-    const hashedOtp = await bcrypt.hash(otp,10)
-    await prisma.otp.create({
-        data:{
-            userId:req.user.id,
-            hashedOtp,
-            expiresAt:new Date(Date.now()+env.OTP_EXPIRATION_MINUTES),
-        }
-    })
-    await sendMail(req.user.email,req.user.username,'OTP',undefined,otp,undefined)
-    return res.status(201).json({message:`We have sent the otp on ${req.user?.email}`})
-})
-
-const verifyOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const {otp}:verifyOtpSchemaType = req.body
-
-    const otpExists = await prisma.otp.findFirst({
-        where:{
-            userId:req.user.id
-        }
-    })
-    if(!otpExists){
-        return next(new CustomError("Otp does not exists",404))
-    }
-    if(otpExists.expiresAt! < new Date){
-        return next(new CustomError("Otp has been expired",400))
-    }
-
-    if(!(await bcrypt.compare(otp,otpExists.hashedOtp))){
-        return next(new CustomError("Otp is invalid",400))
-    }
-
-    const user =  await prisma.user.update({
-        where:{
-            id:req.user.id
-        },
-        data:{
-            emailVerified:true
-        },
-    })
-
+const getUserInfo = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
+    const user = req.user
     const secureUserInfo = {
         id:user.id,
         name:user.name,
@@ -75,9 +26,7 @@ const verifyOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
         fcmToken:user.fcmToken,
         oAuthSignup:user.oAuthSignup
     }
-
-    return res.status(200).json(secureUserInfo);
-
+    return res.status(200).json(secureUserInfo)
 })
 
 const updateFcmToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
@@ -133,10 +82,8 @@ const logout = asyncErrorHandler(async(req:Request,res:Response,next:NextFunctio
 })
 
 export {
-    checkAuth,
-    logout,
+    checkAuth, getUserInfo, logout,
     redirectHandler,
-    sendOtp, updateFcmToken,
-    verifyOtp
+    updateFcmToken
 };
 

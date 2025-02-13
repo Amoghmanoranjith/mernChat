@@ -1,7 +1,6 @@
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
-import { CookieOptions, Response } from 'express'
-import jwt from 'jsonwebtoken'
-import { env } from '../schemas/env.schema.js'
+import { v2 as cloudinary } from 'cloudinary';
+import { CookieOptions } from 'express';
+import { env } from '../schemas/env.schema.js';
 
 
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
@@ -15,12 +14,6 @@ export const cookieOptions:CookieOptions = {
     sameSite:env.NODE_ENV==='DEVELOPMENT'?"lax":"none",
     domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
     partitioned:true,
-}
-
-export const generateOtp=():string=>{
-    let OTP=""
-    for(let i= 0 ; i<4 ; i++) OTP+=Math.floor(Math.random()*10)
-    return OTP
 }
 
 export const uploadFilesToCloudinary = async({files}:{files:Express.Multer.File[]})=>{

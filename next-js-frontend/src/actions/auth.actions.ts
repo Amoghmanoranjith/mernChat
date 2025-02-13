@@ -1,6 +1,7 @@
 "use server";
 import { DEFAULT_AVATAR } from "@/constants";
 import { sendEmail } from "@/lib/server/email/SendEmail";
+import { generateOtp } from "@/lib/server/helpers";
 import { prisma } from "@/lib/server/prisma";
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { createSession, decrypt, deleteSession, encrypt, SessionPayload } from "@/lib/server/session";
@@ -538,4 +539,102 @@ export async function storeUserKeysInDatabase(prevState:any,data:{publicKey:Json
   }
 }
 
+export async function sendOtp(prevState:any,data:{loggedInUserId:string,email:string,username:string}){
+  try { 
+
+    const {loggedInUserId,email,username} = data;
+    await prisma.otp.deleteMany({where:{userId:loggedInUserId}})
+
+    const otp = generateOtp()
+    const hashedOtp = await bcrypt.hash(otp,10)
+
+    await prisma.otp.create({
+        data:{
+          userId:loggedInUserId,
+          hashedOtp,
+          expiresAt:new Date(Date.now()+1000*60*5)
+        }
+    })
+
+    await sendEmail({emailType:"OTP",to:email,username,otp:otp});
+
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:`We have sent the otp on ${email}, please check spam if not received`
+    }
+
+  }
+  } catch (error) {
+    console.log('error sending otp',error);
+    return {
+      errors:{
+        message:'Error sending otp'
+      },
+      success:{
+        message:null
+      }
+    }
+  }
+}
+
+export async function verifyOtp(prevState:any,data:{otp:string,loggedInUserId:string}){
+
+  const {otp,loggedInUserId} = data;
+
+  const otpExists = await prisma.otp.findFirst({
+      where:{userId:loggedInUserId}
+  })
+
+  if(!otpExists){
+      return {
+          errors:{
+              message:'Otp does not exists'
+          },
+          success:{
+              message:null
+          }
+      }
+  }
+
+  if(otpExists.expiresAt! < new Date){
+    return {
+        errors:{
+            message:'Otp has expired'
+        },
+        success:{
+            message:null
+        }
+    }
+  }
+  
+  if(!(await bcrypt.compare(otp,otpExists.hashedOtp))){
+    return {
+        errors:{
+            message:'Otp is invalid, please enter a valid otp'
+        },
+        success:{
+            message:null
+        }
+    }
+  }
+  
+  await prisma.user.update({
+      where:{id:loggedInUserId},
+      data:{emailVerified:true},
+  })
+
+  await prisma.otp.delete({where:{id:otpExists.id}})
+    
+  return {
+      errors:{
+          message:null
+      },
+      success:{
+          message:'Email verified successfully 🎉'
+      },
+  }
+}
 

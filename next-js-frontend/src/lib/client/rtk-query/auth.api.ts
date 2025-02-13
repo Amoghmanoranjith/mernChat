@@ -1,9 +1,5 @@
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type {
-  Otp,
-  ResetPassword,
-} from "../../../interfaces/auth.interface";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -13,30 +9,6 @@ export const authApi = createApi({
   }),
   endpoints: (builder) => ({
 
-    forgotPassword: builder.mutation<void, Pick<FetchUserInfoResponse, "email">>({
-      query: (credentials) => ({
-        url: "/forgot-password",
-        method: "POST",
-        body: credentials,
-      }),
-    }),
-
-    resetPassword: builder.mutation<void, ResetPassword>({
-      query: (credentials) => ({
-        url: "/reset-password",
-        method: "POST",
-        body: credentials,
-      }),
-    }),
-
-    verifyOtp: builder.mutation<FetchUserInfoResponse, Otp>({
-      query: (credentials) => ({
-        url: "/verify-otp",
-        method: "POST",
-        body: credentials,
-      }),
-    }),
-
     updateFcmToken: builder.mutation<{ fcmTokenExists: boolean },{ fcmToken: string }>({
       query: ({ fcmToken }) => ({
         url: "/user/update-fcm-token",
@@ -45,21 +17,14 @@ export const authApi = createApi({
       }),
     }),
 
-    sendOtp: builder.query<void, void>({
-      query: () => "/send-otp",
-    }),
-
     checkAuth: builder.query<FetchUserInfoResponse | null, void>({
       query: () => "/check-auth",
     }),
+    
   }),
 });
 
 export const {
-  useForgotPasswordMutation,
-  useResetPasswordMutation,
-  useVerifyOtpMutation,
-  useLazySendOtpQuery,
   useCheckAuthQuery,
   useUpdateFcmTokenMutation,
 } = authApi;

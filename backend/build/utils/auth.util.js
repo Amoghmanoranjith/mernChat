@@ -11,12 +11,6 @@ export const cookieOptions = {
     domain: env.NODE_ENV === 'DEVELOPMENT' ? 'localhost' : 'aesehi.online',
     partitioned: true,
 };
-export const generateOtp = () => {
-    let OTP = "";
-    for (let i = 0; i < 4; i++)
-        OTP += Math.floor(Math.random() * 10);
-    return OTP;
-};
 export const uploadFilesToCloudinary = async ({ files }) => {
     try {
         const uploadPromises = files.map(file => cloudinary.uploader.upload(file.path));

@@ -1,15 +1,14 @@
 import { Router } from "express";
 import passport from 'passport';
 import { config } from "../config/env.config.js";
-import { checkAuth, logout, redirectHandler, sendOtp, updateFcmToken, verifyOtp } from "../controllers/auth.controller.js";
+import { checkAuth, getUserInfo, logout, redirectHandler, updateFcmToken } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyToken } from "../middlewares/verify-token.middleware.js";
-import { fcmTokenSchema, verifyOtpSchema } from "../schemas/auth.schema.js";
+import { fcmTokenSchema } from "../schemas/auth.schema.js";
 
 export default Router()
 
-.get("/send-otp",verifyToken,sendOtp)
-.post("/verify-otp",verifyToken,validate(verifyOtpSchema),verifyOtp)
+.get("/user",verifyToken,getUserInfo)
 .get("/verify-token",verifyToken,checkAuth)
 .patch("/user/update-fcm-token",verifyToken,validate(fcmTokenSchema),updateFcmToken)
 .get("/logout",logout)

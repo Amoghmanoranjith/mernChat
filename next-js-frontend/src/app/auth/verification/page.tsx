@@ -1,5 +1,7 @@
 import { OtpVerification } from "@/components/auth/OtpVerification";
+import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Verify Email - Mernchat",
@@ -27,6 +29,15 @@ export const metadata: Metadata = {
 
 export default async function Page(){
   
+  const cookiesStore = await cookies();
+  const userInfo =  cookiesStore.get("tempUserInfo")?.value;
+
+  let parsedUserInfo
+
+  if(userInfo){
+    parsedUserInfo = JSON.parse(userInfo) as FetchUserInfoResponse;
+  }
+
   return (
     <div className="flex flex-col gap-y-6">
       <div className="flex flex-col gap-y-4">
@@ -38,7 +49,12 @@ export default async function Page(){
           help us verify that this email is your&apos;s
         </p>
       </div>
-      <OtpVerification/>
+      {
+        parsedUserInfo ?
+        <OtpVerification email={parsedUserInfo.email} loggedInUserId={parsedUserInfo.id} username={parsedUserInfo.username}/>
+        :
+        <p>Some error occured, try reloading the page again</p>
+      }
     </div>
   );
 };
