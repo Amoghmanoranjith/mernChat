@@ -8,12 +8,13 @@ export const requestApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/request`,
     credentials: "include",
-        prepareHeaders:(headers,{getState})=>{
-          const token = (getState() as RootState).authSlice.authToken;
-          if(token){
-            headers.set("Cookie",`token=${token}`);
-          }
-        }
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).authSlice.authToken;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   endpoints: (builder) => ({
 

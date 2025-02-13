@@ -13,13 +13,19 @@ type SessionPayload = {
   
 export const verifyToken=asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
-        const {token} = req.cookies
+        let {token} = req.cookies
 
         const secretKey = "helloWorld@123";
-        const encodedKey = new TextEncoder().encode(secretKey);
 
-        if(!token){
-            return next(new CustomError("Token missing, please login again",401))
+        if (!token && req.headers.authorization) {
+            const authHeader = req.headers.authorization;
+            if (authHeader.startsWith("Bearer ")) {
+              token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
+            }
+          }
+        
+        if (!token) {
+            return next(new CustomError("Token missing, please login again", 401));
         }
 
         const decodedInfo=jwt.verify(token,secretKey,{algorithms:['HS256']}) as SessionPayload

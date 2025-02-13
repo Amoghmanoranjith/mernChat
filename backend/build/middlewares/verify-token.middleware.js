@@ -2,9 +2,14 @@ import jwt from 'jsonwebtoken';
 import { prisma } from "../lib/prisma.lib.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
 export const verifyToken = asyncErrorHandler(async (req, res, next) => {
-    const { token } = req.cookies;
+    let { token } = req.cookies;
     const secretKey = "helloWorld@123";
-    const encodedKey = new TextEncoder().encode(secretKey);
+    if (!token && req.headers.authorization) {
+        const authHeader = req.headers.authorization;
+        if (authHeader.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
+        }
+    }
     if (!token) {
         return next(new CustomError("Token missing, please login again", 401));
     }

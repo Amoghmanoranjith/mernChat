@@ -7,12 +7,13 @@ export const chatApi = createApi({
     baseQuery:fetchBaseQuery({
         baseUrl:process.env.NEXT_PUBLIC_BASE_URL,
         credentials:"include",
-        prepareHeaders:(headers,{getState})=>{
-        const token = (getState() as RootState).authSlice.authToken;
-        if(token){
-            headers.set("Cookie",`token=${token}`);
-        }
-        }
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as RootState).authSlice.authToken;
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+          },
     }),
     endpoints:(builder)=>({
         createChat:builder.mutation<void,Required<Pick<fetchUserChatsResponse,'name'> & {members:string[],isGroupChat:string}> & {avatar?:Blob}>({

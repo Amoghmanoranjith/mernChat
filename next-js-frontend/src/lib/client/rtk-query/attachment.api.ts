@@ -7,12 +7,13 @@ export const attachmentApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/attachment`,
     credentials: "include",
-    prepareHeaders:(headers,{getState})=>{
+    prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).authSlice.authToken;
-      if(token){
-        headers.set("Cookie",`token=${token}`);
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
       }
-    }
+      return headers;
+    },
   }),
 
   endpoints: (builder) => ({
