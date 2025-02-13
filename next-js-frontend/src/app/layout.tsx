@@ -37,8 +37,8 @@ const jsonLd = {
         "https://hashnode.com/@RishiBakshi",
         "https://rishibakshi.hashnode.dev/",
       ],
-      "applicationCategory": "WebApplication",
-      "operatingSystem": "All"
+    "applicationCategory": "SocialNetworkingApplication",
+    "operatingSystem": "All"
 }
 
 export const metadata:Metadata = {
@@ -61,7 +61,7 @@ export const metadata:Metadata = {
     siteName: "Mernchat",
     images: [
       {
-        url: "images/og/og-image.png", // Static path from public folder
+        url: "https://mernchat.in/images/og/og-image.png", // Static path from public folder
         width: 1200,
         height: 630,
         alt: "Mernchat - Secure & Encrypted Chat App",
@@ -74,7 +74,7 @@ export const metadata:Metadata = {
     card: "summary_large_image",
     title: "Mernchat - Secure & Encrypted Chat App",
     description: "Mernchat is a privacy-first chat app offering end-to-end encryption for private chats and secure real-time messaging.",
-    images: ["images/og/og-image.png"], // Static path (from public)
+    images: ["https://mernchat.in/images/og/og-image.png"],
     creator:"@rishibakshii",
     site: "@rishibakshii",
   },
@@ -96,6 +96,7 @@ export default function RootLayout({
   return (
     <>
     <Head>
+    <link rel="preload" href="https://mernchat.in/images/og/og-image.png" as="image" />
     <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

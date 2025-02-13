@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Mern Chat",
-    short_name: "Mern Chat",
+    name: "Mernchat",
+    short_name: "Mernchat",
     theme_color: "#000000",
     background_color: "#000000",
     display: "standalone",
@@ -100,6 +100,6 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes:"1080x1920",
         type:"image/png"
       },
-    ]
+    ],
   };
 }
