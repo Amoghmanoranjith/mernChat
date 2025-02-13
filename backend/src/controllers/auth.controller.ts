@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from "../config/env.config.js";
 import type { AuthenticatedRequest, OAuthAuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from '../lib/prisma.lib.js';
-import type { fcmTokenSchemaType, keySchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
+import type { fcmTokenSchemaType, verifyOtpSchemaType } from "../schemas/auth.schema.js";
 import { env } from "../schemas/env.schema.js";
 import { cookieOptions, generateOtp } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
@@ -80,20 +80,6 @@ const verifyOtp = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
 
 })
 
-const updateUserKeys = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-    const {publicKey,privateKey}:keySchemaType = req.body;
-    const user = await prisma.user.update({
-        where:{
-            id:req.user?.id
-        },
-        data:{
-            publicKey,
-            privateKey
-        }
-    })
-    return res.status(200).json({publicKey:user.publicKey})
-})
-
 const updateFcmToken = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 
     const {fcmToken}:fcmTokenSchemaType = req.body
@@ -150,7 +136,7 @@ export {
     checkAuth,
     logout,
     redirectHandler,
-    sendOtp, updateFcmToken, updateUserKeys,
+    sendOtp, updateFcmToken,
     verifyOtp
 };
 

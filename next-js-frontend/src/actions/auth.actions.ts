@@ -490,4 +490,51 @@ export async function resetPassword(prevState:any,data:{token:string,newPassword
  }
 }
 
+export async function storeUserKeysInDatabase(prevState:any,data:{publicKey:JsonWebKey,privateKey:string,loggedInUserId:string}){
+  try {
+    const {privateKey,publicKey,loggedInUserId} = data;
+
+    const user = await prisma.user.findUnique({where:{id:loggedInUserId}});
+    if(!user){
+      return {
+        errors:{
+          message:'User not found'
+        },
+        success:{
+          message:null
+        }
+      }
+    }
+
+    const updatedUser =  await prisma.user.update({
+        where:{id:user.id},
+        data:{publicKey:JSON.stringify(publicKey),privateKey},
+        select:{publicKey:true}
+    })
+
+    return {
+      errors:{
+        message:null
+      },
+      success:{
+        message:'User keys stored in database successfully'
+      },
+      data:{
+        publicKey:updatedUser.publicKey
+      }
+    }
+
+  } catch (error) {
+    console.log('error storing user keys in database',error);
+    return {
+      errors:{
+        message:'Error storing user keys in database'
+      },
+      success:{
+        message:null
+      }
+    }
+  }
+}
+
 

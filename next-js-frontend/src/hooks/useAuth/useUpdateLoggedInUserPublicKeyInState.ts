@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 type PropTypes = {
-  publicKey: string | undefined;
+  publicKey: string | undefined | null;
 };
 
 export const useUpdateLoggedInUserPublicKeyInState = ({
@@ -15,12 +15,10 @@ export const useUpdateLoggedInUserPublicKeyInState = ({
 
   useEffect(() => {
     if (publicKey) {
-      disptach(
-        updateLoggedInUserPublicKey({ publicKey: JSON.parse(publicKey) })
-      );
+      disptach(updateLoggedInUserPublicKey({ publicKey: JSON.parse(publicKey) }));
       setTimeout(() => {
         router.push("/");
-      }, 100);
+      }, 1000);
     }
   }, [disptach, publicKey, router]);
 };

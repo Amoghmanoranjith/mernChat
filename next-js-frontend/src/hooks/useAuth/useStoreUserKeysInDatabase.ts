@@ -1,23 +1,27 @@
-import { useEffect } from "react";
-import { useUpdateUserKeysInDatabase } from "./useUpdateUserKeysInDatabase";
+import { storeUserKeysInDatabase } from "@/actions/auth.actions";
+import { startTransition, useActionState, useEffect } from "react";
 
 type PropTypes = {
     encryptedPrivateKey: string | null;
     publicKeyJWK: JsonWebKey | null;
+    loggedInUserId:string | undefined;
 }
 
-export const useStoreUserKeysInDatabase = ({encryptedPrivateKey,publicKeyJWK}:PropTypes) => {
-    const {updateKeysInDatabase,publicKeyReturnedFromServerAfterBeingStored,updateUserKeysIsSuccess} = useUpdateUserKeysInDatabase();
+export const useStoreUserKeysInDatabase = ({encryptedPrivateKey,publicKeyJWK,loggedInUserId}:PropTypes) => {
+
+    const [state,storeUserKeysInDatabaseAction] = useActionState(storeUserKeysInDatabase,undefined);
 
     useEffect(()=>{
-        if(encryptedPrivateKey && publicKeyJWK){
-            updateKeysInDatabase({privateKey:encryptedPrivateKey,publicKey:JSON.stringify(publicKeyJWK)});
+        if(encryptedPrivateKey && publicKeyJWK && loggedInUserId){
+            startTransition(()=>{
+                storeUserKeysInDatabaseAction({privateKey:encryptedPrivateKey,loggedInUserId,publicKey:publicKeyJWK})
+            })
         }
-    },[encryptedPrivateKey, publicKeyJWK, updateKeysInDatabase]);
+    },[encryptedPrivateKey, publicKeyJWK,loggedInUserId]);
 
     return {
-        publicKeyReturnedFromServerAfterBeingStored,
-        userKeysStoredInDatabaseSuccess:updateUserKeysIsSuccess
+        publicKeyReturnedFromServerAfterBeingStored:state?.data?.publicKey,
+        userKeysStoredInDatabaseSuccess:state?.success.message?.length ? true : false
     }
 
 }

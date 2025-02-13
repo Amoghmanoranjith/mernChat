@@ -37,24 +37,11 @@ export const SignupForm = () => {
   },[state,router])
 
   const { privateKey, publicKey } = useGenerateKeyPair({ user: state?.data });
-  const { privateKeyJWK, publicKeyJWK } =
-    useConvertPrivateAndPublicKeyInJwkFormat({ privateKey, publicKey });
-  const { encryptedPrivateKey } = useEncryptPrivateKeyWithUserPassword({
-    password,
-    privateKeyJWK,
-  });
-  const {
-    publicKeyReturnedFromServerAfterBeingStored,
-    userKeysStoredInDatabaseSuccess,
-  } = useStoreUserKeysInDatabase({ encryptedPrivateKey, publicKeyJWK });
-  useStoreUserPrivateKeyInIndexedDB({
-    privateKey: privateKeyJWK,
-    userKeysStoredInDatabaseSuccess,
-    userId: state?.data?.id,
-  });
-  useUpdateLoggedInUserPublicKeyInState({
-    publicKey: publicKeyReturnedFromServerAfterBeingStored,
-  });
+  const { privateKeyJWK, publicKeyJWK } = useConvertPrivateAndPublicKeyInJwkFormat({ privateKey, publicKey });
+  const { encryptedPrivateKey } = useEncryptPrivateKeyWithUserPassword({password,privateKeyJWK});
+  const {publicKeyReturnedFromServerAfterBeingStored,userKeysStoredInDatabaseSuccess} = useStoreUserKeysInDatabase({ encryptedPrivateKey, publicKeyJWK, loggedInUserId:state?.data?.id});
+  useStoreUserPrivateKeyInIndexedDB({privateKey: privateKeyJWK,userKeysStoredInDatabaseSuccess,userId: state?.data?.id});
+  useUpdateLoggedInUserPublicKeyInState({publicKey: publicKeyReturnedFromServerAfterBeingStored});
 
   const onSubmit: SubmitHandler<signupSchemaType> = (data) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

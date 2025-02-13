@@ -37,14 +37,6 @@ export const authApi = createApi({
       }),
     }),
 
-    updateUserKeysInDatabase: builder.mutation<{ publicKey: string },{ publicKey: string; privateKey: string }>({
-      query: ({ publicKey, privateKey }) => ({
-        url: "/user/keys",
-        method: "PATCH",
-        body: { publicKey, privateKey },
-      }),
-    }),
-
     updateFcmToken: builder.mutation<{ fcmTokenExists: boolean },{ fcmToken: string }>({
       query: ({ fcmToken }) => ({
         url: "/user/update-fcm-token",
@@ -69,6 +61,5 @@ export const {
   useVerifyOtpMutation,
   useLazySendOtpQuery,
   useCheckAuthQuery,
-  useUpdateUserKeysInDatabaseMutation,
   useUpdateFcmTokenMutation,
 } = authApi;
