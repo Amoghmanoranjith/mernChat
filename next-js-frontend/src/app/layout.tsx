@@ -61,7 +61,7 @@ export const metadata:Metadata = {
     siteName: "Mernchat",
     images: [
       {
-        url: "/og/og-image.png", // Static path from public folder
+        url: "images/og/og-image.png", // Static path from public folder
         width: 1200,
         height: 630,
         alt: "Mernchat - Secure & Encrypted Chat App",
@@ -74,7 +74,7 @@ export const metadata:Metadata = {
     card: "summary_large_image",
     title: "Mernchat - Secure & Encrypted Chat App",
     description: "Mernchat is a privacy-first chat app offering end-to-end encryption for private chats and secure real-time messaging.",
-    images: ["/og/og-image.png"], // Static path (from public)
+    images: ["images/og/og-image.png"], // Static path (from public)
     creator:"@rishibakshii",
     site: "@rishibakshii",
   },
