@@ -5,6 +5,7 @@ import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 const registerSocketHandlers = (io) => {
     io.on("connection", async (socket) => {
+        console.log(socket.user.username, "connected");
         prisma.user.update({
             where: { id: socket.user.id },
             data: { isOnline: true }

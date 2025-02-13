@@ -13,18 +13,12 @@ type SessionPayload = {
 export const socketAuthenticatorMiddleware = async(socket:Socket,next:NextFunction)=>{
 
     try {
-            const cookies = socket.handshake.headers.cookie;
+            const token = socket.handshake.query.token as string;
 
-            if (!cookies) {
+            if (!token) {
                 return next(new CustomError("Token missing, please login again", 401));
             } 
 
-            const parsedCookies = cookie.parse(cookies)
-            const token = parsedCookies['token']
-        
-            if(!token){
-                return next(new CustomError("Token missing, please login again",401))
-            }
             const secret = 'helloWorld@123'
             const decodedInfo=jwt.verify(token,secret,{algorithms:["HS256"]}) as SessionPayload;
         

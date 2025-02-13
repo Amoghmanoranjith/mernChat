@@ -1,15 +1,9 @@
-import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
 import { prisma } from "../lib/prisma.lib.js";
 import { CustomError } from "../utils/error.utils.js";
 export const socketAuthenticatorMiddleware = async (socket, next) => {
     try {
-        const cookies = socket.handshake.headers.cookie;
-        if (!cookies) {
-            return next(new CustomError("Token missing, please login again", 401));
-        }
-        const parsedCookies = cookie.parse(cookies);
-        const token = parsedCookies['token'];
+        const token = socket.handshake.query.token;
         if (!token) {
             return next(new CustomError("Token missing, please login again", 401));
         }

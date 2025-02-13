@@ -4,10 +4,12 @@ import { RootState } from "../store/store";
 
 type InitialState = {
   loggedInUser: FetchUserInfoResponse | null;
+  authToken:string | null;
 };
 
 const initialState: InitialState = {
   loggedInUser: null,
+  authToken:null,
 };
 
 const authSlice = createSlice({
@@ -34,6 +36,9 @@ const authSlice = createSlice({
       if (state.loggedInUser)
         state.loggedInUser.notificationsEnabled = action.payload;
     },
+    setAuthToken:(state,action:PayloadAction<string>)=>{
+      state.authToken = action.payload
+    }
     // updateLoggedInUserFcmTokenStatus:(state,action:PayloadAction<string>)=>{
     //     if(state.loggedInUser)
     //         state.loggedInUser.fcmtoke = action.payload
@@ -43,11 +48,14 @@ const authSlice = createSlice({
 
 export const selectLoggedInUser = (state: RootState) =>
   state.authSlice.loggedInUser;
+export const selectAuthToken = (state: RootState) =>
+  state.authSlice.authToken;
 
 export const {
   updateLoggedInUser,
   updateLoggedInUserPublicKey,
   updateLoggedInUserNotificationStatus,
+  setAuthToken,
   // updateLoggedInUserFcmTokenStatus,
 } = authSlice.actions;
 

@@ -149,6 +149,8 @@ const registerSocketHandlers = (io:Server)=>{
     
     io.on("connection",async(socket:Socket)=>{
 
+        console.log(socket.user.username,"connected");
+
         prisma.user.update({
             where:{id:socket.user.id},
             data:{isOnline:true}

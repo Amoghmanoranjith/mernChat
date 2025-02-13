@@ -6,6 +6,7 @@ import { prisma } from "@/lib/server/prisma";
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { createSession, decrypt, deleteSession, encrypt, SessionPayload } from "@/lib/server/session";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
@@ -637,4 +638,10 @@ export async function verifyOtp(prevState:any,data:{otp:string,loggedInUserId:st
       },
   }
 }
+
+export async function getAuthToken() {
+  const token = (await cookies()).get("token")?.value;
+  return token || null;
+}
+
 

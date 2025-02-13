@@ -86,6 +86,8 @@ export async function middleware(req: NextRequest) {
       secure: process.env.NODE_ENV === 'production'
     });
   }
+
+  response.headers.set("Cookie", `token=${cookie}`);
   
   return response;
 }

@@ -1,11 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Attachment } from "../../../interfaces/attachment.interface";
+import { RootState } from "../store/store";
 
 export const attachmentApi = createApi({
   reducerPath: "attachmentApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/attachment`,
     credentials: "include",
+    prepareHeaders:(headers,{getState})=>{
+      const token = (getState() as RootState).authSlice.authToken;
+      if(token){
+        headers.set("Cookie",`token=${token}`);
+      }
+    }
   }),
 
   endpoints: (builder) => ({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCheckUserPrivateKeyInIndexedDB } from "@/hooks/useAuth/useCheckUserPrivateKeyInIndexedDB";
+import { useFetchAuthToken } from "@/hooks/useAuth/useFetchAuthToken";
 import { useUpdateUnreadMessagesAsSeenOnChatSelect } from "@/hooks/useChat/useUpdateUnreadChatAsSeen";
 import { useClearExtraPreviousMessagesOnChatChange } from "@/hooks/useMessages/useClearExtraPreviousMessagesOnChatChange";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
@@ -32,6 +33,10 @@ export const ChatWrapper = ({children,chats,friendRequest,friends,user}: PropTyp
 
   // messages
   useClearExtraPreviousMessagesOnChatChange();
+
+  // fetch the auth token and set in state
+  // so that rtk query can this token to make requests to backend
+  useFetchAuthToken();
 
   return children;
 };
