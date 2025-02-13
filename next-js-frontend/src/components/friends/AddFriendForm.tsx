@@ -1,29 +1,32 @@
+import { searchUser } from "@/actions/user.actions";
 import { useDebounce } from "@/hooks/useUtils/useDebounce";
 import { useGetUserFriendRequestsQuery } from "@/lib/client/rtk-query/request.api";
-import { useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useSendFriendRequest } from "../../hooks/useFriend/useSendFriendRequest";
-import { useSearchUser } from "../../hooks/useSearch/useSearchUser";
 import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
-import { UserListSkeleton } from "../ui/skeleton/UserListSkeleton";
 import { UserList } from "./UserList";
 
 const AddFriendForm = () => {
+
+  const [state,searchUserAction] = useActionState(searchUser,undefined);
+
   const [inputVal, setInputVal] = useState<string>("");
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
 
   const { data: friends } = useGetUserFriendRequestsQuery();
 
   const { sendFriendRequest } = useSendFriendRequest();
-  const { searchUser, searchResults, isFetching } = useSearchUser();
 
   const debouncedInputVal = useDebounce(inputVal, 600);
 
   useEffect(() => {
     if (debouncedInputVal) {
-      searchUser(debouncedInputVal, true);
+      startTransition(()=>{
+        searchUserAction({username:debouncedInputVal})
+      })
     }
-  }, [debouncedInputVal, searchUser]);
+  }, [debouncedInputVal]);
 
   const hanldeSendFriendRequest = (receiverId: string) => {
     sendFriendRequest({ receiverId });
@@ -40,22 +43,17 @@ const AddFriendForm = () => {
       />
 
       <div>
-        {!isFetching &&
-        searchResults &&
-        searchResults.length > 0 &&
-        friends &&
-        loggedInUserId ? (
+        {(state?.data && friends && loggedInUserId) ? (
           <UserList
-            users={searchResults}
+            users={state.data}
             friends={friends}
             loggedInUserId={loggedInUserId}
             sendFriendRequest={hanldeSendFriendRequest}
           />
-        ) : isFetching ? (
-          <UserListSkeleton count={4} />
-        ) : (
+        ) 
+        :(
           !inputVal?.trim() &&
-          !searchResults?.length && (
+          !state?.data?.length && (
             <p className="text-center mt-16">Go on try the speed!</p>
           )
         )}

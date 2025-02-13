@@ -15,10 +15,6 @@ export const userApi = createApi({
 
   endpoints: (builder) => ({
     
-    searchUser: builder.query<Pick<FetchUserInfoResponse, "id" | "name" | "username" | "avatar">[],User["username"]>({
-      query: (username) => `/search?username=${username}`,
-    }),
-
     updateProfile: builder.mutation<FetchUserInfoResponse, { avatar: Blob }>({
       query: ({ avatar }) => {
         const formData = new FormData();
@@ -53,7 +49,6 @@ export const userApi = createApi({
 });
 
 export const {
-  useLazySearchUserQuery,
   useUpdateProfileMutation,
   useUpdateNotificationsMutation,
 } = userApi;

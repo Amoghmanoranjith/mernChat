@@ -2,28 +2,6 @@ import { prisma } from "../lib/prisma.lib.js";
 import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
-export const getUserByUsername = asyncErrorHandler(async (req, res, next) => {
-    const { username } = req.query;
-    if (!username || !username?.toString().trim()) {
-        return next(new CustomError("Username cannot be empty"));
-    }
-    const searchTerm = username.toString().trim();
-    const users = await prisma.user.findMany({
-        where: {
-            username: {
-                contains: searchTerm,
-                mode: "insensitive"
-            }
-        },
-        select: {
-            id: true,
-            name: true,
-            username: true,
-            avatar: true
-        }
-    });
-    return res.status(200).json(users);
-});
 export const udpateUser = asyncErrorHandler(async (req, res, next) => {
     if (!req.file) {
         return next(new CustomError("Please provide an image", 400));
