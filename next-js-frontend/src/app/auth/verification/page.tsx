@@ -1,4 +1,29 @@
 import { OtpVerification } from "@/components/auth/OtpVerification";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Verify Email - Mernchat",
+  description: "Enter the OTP sent to your email to verify your account on Mernchat.",
+  keywords: [
+    "Mernchat email verification", 
+    "verify email OTP", 
+    "secure chat verification", 
+    "email authentication", 
+    "OTP login security"
+  ],
+  openGraph: {
+    title: "Verify Email - Mernchat",
+    description: "Enter the OTP sent to your email to verify your account on Mernchat.",
+    url: "https://mernchat.in/auth/verify-email",
+    siteName: "Mernchat",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Verify Email - Mernchat",
+    description: "Enter the OTP sent to your email to verify your account on MernChat.",
+  },
+};
 
 export default async function Page(){
   

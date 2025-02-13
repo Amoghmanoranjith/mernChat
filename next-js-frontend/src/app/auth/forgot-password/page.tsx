@@ -1,5 +1,31 @@
 import { AuthRedirectLink } from "@/components/auth/AuthRedirectLink";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Forgot Password - Mernchat",
+  description: "Forgot your password? Reset it securely on MernChat and regain access to your account.",
+  keywords: [
+    "Mernchat password reset", 
+    "forgot password", 
+    "reset password", 
+    "recover account", 
+    "secure password reset"
+  ],
+  openGraph: {
+    title: "Forgot Password - Mernchat",
+    description: "Forgot your password? Reset it securely on Mernchat and regain access to your account.",
+    url: "https://mernchat.in/auth/forgot-password",
+    siteName: "Mernchat",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Forgot Password - Mernchat",
+    description: "Forgot your password? Reset it securely on Mernchat and regain access to your account.",
+  },
+};
 
 const page = () => {
   return (

@@ -1,6 +1,6 @@
 # **Next.js Chat App – Secure, End-to-End Encrypted (E2EE) Real-Time Messaging** 🗨️  
 
-**Next.js Chat App** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
+**[Next.js Chat App](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/1.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/3.png)  

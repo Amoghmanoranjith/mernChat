@@ -1,7 +1,32 @@
 "use client";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+import { Metadata } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
+
+export const metadata: Metadata = {
+  title: "Reset Password - Mernchat",
+  description: "Securely reset your password on Mernchat and regain access to your account.",
+  keywords: [
+    "MernChat password reset", 
+    "reset password", 
+    "forgot password", 
+    "secure account recovery", 
+    "change password"
+  ],
+  openGraph: {
+    title: "Reset Password - Mernchat",
+    description: "Securely reset your password on Mernchat and regain access to your account.",
+    url: "https://mernchat.in/auth/reset-password",
+    siteName: "Mernchat",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Reset Password - Mernchat",
+    description: "Securely reset your password on Mernchat and regain access to your account.",
+  },
+};
 
 function ResetPasswordPageContent (){
 
