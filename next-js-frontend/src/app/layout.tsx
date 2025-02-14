@@ -8,6 +8,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Head from "next/head";
+import { Toaster as SonnerToaster} from "@/components/ui/Sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,12 @@ export const metadata:Metadata = {
   creator: "Rishi Bakshi",
   publisher: "Rishi Bakshi",
   metadataBase: new URL("https://mernchat.in"),
+  icons:{
+    apple:{
+      url:"https://mernchat.in/images/apple-touch-icon/apple-touch-icon.png",
+    },
+  },
+  
 
   openGraph: {
     title: "Mernchat - Secure & Encrypted Chat App",
@@ -85,6 +92,29 @@ export const metadata:Metadata = {
   alternates: {
     canonical: "https://mernchat.in",
   },
+  other: {
+    jsonLd: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Mernchat",
+      "url": "https://mernchat.in",
+      "author": {
+        "@type": "Person",
+        "name": "Rishi Bakshi",
+        "url": "https://rishibakshii.github.io/portfolio"
+      },
+      "sameAs": [
+        "https://github.com/RishiBakshii/nextjs-chat-app",
+        "https://twitter.com/rishibakshii",
+        "https://www.linkedin.com/in/rishi-bakshi/",
+        "https://leetcode.com/u/rishibakshii/",
+        "https://hashnode.com/@RishiBakshi",
+        "https://rishibakshi.hashnode.dev/"
+      ],
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "All"
+    })
+  }
 };
 
 
@@ -96,12 +126,11 @@ export default function RootLayout({
   return (
     <>
     <Head>
-    <link rel="preload" href="https://mernchat.in/images/og/og-image.png" as="image" />
-    <script
+      <link rel="preload" href="https://mernchat.in/images/og/og-image.png" as="image" />
+      <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd)}}
       />
-      <link rel="me" href="https://github.com/RishiBakshii/nextjs-chat-app"/>
     </Head>
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-hidden`}>
@@ -110,6 +139,7 @@ export default function RootLayout({
         <StoreProvider>
           <SocketProvider>
             <Toaster />
+            <SonnerToaster/>
             <InitializeIndexedDbWrapper />
             <ThemeInitializer />
             <ModalWrapper />

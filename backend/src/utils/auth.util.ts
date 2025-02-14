@@ -1,6 +1,4 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { CookieOptions } from 'express';
-import { env } from '../schemas/env.schema.js';
 
 
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;

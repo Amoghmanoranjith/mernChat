@@ -18,13 +18,23 @@ export const metadata: Metadata = {
     url: "https://mernchat.in/auth/signup",
     siteName: "Mernchat",
     type: "website",
+    images: [
+      {
+        url: "https://mernchat.in/images/og/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Mernchat - Secure & Encrypted Chat App",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Sign Up - Mernchat",
     description: "Create a secure account on MernChat and start chatting with end-to-end encryption.",
+    images: ["https://mernchat.in/images/og/og-image.png"], // Add Twitter image
   },
 };
+
 
 const page = () => {
   return (

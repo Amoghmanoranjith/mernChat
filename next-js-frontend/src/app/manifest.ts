@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     icons: [
       {
-        src: "images/pwa/maskable.png",
+        src: "images/pwa/maskable192.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "maskable",

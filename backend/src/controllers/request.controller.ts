@@ -6,6 +6,7 @@ import { prisma } from "../lib/prisma.lib.js";
 import type { createRequestSchemaType, handleRequestSchemaType } from "../schemas/request.schema.js";
 import { joinMembersInChatRoom } from "../utils/chat.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
+import { sendPushNotification } from "../utils/generic.js";
 import { emitEvent, emitEventToRoom } from "../utils/socket.util.js";
 
 
@@ -131,8 +132,9 @@ export const createRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
       }
     })
 
-    if(!isValidReceiverId.isOnline && isValidReceiverId.fcmToken && isValidReceiverId.notificationsEnabled){
-      // sendPushNotification({fcmToken:isValidReceiverId.fcmToken,body:`${req.user.username} sent you a friend request`})
+    if(isValidReceiverId.fcmToken && isValidReceiverId.notificationsEnabled){
+      console.log('push notification triggered for receiver');
+      sendPushNotification({fcmToken:isValidReceiverId.fcmToken,body:`${req.user.username} sent you a friend request 😃`})
     }
 
     const io:Server = req.app.get('io');
@@ -291,8 +293,8 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
           sender = newFriendEntry.user2
         }
 
-        if(sender.notificationsEnabled && !sender.isOnline && sender.fcmToken){
-          // sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has accepted your friend request 😃`})
+        if(sender.notificationsEnabled && sender.fcmToken){
+          sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has accepted your friend request 😃`})
         }
 
         const io:Server = req.app.get('io');
@@ -327,8 +329,8 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
 
         const sender = deletedRequest.sender
 
-        if(!sender.isOnline && sender.fcmToken && sender.notificationsEnabled){
-          // sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has rejected your friend request ☹️`})
+        if(sender.fcmToken && sender.notificationsEnabled){
+          sendPushNotification({fcmToken:sender.fcmToken,body:`${req.user.username} has rejected your friend request ☹️`})
         }
         return res.status(200).json({id:deletedRequest.id})
     }

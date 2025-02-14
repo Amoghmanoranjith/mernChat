@@ -19,13 +19,23 @@ export const metadata: Metadata = {
     url: "https://mernchat.in/auth/forgot-password",
     siteName: "Mernchat",
     type: "website",
+    images: [
+      {
+        url: "https://mernchat.in/images/og/og-image.png", // Update with your actual OG image
+        width: 1200,
+        height: 630,
+        alt: "Mernchat - Secure & Encrypted Chat App",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Forgot Password - Mernchat",
     description: "Forgot your password? Reset it securely on Mernchat and regain access to your account.",
+    images: ["https://mernchat.in/images/og/og-image.png"], // Update with your actual Twitter image
   },
 };
+
 
 const page = () => {
   return (
