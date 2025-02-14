@@ -3,6 +3,7 @@ import { useCloseNavMenu } from "@/hooks/useUI/useCloseNavMenu";
 import { useOpenAddFriendForm } from "@/hooks/useUI/useOpenAddFriendForm";
 import { useOpenGroupChatForm } from "@/hooks/useUI/useOpenGroupChatForm";
 import { useOpenProfileForm } from "@/hooks/useUI/useOpenProfileForm";
+import { useOpenSettingsForm } from "@/hooks/useUI/useOpenSettingsForm";
 import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -10,6 +11,7 @@ import { useRef } from "react";
 import { AddFriendIcon } from "../ui/icons/AddFriendIcon";
 import { LogoutIcon } from "../ui/icons/LogoutIcon";
 import { PlusIcon } from "../ui/icons/PlusIcon";
+import { SettingIcon } from "../ui/icons/SettingIcon";
 import { UserIcon } from "../ui/icons/UserIcon";
 
 export const NavMenu = () => {
@@ -18,6 +20,8 @@ export const NavMenu = () => {
   const { openGroupChatForm } = useOpenGroupChatForm();
 
   const { closeNavMenu } = useCloseNavMenu();
+
+
 
   const navMenuRef = useRef<HTMLDivElement>(null);
   useHandleOutsideClick(navMenuRef, closeNavMenu);
@@ -28,6 +32,8 @@ export const NavMenu = () => {
     await logout();
     router.push("/auth/login");
   }
+
+  const {openSettingsForm} = useOpenSettingsForm();
 
   return (
     <motion.div
@@ -62,13 +68,13 @@ export const NavMenu = () => {
           <PlusIcon />
           <p>New Group Chat</p>
         </li>
-        {/* <li
+        <li
           onClick={openSettingsForm}
           className="cursor-pointer flex items-center gap-x-2 hover:bg-secondary-dark p-2 rounded"
         >
-          <SettingIcon />
+          <SettingIcon/>
           <p>Settings</p>
-        </li> */}
+        </li>
         <li
           onClick={handleLogoutClick}
           className="cursor-pointer flex items-center gap-x-2 hover:bg-secondary-dark p-2 rounded"

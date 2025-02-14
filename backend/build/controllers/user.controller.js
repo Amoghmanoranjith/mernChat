@@ -50,18 +50,6 @@ export const udpateUser = asyncErrorHandler(async (req, res, next) => {
     };
     return res.status(200).json(secureUserInfo);
 });
-export const updateNotifications = asyncErrorHandler(async (req, res, next) => {
-    const { isEnabled } = req.body;
-    const user = await prisma.user.update({
-        where: {
-            id: req.user.id
-        },
-        data: {
-            notificationsEnabled: isEnabled
-        }
-    });
-    return res.status(200).json({ notificationsEnabled: user.notificationsEnabled });
-});
 export const testEmailHandler = asyncErrorHandler(async (req, res, next) => {
     const { emailType } = req.query;
     if (emailType === 'welcome') {

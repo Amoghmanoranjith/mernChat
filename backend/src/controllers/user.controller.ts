@@ -2,7 +2,6 @@ import { UploadApiResponse } from "cloudinary";
 import { NextFunction, Response } from "express";
 import type { AuthenticatedRequest } from "../interfaces/auth/auth.interface.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { notificationsSchemaType } from "../schemas/user.schema.js";
 import { deleteFilesFromCloudinary, uploadFilesToCloudinary } from "../utils/auth.util.js";
 import { sendMail } from "../utils/email.util.js";
 import { CustomError, asyncErrorHandler } from "../utils/error.utils.js";
@@ -60,21 +59,6 @@ export const udpateUser  = asyncErrorHandler(async(req:AuthenticatedRequest,res:
         return res.status(200).json(secureUserInfo)
     }
 )
-
-export const updateNotifications = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-
-    const {isEnabled}:notificationsSchemaType = req.body
-
-    const user = await prisma.user.update({
-        where:{
-            id:req.user.id
-        },
-        data:{
-            notificationsEnabled:isEnabled
-        }
-    })
-    return res.status(200).json({notificationsEnabled:user.notificationsEnabled})
-})
 
 export const testEmailHandler = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
 

@@ -1,4 +1,4 @@
-import { storeFcmToken } from "@/actions/user.actions";
+import { storeFcmToken, updateUserNotificationStatus } from "@/actions/user.actions";
 import { startTransition, useActionState, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -11,11 +11,13 @@ type PropTypes = {
 export const useStoreFcmTokenInDb = ({generatedFcmToken,userFcmToken,loggedInUserId}:PropTypes) => {
 
     const [state,storeFcmTokenAction] = useActionState(storeFcmToken,undefined);
+    const [notificationStateRes,updateUserNotificationStatusAction] = useActionState(updateUserNotificationStatus,undefined);
 
     useEffect(()=>{
         if(generatedFcmToken && userFcmToken !== generatedFcmToken){
             startTransition(()=>{
-                storeFcmTokenAction({fcmToken:generatedFcmToken,loggedInUserId})
+                storeFcmTokenAction({fcmToken:generatedFcmToken,loggedInUserId});
+                updateUserNotificationStatusAction({loggedInUserId,notificationStatus:true});
             })
         }
     },[generatedFcmToken, loggedInUserId, userFcmToken])
@@ -26,4 +28,10 @@ export const useStoreFcmTokenInDb = ({generatedFcmToken,userFcmToken,loggedInUse
             console.log("error storing fcm token",state.errors);
         }
     },[state])
+
+    useEffect(()=>{
+        if(notificationStateRes?.errors.message?.length) toast.error(notificationStateRes.errors.message);
+        else if(notificationStateRes?.success.message?.length) toast.success(notificationStateRes.success.message);
+    },[notificationStateRes])
+
 }

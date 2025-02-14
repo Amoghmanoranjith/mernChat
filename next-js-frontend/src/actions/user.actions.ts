@@ -90,3 +90,47 @@ export async function storeFcmToken(prevState:any,data:{fcmToken:string,loggedIn
         }
     }
 }
+
+export async function updateUserNotificationStatus(prevState:any,data:{loggedInUserId:string,notificationStatus:boolean}){
+    try {
+        const {loggedInUserId,notificationStatus} = data;
+
+        const user = await prisma.user.findUnique({where:{id:loggedInUserId}});
+
+        if(!user){
+            return {
+                errors:{
+                    message:"User not found"
+                },
+                success:{
+                    message:null
+                }
+            }
+        }
+
+        await prisma.user.update({
+            where:{id:loggedInUserId},
+            data:{notificationsEnabled:notificationStatus}
+        })
+
+        return {
+            errors:{
+                message:null
+            },
+            success:{
+                message:`Notifications ${notificationStatus ? "enabled" : "disabled"}`
+            }
+        }
+
+    } catch (error) {
+        console.log("error updating user notification status",error);
+        return {
+            errors:{
+                message:"Some error occured"
+            },
+            success:{
+                message:null
+            }
+        }
+    }
+}

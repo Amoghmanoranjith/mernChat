@@ -8,11 +8,11 @@ import {
   selectFriendRequestForm,
   selectGifForm,
   selectGroupChatForm,
-  selectNotificationPermissionForm,
   selectPollForm,
   selectProfileForm,
   selectRecoverPrivateKeyForm,
   selectRemoveMemberForm,
+  selectSettingsForm,
   selectViewVotes,
   setAddFriendForm,
   setAddMemberForm,
@@ -20,10 +20,10 @@ import {
   setFriendRequestForm,
   setGifForm,
   setNewgroupChatForm,
-  setNotificationPermissionForm,
   setPollForm,
   setProfileForm,
   setRemoveMemberForm,
+  setSettingsForm,
   setViewVotes
 } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
@@ -62,11 +62,10 @@ const ViewVotes = dynamic(() => import("../messages/ViewVotes"), {
 const AttachmentPreview = dynamic(() => import("../ui/AttachmentPreview"), {
   ssr: false,
 });
-const NotificationPermissionForm = dynamic(
-  () => import("../user/NotificationPermissionForm"),
-  { ssr: false }
-);
 const ProfileForm = dynamic(() => import("../user/ProfileForm"), {
+  ssr: false,
+});
+const SettingsForm = dynamic(() => import("../settings/SettingsForm"), {
   ssr: false,
 });
 
@@ -84,11 +83,12 @@ export const ModalWrapper = () => {
   const isPollFormOpen = useAppSelector(selectPollForm);
   const isViewVotesOpen = useAppSelector(selectViewVotes);
   const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);
-  const isNotificationPermissionFormOpen = useAppSelector(
-    selectNotificationPermissionForm
-  );
+
   const isRecoverPrivateKeyFormOpen = useAppSelector(
     selectRecoverPrivateKeyForm
+  );
+  const isSettingsFormOpen = useAppSelector(
+    selectSettingsForm
   );
 
   return (
@@ -167,16 +167,14 @@ export const ModalWrapper = () => {
         <ChatUpdateForm />
       </Modal>
 
-      <Modal
-        isOpen={isNotificationPermissionFormOpen}
-        onClose={() => dispatch(setNotificationPermissionForm(false))}
-      >
-        <NotificationPermissionForm />
-      </Modal>
-
       <Modal isOpen={isRecoverPrivateKeyFormOpen} onClose={() => ""}>
         <RecoverPrivateKeyForm />
       </Modal>
+      
+      <Modal isOpen={isSettingsFormOpen} onClose={()=>dispatch(setSettingsForm(false))}>
+        <SettingsForm/>
+      </Modal>
+
     </>
   );
 };

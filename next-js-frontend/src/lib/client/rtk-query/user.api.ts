@@ -1,9 +1,7 @@
 import { FetchUserInfoResponse } from "@/lib/server/services/userService";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { User } from "../../../interfaces/auth.interface";
 import {
-  updateLoggedInUser,
-  updateLoggedInUserNotificationStatus,
+  updateLoggedInUser
 } from "../slices/authSlice";
 import { RootState } from "../store/store";
 
@@ -38,25 +36,10 @@ export const userApi = createApi({
         dispatch(updateLoggedInUser(UpdatedUser));
       },
     }),
-
-    updateNotifications: builder.mutation<Pick<User, "notificationsEnabled">,{ isEnabled: boolean }>({
-      query: ({ isEnabled }) => ({
-        method: "PATCH",
-        url: "/notifications",
-        body: { isEnabled },
-      }),
-      async onQueryStarted({}, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled;
-        dispatch(
-          updateLoggedInUserNotificationStatus(data.notificationsEnabled)
-        );
-      },
-    }),
     
   }),
 });
 
 export const {
   useUpdateProfileMutation,
-  useUpdateNotificationsMutation,
 } = userApi;

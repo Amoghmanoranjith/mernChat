@@ -24,7 +24,7 @@ export const SocketProvider = ({ children }: PropTypes) => {
 
   const token =  useAppSelector(selectAuthToken);
 
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [, setIsConnected] = useState<boolean>(false);
   const loggedInUser = useAppSelector(selectLoggedInUser);
 
   useEffect(() => {
@@ -54,15 +54,15 @@ export const SocketProvider = ({ children }: PropTypes) => {
           console.log(error);
         }
 
-        return () => {
-          socket?.disconnect();
-          socket = null; // Clean up the socket instance on unmount
-        };
       }
     }
-  }, [loggedInUser, loggedInUser?.email]);
+    return () => {
+      socket?.disconnect();
+      socket = null; // Clean up the socket instance on unmount
+    };
+  }, [loggedInUser, token]);
 
-  const socketValue = useMemo(() => socket, [isConnected]);
+  const socketValue = useMemo(() => socket, []);
 
   return (
     <socketContext.Provider value={socketValue}>
