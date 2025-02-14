@@ -30,15 +30,14 @@ export const useToast = ({
   useEffect(() => {
     if (!isUninitialized) {
       if (isLoading && loaderToast) toast.loading("loading");
-      if (!isLoading && !isSuccess && isError && errorToast) {
+      else if(isError && errorToast) {
         toast.dismiss();
         if (isErrorWithMessage(error)) toast.error(error.data.message);
         else toast.error("some Error occured");
       }
-      if (!isLoading && isSuccess && successToast) {
-        toast.dismiss();
+      else if(isSuccess && successToast) {
         toast.success(successMessage);
       }
     }
-  }, []);
+  }, [error, errorToast, isError, isLoading, isSuccess, isUninitialized, loaderToast, successMessage, successToast]);
 };

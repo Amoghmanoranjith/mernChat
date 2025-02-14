@@ -6,15 +6,16 @@ export const useSendFriendRequest = () => {
     sendFriendRequest,
     { error, isError, isLoading, isSuccess, isUninitialized },
   ] = useSendFriendRequestMutation();
+
   useToast({
     error,
     isError,
     isLoading,
     isSuccess,
     isUninitialized,
-    loaderToast: true,
     successMessage: "Friend request sent",
     successToast: true,
+    errorToast:true,
   });
 
   return {

@@ -50,7 +50,7 @@ export const createRequest = asyncErrorHandler(async (req, res, next) => {
         }
     });
     if (requestAlreadyExists) {
-        return next(new CustomError("Request is already sent", 400));
+        return next(new CustomError("Request is already sent, please wait for them to either accept or reject it", 400));
     }
     const doesRequestExistsFromReceiver = await prisma.friendRequest.findFirst({
         where: {
@@ -114,7 +114,7 @@ export const createRequest = asyncErrorHandler(async (req, res, next) => {
     }
     const io = req.app.get('io');
     emitEvent({ io, event: Events.NEW_FRIEND_REQUEST, data: newRequest, users: [receiver] });
-    return res.status(201);
+    return res.status(201).json({});
 });
 export const handleRequest = asyncErrorHandler(async (req, res, next) => {
     const { id } = req.params;
