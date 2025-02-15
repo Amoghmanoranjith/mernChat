@@ -12,8 +12,11 @@ export const useSendAttachments = () => {
     isLoading,
     isSuccess,
     isUninitialized,
-    successMessage: "Attachments sent",
+    successMessage: "Attachment sent",
     successToast: true,
+    loaderToast:true,
+    errorToast:true,
+    loadingMessage:"Uploading attachment"
   });
 
   return { uploadAttachment };

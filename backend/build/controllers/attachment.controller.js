@@ -123,7 +123,7 @@ export const uploadAttachment = asyncErrorHandler(async (req, res, next) => {
         }
     };
     emitEventToRoom({ data: unreadMessageData, event: Events.UNREAD_MESSAGE, io, room: chatId });
-    return res.status(201);
+    return res.status(201).json({});
 });
 export const fetchAttachments = asyncErrorHandler(async (req, res, next) => {
     const { id } = req.params;

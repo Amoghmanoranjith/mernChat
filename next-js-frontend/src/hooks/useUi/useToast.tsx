@@ -15,6 +15,7 @@ type PropTypes = {
   errorToast?: boolean;
   successToast?: boolean;
   successMessage?: string;
+  loadingMessage?:string
 };
 export const useToast = ({
   error,
@@ -26,16 +27,18 @@ export const useToast = ({
   errorToast = true,
   successToast = false,
   successMessage = "success",
+  loadingMessage
 }: PropTypes) => {
   useEffect(() => {
     if (!isUninitialized) {
-      if (isLoading && loaderToast) toast.loading("loading");
+      if (isLoading && loaderToast) toast.loading(loadingMessage?loadingMessage:"loading");
       else if(isError && errorToast) {
         toast.dismiss();
         if (isErrorWithMessage(error)) toast.error(error.data.message);
         else toast.error("some Error occured");
       }
       else if(isSuccess && successToast) {
+        toast.dismiss();
         toast.success(successMessage);
       }
     }

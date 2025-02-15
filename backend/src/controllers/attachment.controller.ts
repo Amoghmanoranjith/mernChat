@@ -150,7 +150,7 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
     }
 
     emitEventToRoom({data:unreadMessageData,event:Events.UNREAD_MESSAGE,io,room:chatId})
-    return res.status(201)
+    return res.status(201).json({});
 
 })
 
