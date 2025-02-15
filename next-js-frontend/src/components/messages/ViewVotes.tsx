@@ -10,7 +10,7 @@ const ViewVotes = () => {
     votesData && (
     <div className="flex flex-col gap-y-8 select-none">
 
-      <h6 className="font-medium text-xl">{'demo poll question'}</h6>
+      <h6 className="font-medium text-xl">{votesData.question}</h6>
 
       <div className="flex flex-col gap-y-6">
 

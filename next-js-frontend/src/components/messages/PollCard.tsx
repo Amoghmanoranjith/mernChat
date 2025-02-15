@@ -21,7 +21,7 @@ export const PollCard = ({ pollData, messageId}: PropTypes) => {
     }
   });
 
-  const { handleViewVotesClick } = useViewVotesClick({optionIndexToVotesMap,options:pollData.options});
+  const { handleViewVotesClick } = useViewVotesClick({optionIndexToVotesMap,options:pollData.options,question:pollData.question});
 
   return (
     <div className="flex flex-col gap-y-4 min-w-56">

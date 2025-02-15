@@ -18,6 +18,7 @@ interface InitialState {
   pollForm: boolean;
   viewVotes: boolean;
   votesData: {
+    question:string;
     options:string[];
     optionIndexToVotesMap: Record<number, {
       id: string;
@@ -104,6 +105,7 @@ const uiSlice = createSlice({
       state.viewVotes = action.payload;
     },
     setVotesData: (state,action: PayloadAction<{
+      question:string;
       options:string[];
       optionIndexToVotesMap: Record<number, {
         id: string;
