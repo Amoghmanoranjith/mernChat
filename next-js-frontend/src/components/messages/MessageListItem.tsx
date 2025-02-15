@@ -126,6 +126,7 @@ export const MessageListItem = ({
             loggedInUserId={loggedInUserId}
             message={message}
             selectedChatDetails={selectedChatDetails}
+            setReactionMenuMessageId={setReactionMenuMessageId}
           />
         )}
       </div>

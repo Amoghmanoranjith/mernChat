@@ -2,22 +2,33 @@ import { Message } from "@/interfaces/message.interface";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { motion } from "framer-motion";
 import { MessageReactionList } from "./MessageReactionList";
+import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
+import { useRef } from "react";
 
 type PropTypes = {
   message: Message;
   loggedInUserId: string;
   selectedChatDetails: fetchUserChatsResponse;
+  setReactionMenuMessageId: React.Dispatch<
+  React.SetStateAction<string | undefined>
+>;
 };
 
 export const MessageReactionsInfo = ({
   loggedInUserId,
   message,
   selectedChatDetails,
+  setReactionMenuMessageId,
 }: PropTypes) => {
+
   const myMessage = loggedInUserId === message.sender.id;
+
+  const reactionsRef = useRef<HTMLDivElement>(null);
+  useHandleOutsideClick(reactionsRef, () => setReactionMenuMessageId(undefined));
 
   return (
     <motion.div
+      ref={reactionsRef}
       variants={{ hide: { opacity: 0, y: 5 }, show: { opacity: 1, y: 0 } }}
       initial="hide"
       animate="show"
