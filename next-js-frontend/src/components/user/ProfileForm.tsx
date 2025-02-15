@@ -13,7 +13,7 @@ export const ProfileForm = () => {
   const loggedInUser = useAppSelector(selectLoggedInUser);
 
   const [updateProfileTrigger,{ error, isError, isLoading, isSuccess, isUninitialized }] = useUpdateProfileMutation();
-  useToast({error,isError,isLoading,isSuccess,isUninitialized,loaderToast: true,successMessage: "Profile Updated",successToast: true});
+  useToast({error,isError,isLoading,isSuccess,isUninitialized,loaderToast: true,successMessage: "Profile Updated",successToast: true,loadingMessage:"Updating Profile"});
 
   const [preview, setPreview] = useState<string>(loggedInUser?.avatar || DEFAULT_AVATAR);
   const [image, setImage] = useState<Blob>();
