@@ -29,7 +29,9 @@ export const useEmojiClickReactionFeature = ({
       // if an old reaction exists then delete it first
       deleteReaction({ chatId, messageId });
     }
-    sendNewReaction({ chatId, messageId, reaction: e.emoji });
+    setTimeout(() => {
+      sendNewReaction({ chatId, messageId, reaction: e.emoji });
+    }, 100);
     setOpenContextMenuMessageId(undefined);
   };
 
