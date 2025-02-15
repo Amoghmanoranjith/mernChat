@@ -24,7 +24,7 @@ export const SocketProvider = ({ children }: PropTypes) => {
 
   const token =  useAppSelector(selectAuthToken);
 
-  const [, setIsConnected] = useState<boolean>(false);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
   const loggedInUser = useAppSelector(selectLoggedInUser);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export const SocketProvider = ({ children }: PropTypes) => {
     };
   }, [loggedInUser, token]);
 
-  const socketValue = useMemo(() => socket, []);
+  const socketValue = useMemo(() => socket, [isConnected]);
 
   return (
     <socketContext.Provider value={socketValue}>
