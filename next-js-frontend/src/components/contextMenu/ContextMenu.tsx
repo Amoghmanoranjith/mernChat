@@ -37,7 +37,7 @@ export const ContextMenu = ({
       variants={{ hide: { opacity: 0 }, show: { opacity: 1 } }}
       initial="hide"
       animate="show"
-      className={`flex flex-col gap-y-2 absolute bg-red-500 ${
+      className={`flex flex-col gap-y-2 absolute ${
         myMessage ? "right-0" : "left-0"
       } z-10`}
     >

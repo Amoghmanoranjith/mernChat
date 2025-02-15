@@ -5,11 +5,14 @@ import { startTransition, useActionState, useEffect, useState } from "react";
 import { useSendFriendRequest } from "../../hooks/useFriend/useSendFriendRequest";
 import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
+import { CircleLoading } from "../shared/CircleLoading";
 import { UserList } from "./UserList";
 
 const AddFriendForm = () => {
 
   const [state,searchUserAction] = useActionState(searchUser,undefined);
+
+  const [loading,setLoading] = useState<boolean>(false);
 
   const [inputVal, setInputVal] = useState<string>("");
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
@@ -22,8 +25,10 @@ const AddFriendForm = () => {
 
   useEffect(() => {
     if (debouncedInputVal) {
+      setLoading(true);
       startTransition(()=>{
         searchUserAction({username:debouncedInputVal})
+        setLoading(false);
       })
     }
   }, [debouncedInputVal]);
@@ -43,7 +48,14 @@ const AddFriendForm = () => {
       />
 
       <div>
-        {(state?.data && friends && loggedInUserId) ? (
+        {
+          loading && (
+            <div className="flex justify-center mt-5">
+              <CircleLoading/>
+            </div>
+          )
+        }
+        {(!loading && state?.data && friends && loggedInUserId) ? (
           <UserList
             users={state.data}
             friends={friends}
@@ -52,7 +64,7 @@ const AddFriendForm = () => {
           />
         ) 
         :(
-          !inputVal?.trim() &&
+          !loading && !inputVal?.trim() &&
           !state?.data?.length && (
             <p className="text-center mt-16">Go on try the speed!</p>
           )
