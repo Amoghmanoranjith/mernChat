@@ -133,7 +133,7 @@ export default function RootLayout({
       />
     </Head>
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-hidden`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* Modal root for portals */}
         <div id="modal-root"></div>
         <StoreProvider>
