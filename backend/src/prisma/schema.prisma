@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CallStatus {
+  MISSED
+  COMPLETED
+  ONGOING
+}
+
 model ChatMembers {
   id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id])
@@ -63,10 +69,10 @@ model Vote {
   user        User   @relation(fields: [userId], references: [id])
   userId      String
   optionIndex Int
-  poll        Poll   @relation(fields: [pollId], references: [id],onDelete: Cascade)
+  poll        Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
   pollId      String
 
-  @@unique([userId,pollId,optionIndex])
+  @@unique([userId, pollId, optionIndex])
 }
 
 model Poll {
@@ -83,7 +89,7 @@ model Reactions {
   user      User     @relation(fields: [userId], references: [id])
   userId    String
   reaction  String
-  message   Message  @relation(fields: [messageId], references: [id],onDelete: Cascade)
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
   messageId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,6 +177,18 @@ model UnreadMessages {
   @@unique([userId, chatId])
 }
 
+model CallHistory {
+  id        String   @id @default(cuid())
+  caller    User     @relation("caller", fields: [callerId], references: [id])
+  callerId  String
+  callee    User     @relation("callee", fields: [calleeId], references: [id])
+  calleeId  String
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  duration  Int?
+  status   CallStatus @default(ONGOING)
+}
+
 model User {
   id                       String    @id @default(cuid())
   name                     String
@@ -207,7 +225,9 @@ model User {
   FriendRequestSent     FriendRequest[] @relation("SentRequests")
   FriendRequestReceived FriendRequest[] @relation("ReceivedRequests")
 
-  friendsAsUser1 Friends[]     @relation("UserAsFriend1")
-  friendsAsUser2 Friends[]     @relation("UserAsFriend2")
-  ChatMembers    ChatMembers[]
+  friendsAsUser1      Friends[]     @relation("UserAsFriend1")
+  friendsAsUser2      Friends[]     @relation("UserAsFriend2")
+  ChatMembers         ChatMembers[]
+  ToWhomUserCalled    CallHistory[] @relation("caller")
+  WhomUserWasCalledBy CallHistory[] @relation("callee")
 }
