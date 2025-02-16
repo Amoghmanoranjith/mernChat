@@ -9,7 +9,9 @@ export const useFetchInitialMessagesOnChatSelect = () => {
 
   useEffect(() => {
     if (selectedChatId) {
-      getMessages({ chatId: selectedChatId, page: 1 }, true);
+      setTimeout(() => {
+        getMessages({ chatId: selectedChatId, page: 1 }, true);
+      }, 200);
     }
   }, [getMessages, selectedChatId]);
 
