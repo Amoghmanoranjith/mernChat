@@ -29,4 +29,5 @@ export var Events;
     Events["CALLEE_BUSY"] = "CALLEE_BUSY";
     Events["CALL_END"] = "CALL_END";
     Events["CALL_REJECTED"] = "CALL_REJECTED";
+    Events["CALLER_OFFLINE"] = "CALLER_OFFLINE";
 })(Events || (Events = {}));

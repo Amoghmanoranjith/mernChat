@@ -74,8 +74,37 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
     
             const isCalleeBusy = userCallMap.get(calleeId);
     
-            if(isCalleeBusy){
-                console.log('busyyyyyyyyy');
+            // if(isCalleeBusy){
+            //     console.log('busyyyyyyyyy');
+            //     await prisma.callHistory.create({
+            //         data:{
+            //             callerId:socket.user.id,
+            //             calleeId:calleeId,
+            //             status:"MISSED"
+            //         }
+            //     })
+            //     socket.emit(Events.CALLEE_BUSY);
+            //     socket.emit(Events.CALL_END);
+
+            //     const calleeInfo =  await prisma.user.findUnique({
+            //         where:{id:calleeId},
+            //         select:{notificationsEnabled:true,fcmToken:true}
+            //     });
+
+            //     if(calleeInfo && calleeInfo.notificationsEnabled && calleeInfo.fcmToken){
+            //         sendPushNotification({fcmToken:calleeInfo.fcmToken,body:`You have missed a call from ${socket.user.username}`,title:"Missed Call"})
+            //     }
+
+            //     userCallMap.delete(socket.user.id); // making the caller available again
+            //     return;
+            // }
+    
+            const calleeSocketId = userSocketIds.get(calleeId);
+    
+            if(!calleeSocketId){
+                socket.emit(Events.CALLEE_OFFLINE);
+                socket.emit(Events.CALL_END);
+
                 await prisma.callHistory.create({
                     data:{
                         callerId:socket.user.id,
@@ -83,23 +112,17 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                         status:"MISSED"
                     }
                 })
-                socket.emit(Events.CALLEE_BUSY);
-                userCallMap.delete(socket.user.id); // making the caller available again
-                return;
-            }
-    
-            const calleeSocketId = userSocketIds.get(calleeId);
-    
-            if(!calleeSocketId){
-                socket.emit(Events.CALLEE_OFFLINE);
+
                 const calleeInfo =  await prisma.user.findUnique({
                     where:{id:calleeId},
                     select:{notificationsEnabled:true,fcmToken:true}
                 });
+
                 if(calleeInfo && calleeInfo.notificationsEnabled && calleeInfo.fcmToken){
                     sendPushNotification({fcmToken:calleeInfo.fcmToken,body:`You have missed a call from ${socket.user.username}`,title:"Missed Call"})
                 }
                 userCallMap.delete(socket.user.id); // making the caller available again
+                console.log('Callee is offline');
                 return;
             }
             
@@ -121,17 +144,19 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 offer,
                 callHistoryId:newCall.id
             }
+
+            console.log('emitting incoming call event to',calleeSocketId);
     
-            socket.to(calleeSocketId).emit(Events.INCOMING_CALL,payload);
+            io.to(calleeSocketId).emit(Events.INCOMING_CALL,payload);
             
         } catch (error) {
             console.log('Error in CALL_USER event',error);
-        }
-        
+            userCallMap.delete(socket.user.id); // making the caller available again
+            socket.emit(Events.CALL_END);
+        }        
     })
     
     socket.on(Events.CALL_ACCEPTED,async({answer,callerId,callHistoryId}:CallAcceptedEventReceivePayload)=>{
-        console.log('call accepeted even received by ',socket.user.username);
         try {
             const callerSocketId = userSocketIds.get(callerId);
             
@@ -152,14 +177,11 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 // making the callee,caller available again
                 userCallMap.delete(call.calleeId);
                 userCallMap.delete(call.callerId);
-                
-                const callerSocketId = userSocketIds.get(call.callerId);
+
                 const calleeSocketId = userSocketIds.get(call.calleeId);
-                if(callerSocketId){
-                    io.to(callerSocketId).emit(Events.CALL_END);
-                }
                 if(calleeSocketId){
                     io.to(calleeSocketId).emit(Events.CALL_END);
+                    io.to(calleeSocketId).emit(Events.CALLER_OFFLINE);
                 }
                 return;
             }
@@ -175,16 +197,14 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
         } catch (error) {
             console.log('Error in CALL_ACCEPTED event',error);
         }
-
     })
 
     socket.on(Events.CALL_REJECTED,async({callHistoryId}:CallRejectedEventReceivePayload)=>{
 
+        const call =  await prisma.callHistory.findUnique({
+            where:{id:callHistoryId}
+        })
         try {
-            const call =  await prisma.callHistory.findUnique({
-                where:{id:callHistoryId}
-            })
-    
             if(!call){
                 console.log(`Call not found for callHistoryId: ${callHistoryId}`);
                 return;
@@ -192,26 +212,36 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
     
             const updatedCall = await prisma.callHistory.update({
                 where:{id:call.id},
-                data:{
-                    status:"REJECTED",
-                }
+                data:{status:"REJECTED"}
             })
             
-            // making the callee available again
-            // removing the callee from the busy list
-            userCallMap.delete(updatedCall.calleeId);
-    
-            // making the caller available again
-            // removing the caller from the busy list
-            userCallMap.delete(updatedCall.callerId);
-    
+            
             const callerSocketId = userSocketIds.get(updatedCall.callerId);
+            const calleeSocketId = userSocketIds.get(updatedCall.calleeId);
             
             if(callerSocketId){
                 socket.to(callerSocketId).emit(Events.CALL_REJECTED);
+                socket.to(callerSocketId).emit(Events.CALL_END);
             }
+
+            if(calleeSocketId){
+                io.to(calleeSocketId).emit(Events.CALL_END);
+            }
+
         } catch (error) {
             console.log('Error in CALL_REJECTED event',error);
+        }
+        finally{
+            // making the callee available again
+            // removing the callee from the busy list
+            if(call?.calleeId){
+                userCallMap.delete(call.calleeId);
+            }
+            // making the caller available again
+            // removing the caller from the busy list
+            if(call?.callerId){
+                userCallMap.delete(call.callerId);
+            }
         }
     })
     
@@ -242,49 +272,45 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
             userCallMap.delete(ongoingCall.calleeId);
     
             if(callerSocketId){
-                socket.to(callerSocketId).emit(Events.CALL_END);
+                io.to(callerSocketId).emit(Events.CALL_END);
             }
             if(calleeSocketId){
-                socket.to(calleeSocketId).emit(Events.CALL_END);
+                io.to(calleeSocketId).emit(Events.CALL_END);
             }
             
         } catch (error) {
-            console.log('Error in CALL_END event',error);
+            console.error(`Error in CALL_END event for callHistoryId: ${callHistoryId}`, error);
         }
     })
     
     socket.on(Events.NEGO_NEEDED,async({offer,calleeId,callHistoryId}:NegoNeededEventReceivePayload)=>{
 
         try {
-            // console.log({offer,calleeId,callHistoryId});
-            console.log('nego needed event received by ',socket.user.username);
-            const calleeIdSocket = userSocketIds.get(calleeId);
+            const calleeSocketId = userSocketIds.get(calleeId);
             
-            if(!calleeIdSocket){
+            if(!calleeSocketId){
                 // so we need to update the call status and free both caller and callee from busy list
                 const call =  await prisma.callHistory.findUnique({where:{id:callHistoryId}})
                 if(!call){
-                    console.log('Some Error occured');
+                    console.error(`Call history not found for callHistoryId: ${callHistoryId}`);
                     return;
                 }
-                await prisma.callHistory.update({
-                    where:{id:callHistoryId},
-                    data:{
-                        status:"MISSED",
-                    }
-                })
+                await prisma.$transaction([
+                    prisma.callHistory.update({
+                        where: { id: callHistoryId },
+                        data: { status: "MISSED" }
+                    })
+                ]);
+                
 
                 // making the callee,caller available again
                 userCallMap.delete(call.calleeId);
                 userCallMap.delete(call.callerId);
                 
                 const callerSocketId = userSocketIds.get(call.callerId);
-                const calleeSocketId = userSocketIds.get(call.calleeId);
                 if(callerSocketId){
+                    io.to(callerSocketId).emit(Events.CALLEE_OFFLINE);
                     io.to(callerSocketId).emit(Events.CALL_END);
-                }
-                if(calleeSocketId){
-                    io.to(calleeSocketId).emit(Events.CALL_END);
                 }
                 return;
             }
@@ -294,7 +320,7 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 callerId:socket.user.id,
                 callHistoryId
             }
-            socket.to(calleeIdSocket).emit(Events.NEGO_NEEDED,payload);        
+            socket.to(calleeSocketId).emit(Events.NEGO_NEEDED,payload);        
             
         } catch (error) {
             console.log('Error in NEGO_NEEDED event',error);
@@ -302,7 +328,6 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
     })
     
     socket.on(Events.NEGO_DONE,async({answer,callerId,callHistoryId}:NegoDoneEventReceivePayload)=>{
-        console.log('nego done event received by ',socket.user.username);
         try {
             const callerSocketId = userSocketIds.get(callerId);
             
@@ -310,28 +335,26 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 // so we need to update the call status and free both caller and callee from busy list
                 const call =  await prisma.callHistory.findUnique({where:{id:callHistoryId}})
                 if(!call){
-                    console.log('Some Error occured');
+                    console.warn(`Call history not found or already updated for callHistoryId: ${callHistoryId}`);
                     return;
                 }
-                await prisma.callHistory.update({
-                    where:{id:callHistoryId},
-                    data:{
-                        status:"MISSED",
-                    }
-                })
+                await prisma.$transaction([
+                    prisma.callHistory.update({
+                        where: { id: callHistoryId },
+                        data: { status: "MISSED" }
+                    })
+                ]);
+                
     
                 // making the callee,caller available again
                 userCallMap.delete(call.calleeId);
                 userCallMap.delete(call.callerId);
                 
-                const callerSocketId = userSocketIds.get(call.callerId);
                 const calleeSocketId = userSocketIds.get(call.calleeId);
                 
-                if(callerSocketId){
-                    io.to(callerSocketId).emit(Events.CALL_END);
-                }
                 if(calleeSocketId){
                     io.to(calleeSocketId).emit(Events.CALL_END);
+                    io.to(calleeSocketId).emit(Events.CALLER_OFFLINE);
                 }
                 return;
             }

@@ -3,6 +3,7 @@ import { setCallDisplay, setInComingCallInfo, setIsIncomingCall } from "@/lib/cl
 import { useAppDispatch } from "@/lib/client/store/hooks";
 import { useCallback } from "react";
 import { useSocketEvent } from "../useSocket/useSocketEvent";
+import toast from "react-hot-toast";
 
 
 export type IncomingCallEventReceivePayload = {
@@ -20,6 +21,7 @@ export const useIncomingCallListener = () => {
     const dispatch = useAppDispatch();
 
     const hanleIncomingCall = useCallback(async(data:IncomingCallEventReceivePayload)=>{
+        toast.success("Incoming call event received");
         dispatch(setIsIncomingCall(true));
         dispatch(setInComingCallInfo(data));
         dispatch(setCallDisplay(true));

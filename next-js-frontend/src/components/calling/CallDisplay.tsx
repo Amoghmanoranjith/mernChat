@@ -2,10 +2,13 @@ import { DEFAULT_AVATAR } from "@/constants";
 import { useSocket } from "@/context/socket.context";
 import { useSocketEvent } from "@/hooks/useSocket/useSocketEvent";
 import { Event } from "@/interfaces/events.interface";
+import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay, setInComingCallInfo, setIsIncomingCall } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { peer } from "@/lib/client/webrtc/services/peer";
+import { fetchUserChatsResponse } from "@/lib/server/services/userService";
+import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -40,10 +43,6 @@ type CallRejectedEventSendPayload = {
     callHistoryId:string
 }
 
-type CallEndEventSendPayload = {
-    callHistoryId:string
-}
-
 type CallAcceptedEventReceivePayload = {
     calleeId: string;
     answer: RTCSessionDescriptionInit;
@@ -73,11 +72,18 @@ type NegoFinalEventReceivePayload = {
     calleeId: string;
 };
 
+type CallEndEventSendPayload = {
+    callHistoryId:string
+}
+
 const CallDisplay = () => {
 
-    const selectedChatDetails =  useAppSelector(selectSelectedChatDetails);
+    const selectedChatDetails =  useAppSelector(selectSelectedChatDetails) as fetchUserChatsResponse;
     const isInComingCall = useAppSelector(selectIsIncomingCall);
     const incomingCallInfo = useAppSelector(selectIncomingCallInfo);
+
+    const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
+    const otherMember = getOtherMemberOfPrivateChat(selectedChatDetails,loggedInUserId);
 
     // my stream
     const [myStream, setMyStream] = useState<MediaStream | null>(null);
@@ -104,20 +110,27 @@ const CallDisplay = () => {
         setCameraOn((prev)=>!prev);
     },[]);
 
-
     const updateStreamAccordingToPreferences = useCallback(async () => {
         try {
             if(!isInComingCall || isAccepted){
-
-                console.log("Updating stream with: ", { micOn, cameraOn });
+                
                 // Stop existing tracks before getting a new stream
                 myStream?.getTracks().forEach(track => track.stop());
+
+                if (!micOn && !cameraOn) {
+                    toast("As of now you can't turn off both mic and camera at the same time");
+                    toast.success("We are working on fixing this issue as soon as possible");
+                    const emptyStream = new MediaStream(); // Empty stream
+                    // emptyStream.addTrack(new MediaStreamTrack());
+                    // emptyStream.addTrack(new MediaStreamTrack());
+                    setMyStream(emptyStream);
+                    return;
+                }
         
                 const stream = await navigator.mediaDevices.getUserMedia({
                     audio: micOn,
                     video: cameraOn
                 });
-                console.log('done till here man');
                 setMyStream(stream);
             }
         } catch (err) {
@@ -127,7 +140,6 @@ const CallDisplay = () => {
     
     
     const sendStreams = useCallback(()=>{
-        console.log('send streams called');
         if(myStream && isAccepted){
             console.log('inside send streams');
             try {
@@ -147,7 +159,7 @@ const CallDisplay = () => {
         const offer = await peer.getOffer();
         if(offer && selectedChatDetails){
             const payload:CallUserEventSendPayload = {
-                calleeId:selectedChatDetails.ChatMembers[0].user.id,
+                calleeId:selectedChatDetails.ChatMembers.filter(member=>member?.user?.id !== loggedInUserId)[0]?.user?.id,
                 offer
             }
           socket?.emit(Event.CALL_USER,payload);
@@ -159,10 +171,17 @@ const CallDisplay = () => {
         }
     },[dispatch, selectedChatDetails, socket])
 
-    const handleCallEndClick = useCallback(()=>{
+    const handleCallEndClick = useCallback(() => {
 
-    },[]);
-
+        if(callHistoryId) {
+            toast.success("call ended");
+            const payload:CallEndEventSendPayload = {
+                callHistoryId
+            }
+            socket?.emit(Event.CALL_END, payload);
+        }
+    }, [callHistoryId, socket]);
+    
     const handleAcceptCall = useCallback(async()=>{
         if(incomingCallInfo){
             
@@ -187,8 +206,6 @@ const CallDisplay = () => {
             }
             setIsAccepted(true);
             socket?.emit(Event.CALL_ACCEPTED,callAcceptPayload);
-            console.log("Call accepeted");
-            console.log('now sending streams');
         }
         else{
             toast.error("Some error occured in accepting the call");
@@ -202,22 +219,13 @@ const CallDisplay = () => {
                 callHistoryId:incomingCallInfo.callHistoryId
             }
             socket?.emit(Event.CALL_REJECTED,payload);
-            dispatch(setCallDisplay(false));
-            dispatch(setInComingCallInfo(null));
-            dispatch(setIsIncomingCall(false));
         }
         else{
             toast.error("Some error occured in rejecting the call");
         }
-    },[dispatch, incomingCallInfo, socket]);
-
-    const handleCallRejected = useCallback(()=>{
-        toast.error("Call declined");
-        dispatch(setCallDisplay(false));
-    },[dispatch])
+    },[incomingCallInfo, socket]);
 
     const handleCallAcceptedEvent = useCallback(async({answer,callHistoryId,calleeId}:CallAcceptedEventReceivePayload)=>{
-        console.log('call accepeted event receive payload',answer,callHistoryId,calleeId);
         peer.setLocalDescription(answer);
         setCallHistoryId(callHistoryId);
         setRemoteUserId(calleeId);
@@ -225,17 +233,32 @@ const CallDisplay = () => {
     },[]);
 
     const handleCallEndEvent = useCallback(()=>{
-        toast.success("Call ended");
-        dispatch(setCallDisplay(false));
-    },[dispatch])
+        toast.success("Call end event received from server");
+
+        // Close peer connection
+        peer.closeConnection();
+        // Stop local media tracks
+        myStream?.getTracks().forEach(track => track.stop());
+        
+        // Reset streams
+        setMyStream(null);
+        setRemoteStream(null);
+        setRemoteAudioStream(null);
+        setRemoteVideoStream(null);
+        dispatch(setInComingCallInfo(null));
+        dispatch(setIsIncomingCall(false));
+
+        // finally close the call display modal
+        setTimeout(() => {
+            dispatch(setCallDisplay(false));    
+        }, 2000);
+
+    },[dispatch, myStream])
     
     const handleNegoNeededEvent = useCallback(async({callerId,offer,callHistoryId}:NegoNeededEventReceivePayload)=>{
-        console.log('neego needed received from server');
         setRemoteUserId(callerId);
         setCallHistoryId(callHistoryId);
         const answer = await peer.getAnswer(offer);
-
-        console.log('answer is',answer);
 
         if(answer){
             const payload:NegoDoneEventSendPayload = {
@@ -260,7 +283,6 @@ const CallDisplay = () => {
             offer,
             callHistoryId,
           }
-          console.log('neego need sent to server');
           socket?.emit(Event.NEGO_NEEDED,payload);
         }
         else{
@@ -278,36 +300,34 @@ const CallDisplay = () => {
     },[])
 
     const handleRemoteStream = useCallback(async(e:RTCTrackEvent)=>{
-        const remoteStream = e.streams;
-        setRemoteStream(remoteStream[0]); 
 
-        const audioTracks = remoteStream[0].getAudioTracks();
-        const videoTracks = remoteStream[0].getVideoTracks();
+        const remoteStream = e.streams[0];
+        setRemoteStream(remoteStream); 
 
-        // Set the audio and video streams based on the tracks
-        if (audioTracks.length > 0) {
-            const audioStream = new MediaStream(audioTracks);
-            setRemoteAudioStream(audioStream);
-        } else {
-            setRemoteAudioStream(null);
-        }
+        const audioTracks = remoteStream.getAudioTracks();
+        const videoTracks = remoteStream.getVideoTracks();
 
-        if (videoTracks.length > 0) {
-            const videoStream = new MediaStream(videoTracks);
-            setRemoteVideoStream(videoStream);
-        } else {
-            setRemoteVideoStream(null);
-        }
+        console.log('received audio track',audioTracks[0]);
+        console.log('received video track',videoTracks[0]);
+
+        const receivedAudioStream = ((audioTracks.length > 0 && audioTracks[0].enabled) ? new MediaStream(audioTracks) : null);
+        const receivedVideoStream = ((videoTracks.length > 0 && videoTracks[0].enabled) ? new MediaStream(videoTracks) : null);
+
+
+        setRemoteAudioStream(receivedAudioStream);
+        setRemoteVideoStream(receivedVideoStream);
+
     },[])
 
     useEffect(()=>{
         // when we dont have an incomoin call, we will call the user
-        if(!isInComingCall) callUser();
-    },[callUser]);
+        if(!isInComingCall) {
+            callUser();
+        }
+    },[isInComingCall]);
     
     useEffect(() => {
         // if user changes options like mic or camera, we will update the stream
-        console.log('user pref changed triggered');
         updateStreamAccordingToPreferences();
     }, [micOn, cameraOn, updateStreamAccordingToPreferences]);
     
@@ -341,34 +361,41 @@ const CallDisplay = () => {
     },[handleNegoNeeded])
 
     useSocketEvent(Event.CALL_ACCEPTED,handleCallAcceptedEvent);
-    useSocketEvent(Event.CALL_REJECTED,handleCallRejected);
     useSocketEvent(Event.CALL_END,handleCallEndEvent);    
     useSocketEvent(Event.NEGO_NEEDED,handleNegoNeededEvent);
     useSocketEvent(Event.NEGO_FINAL,handleNegoFinalEvent);
+    useSocketEvent(Event.CALL_END,handleCallEndEvent);
+
+    const isBothStreamOpen = myStream?.getVideoTracks()[0] && remoteStream?.getVideoTracks()[0];
 
   return (
     <div className="flex justify-center flex-col">
     {!isInComingCall || isAccepted ? (
         <div className="gap-6 flex flex-col">
-            <div className=" flex flex-col gap-2 items-center">
-                <Image
-                src={incomingCallInfo?incomingCallInfo.caller.avatar : selectedChatDetails?.ChatMembers[0].user.avatar || DEFAULT_AVATAR}
-                width={200}
-                height={200}
-                alt="caller-avatar"
-                className="bg-green-500 rounded-full size-32"
-                />
-                <p className="text-xl">{selectedChatDetails?.ChatMembers[0].user.username}</p>
-                <div>
-                <p className="text-secondary-darker text-lgr">Voice Call</p>
-                <p className="text-secondary-darker text-lgr">{remoteUserId?("Connected"):"Ringing..."}</p>
-                {
-                    remoteUserId && !remoteAudioStream && (
-                        <p className="text-lgr text-red-500">Muted</p>
-                    )
-                }
+
+            {/* call info */}
+            <div className=" flex flex-col gap-3 items-center">
+
+                {/* image and username */}
+                <div className="flex flex-col gap-2 items-center">
+                    <Image
+                        src={incomingCallInfo?incomingCallInfo.caller.avatar : otherMember?.user?.avatar || DEFAULT_AVATAR}
+                        width={200}
+                        height={200}
+                        alt="caller-avatar"
+                        className="bg-green-500 rounded-full size-32"
+                    />
+                    <span className="text-xl">{incomingCallInfo?incomingCallInfo.caller?.username:otherMember?.user?.username || 'default-user'}</span>
+                </div>
+
+                {/* call status and timer */}
+                <div className="flex flex-col gap-2 items-center">
+                    <p className="text-secondary-darker text-lgr">{remoteUserId?("Ongoing call"):"Ringing..."}</p>
+                    {remoteUserId && !remoteAudioStream && (<p className="text-lgr text-red-500">Muted</p>)}
                 </div>
             </div>
+
+            {/* action buttons */}
             <div className="flex items-center justify-center gap-2">
                 <button onClick={toggleMic} className="rounded-3xl p-2 bg-green-500">
                     {micOn?<MicrophoneOn/>:<MicrophoneMuted/>}
@@ -378,13 +405,13 @@ const CallDisplay = () => {
                 </button>
                 <button onClick={handleCallEndClick} className="bg-red-500 rounded-3xl p-2"><CallHangIcon/></button>
             </div>
-
-            <div className="flex justify-between">
+            
+            {/* video stream display */}
+            <div className={`flex ${isBothStreamOpen?"justify-between":"justify-center"}`}>
                 {
-                    myStream && (
-                        <div>
-                            <h1>My Stream</h1>
-                            <div className="w-[200px] h-[200px] rounded-lg">
+                    myStream?.getVideoTracks()[0] && (
+                        <div className="w-[200px] h-[200px] rounded-lg overflow-hidden">
+                            <span>My Stream</span>
                             <video
                                 ref={(video) => {
                                     if (video) video.srcObject = myStream;
@@ -394,29 +421,27 @@ const CallDisplay = () => {
                                 autoPlay
                                 playsInline
                             />
-                            </div>
                         </div>
                     )
                 }
                 {
-                    remoteStream && (
-                        <div>
-                            <h1>Remote Stream</h1>
-                            <div className="w-[200px] h-[200px] rounded-lg">
+                    remoteVideoStream && (
+                        <div className="w-[200px] h-[200px] rounded-lg overflow-hidden">
+                            <span>Remote Stream</span>
                             <video
                                 ref={(video) => {
-                                    if (video) video.srcObject = remoteStream;
+                                    if (video) video.srcObject = remoteVideoStream;
                                 }}
                                 width="200"
                                 height="200"
                                 autoPlay
                                 playsInline
                             />
-                            </div>
                         </div>
                     )
                 }
             </div>
+
         </div>
     ):(
         <div className=" gap-6 flex flex-col">

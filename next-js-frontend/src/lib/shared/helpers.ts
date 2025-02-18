@@ -242,7 +242,7 @@ const getOtherMemberOfPrivateChat = (
   chat: fetchUserChatsResponse,
   loggedInUserId: string
 ) => {
-  return chat.ChatMembers.filter(({user:{id}}) => id !== loggedInUserId)[0];
+  return chat?.ChatMembers?.filter(({user:{id}}) => id !== loggedInUserId)[0];
 };
 
 const getActiveMembersInChat = (
