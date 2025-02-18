@@ -1,3 +1,4 @@
+import { IncomingCallEventReceivePayload } from "@/hooks/useCalls/useIncomingCallListener";
 import { Message } from "@/interfaces/message.interface";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store/store";
@@ -31,6 +32,9 @@ interface InitialState {
   recoverPrivateKeyForm: boolean;
   settingsForm: boolean;
   notificationPermissionForm: boolean;
+  callDisplay: boolean;
+  isIncomingCall:boolean
+  incomingCallInfo: IncomingCallEventReceivePayload | null;
 }
 
 const initialState: InitialState = {
@@ -54,6 +58,9 @@ const initialState: InitialState = {
   recoverPrivateKeyForm: false,
   settingsForm: false,
   notificationPermissionForm: false,
+  callDisplay:false,
+  isIncomingCall:false,
+  incomingCallInfo:null
 };
 const uiSlice = createSlice({
   name: "uiSlice",
@@ -127,9 +134,18 @@ const uiSlice = createSlice({
     setSettingsForm: (state, action: PayloadAction<boolean>) => {
       state.settingsForm = action.payload;
     },
+    setCallDisplay: (state, action: PayloadAction<boolean>) => {
+      state.callDisplay = action.payload;
+    },
     setNotificationPermissionForm: (state, action: PayloadAction<boolean>) => {
       state.notificationPermissionForm = action.payload;
     },
+    setIsIncomingCall: (state, action: PayloadAction<boolean>) => {
+      state.isIncomingCall = action.payload;
+    },
+    setInComingCallInfo: (state, action: PayloadAction<IncomingCallEventReceivePayload | null>) => {
+      state.incomingCallInfo = action.payload;
+    }
   },
 });
 
@@ -167,6 +183,9 @@ export const selectSettingsForm = (state: RootState) =>
   state.uiSlice.settingsForm;
 export const selectNotificationPermissionForm = (state: RootState) =>
   state.uiSlice.notificationPermissionForm;
+export const selectCallDisplay = (state: RootState) => state.uiSlice.callDisplay;
+export const selectIsIncomingCall = (state: RootState) => state.uiSlice.isIncomingCall;
+export const selectIncomingCallInfo = (state: RootState) => state.uiSlice.incomingCallInfo;
 
 // exporting actions
 export const {
@@ -191,6 +210,9 @@ export const {
   setRecoverPrivateKeyForm,
   setSettingsForm,
   setNotificationPermissionForm,
+  setCallDisplay,
+  setIsIncomingCall,
+  setInComingCallInfo,
 } = uiSlice.actions;
 
 export default uiSlice;

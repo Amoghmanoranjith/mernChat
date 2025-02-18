@@ -1,10 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
-import { userSocketIds } from "../index.js";
+import { userCallMap, userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
 import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
+import registerWebRtcHandlers from "./webrtc/socket.js";
 
 type MessageEventReceivePayload = {
     chatId:string
@@ -601,6 +602,8 @@ const registerSocketHandlers = (io:Server)=>{
             io.to(chatId).emit(Events.VOTE_OUT,payload)
         })
 
+        registerWebRtcHandlers(socket,io);
+
         socket.on("disconnect",async()=>{
 
             await prisma.user.update({
@@ -613,6 +616,7 @@ const registerSocketHandlers = (io:Server)=>{
                 }
             })
             userSocketIds.delete(socket.user.id);
+            userCallMap.delete(socket.user.id)
 
             const payload:OfflineUserEventSendPayload = {
                 userId:socket.user.id

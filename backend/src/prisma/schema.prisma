@@ -17,6 +17,8 @@ enum CallStatus {
   MISSED
   COMPLETED
   ONGOING
+  REJECTED
+  INTERRUPTED
 }
 
 model ChatMembers {

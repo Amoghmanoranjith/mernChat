@@ -4,6 +4,7 @@ import {
   selectAddFriendForm,
   selectAddMemberForm,
   selectAttachments,
+  selectCallDisplay,
   selectChatUpdateForm,
   selectFriendRequestForm,
   selectGifForm,
@@ -16,6 +17,7 @@ import {
   selectViewVotes,
   setAddFriendForm,
   setAddMemberForm,
+  setCallDisplay,
   setChatUpdateForm,
   setFriendRequestForm,
   setGifForm,
@@ -68,6 +70,9 @@ const ProfileForm = dynamic(() => import("../user/ProfileForm"), {
 const SettingsForm = dynamic(() => import("../settings/SettingsForm"), {
   ssr: false,
 });
+const CallDisplay = dynamic(() => import("../calling/CallDisplay"), {
+  ssr: false,
+});
 
 export const ModalWrapper = () => {
   const dispatch = useAppDispatch();
@@ -83,6 +88,8 @@ export const ModalWrapper = () => {
   const isPollFormOpen = useAppSelector(selectPollForm);
   const isViewVotesOpen = useAppSelector(selectViewVotes);
   const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);
+
+  const isCallDisplayOpen = useAppSelector(selectCallDisplay);
 
   const isRecoverPrivateKeyFormOpen = useAppSelector(
     selectRecoverPrivateKeyForm
@@ -173,6 +180,10 @@ export const ModalWrapper = () => {
       
       <Modal isOpen={isSettingsFormOpen} onClose={()=>dispatch(setSettingsForm(false))}>
         <SettingsForm/>
+      </Modal>
+
+      <Modal isOpen={isCallDisplayOpen} onClose={()=>dispatch(setCallDisplay(false))}>
+        <CallDisplay/>
       </Modal>
 
     </>

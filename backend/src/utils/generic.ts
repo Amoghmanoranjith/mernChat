@@ -11,14 +11,14 @@ export const getRandomIndex=(length: number): number =>{
     return Math.floor(Math.random() * length);
 }
 
-export const sendPushNotification = ({fcmToken,body}:{fcmToken:string,body:string})=>{
+export const sendPushNotification = ({fcmToken,body,title}:{fcmToken:string,body:string,title?:string})=>{
     try {
         console.log('push notification called for fcmToken',fcmToken);
         const link = '/';
         const payload: Message = {
             token:fcmToken,
             notification: {
-              title:`${notificationTitles[getRandomIndex(notificationTitles.length)]}`,
+              title:title?title:`${notificationTitles[getRandomIndex(notificationTitles.length)]}`,
               body,
               imageUrl:"https://res.cloudinary.com/djr9vabwz/image/upload/v1739560136/logo192_lqsucz.png"
             },

@@ -27,6 +27,8 @@ const io = new Server(server, { cors: { credentials: true, origin: config.client
 app.set("io", io);
 // userSocketIds
 export const userSocketIds = new Map();
+// userIToCallMap
+export const userCallMap = new Map();
 // middlewares
 app.use(cors({ credentials: true, origin: config.clientUrl }));
 app.use(passport.initialize());

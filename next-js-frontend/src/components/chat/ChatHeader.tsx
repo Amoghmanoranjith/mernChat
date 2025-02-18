@@ -2,13 +2,16 @@
 import { DEFAULT_AVATAR } from "@/constants";
 import { useChatHeaderClick } from "@/hooks/useChat/useChatHeaderClick";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
-import { useAppSelector } from "@/lib/client/store/hooks";
+import { setCallDisplay } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import Image from "next/image";
+import { useCallback } from "react";
 import {
   getChatAvatar,
   getOtherMemberOfPrivateChat,
 } from "../../lib/shared/helpers";
+import { CallIcon } from "../ui/icons/CallIcon";
 import { ChatHeaderBasicInfo } from "./ChatHeaderBasicInfo";
 import { ChatHeaderSecondaryInfo } from "./ChatHeaderSecondaryInfo";
 
@@ -30,6 +33,12 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
     selectedChatDetails,
     loggedInUserId
   ) as string;
+
+  const dispatch = useAppDispatch();
+
+  const handleCallClick = useCallback(()=>{
+    dispatch(setCallDisplay(true));
+  },[dispatch])
 
   return (
     <div
@@ -57,6 +66,8 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
           />
         </div>
       </div>
+
+      <span onClick={handleCallClick} className="cursor-pointer"><CallIcon/></span>
     </div>
   );
 };
