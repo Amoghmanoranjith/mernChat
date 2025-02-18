@@ -9,7 +9,6 @@ import { peer } from "@/lib/client/webrtc/services/peer";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import ReactPlayer from "react-player";
 import { CallHangIcon } from "../ui/icons/CallHangIcon";
 import { CameraOff } from "../ui/icons/CameraOff";
 import { CameraOn } from "../ui/icons/CameraOn";
@@ -95,7 +94,7 @@ const CallDisplay = () => {
 
     // user-preferences
     const [micOn,setMicOn] = useState<boolean>(true);
-    const [cameraOn,setCameraOn] = useState<boolean>(true);
+    const [cameraOn,setCameraOn] = useState<boolean>(false);
 
     const toggleMic = useCallback(()=>{
         setMicOn((prev)=>!prev);
@@ -105,10 +104,12 @@ const CallDisplay = () => {
         setCameraOn((prev)=>!prev);
     },[]);
 
+
     const updateStreamAccordingToPreferences = useCallback(async () => {
         try {
-            if(!isInComingCall){
-                toast.success("run pref");
+            if(!isInComingCall || isAccepted){
+
+                console.log("Updating stream with: ", { micOn, cameraOn });
                 // Stop existing tracks before getting a new stream
                 myStream?.getTracks().forEach(track => track.stop());
         
@@ -116,47 +117,33 @@ const CallDisplay = () => {
                     audio: micOn,
                     video: cameraOn
                 });
-        
+                console.log('done till here man');
                 setMyStream(stream);
             }
         } catch (err) {
             console.error("Error accessing media devices: ", err);
         }
-    }, [isInComingCall,micOn, cameraOn]); 
+    }, [isInComingCall,isAccepted,micOn, cameraOn]); 
     
-
-    // const sendStreams = useCallback(() => {
-    //     toast.success('send stream triggered');
-    //     if (myStream && peer.peer) {
-    //         toast.success("sending streams");
-    //         // Remove old tracks
-    //         peer.peer.getSenders().forEach(sender => {
-    //             peer.peer?.removeTrack(sender);
-    //         });
-    
-    //         // Add new tracks
-    //         myStream.getTracks().forEach(track => {
-    //             peer.peer?.addTrack(track, myStream);
-    //         });
-    //     }
-    // }, [myStream]);
     
     const sendStreams = useCallback(()=>{
-        if(myStream){
-          for(const track of myStream.getTracks()){
-            peer.peer?.addTrack(track,myStream);
-          }
+        console.log('send streams called');
+        if(myStream && isAccepted){
+            console.log('inside send streams');
+            try {
+                for(const track of myStream.getTracks()){
+                  peer.peer?.addTrack(track,myStream);
+                }
+            } catch (error) {
+                console.log('error in sending streams',error);
+            }
         }
-      },[myStream])
-    
-    
+      },[myStream,isAccepted])
     
     const socket = useSocket();
     const dispatch = useAppDispatch();
 
     const callUser = useCallback(async()=>{
-        const stream = await navigator.mediaDevices.getUserMedia({audio:true,video:true});
-        setMyStream(stream);
         const offer = await peer.getOffer();
         if(offer && selectedChatDetails){
             const payload:CallUserEventSendPayload = {
@@ -178,9 +165,10 @@ const CallDisplay = () => {
 
     const handleAcceptCall = useCallback(async()=>{
         if(incomingCallInfo){
-
-            const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+            
+            const stream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
             setMyStream(stream);
+
             const answer = await peer.getAnswer(incomingCallInfo.offer);
 
             if(!answer){
@@ -198,9 +186,8 @@ const CallDisplay = () => {
                 callHistoryId:incomingCallInfo.callHistoryId
             }
             setIsAccepted(true);
-            
             socket?.emit(Event.CALL_ACCEPTED,callAcceptPayload);
-            toast.success("Call accepeted");
+            console.log("Call accepeted");
             console.log('now sending streams');
         }
         else{
@@ -234,6 +221,7 @@ const CallDisplay = () => {
         peer.setLocalDescription(answer);
         setCallHistoryId(callHistoryId);
         setRemoteUserId(calleeId);
+        setIsAccepted(true);
     },[]);
 
     const handleCallEndEvent = useCallback(()=>{
@@ -317,15 +305,18 @@ const CallDisplay = () => {
         if(!isInComingCall) callUser();
     },[callUser]);
     
-    // useEffect(() => {
-    //     // if user changes options like mic or camera, we will update the stream
-    //     updateStreamAccordingToPreferences();
-    // }, [micOn, cameraOn, updateStreamAccordingToPreferences]);
-
-
+    useEffect(() => {
+        // if user changes options like mic or camera, we will update the stream
+        console.log('user pref changed triggered');
+        updateStreamAccordingToPreferences();
+    }, [micOn, cameraOn, updateStreamAccordingToPreferences]);
+    
     useEffect(()=>{
-        if(myStream) sendStreams();
-    },[myStream, sendStreams])
+        if(myStream){
+            console.log('streams changed');
+            sendStreams();
+        }
+    },[myStream])
 
     useEffect(()=>{
         if(incomingCallInfo){
@@ -356,7 +347,7 @@ const CallDisplay = () => {
     useSocketEvent(Event.NEGO_FINAL,handleNegoFinalEvent);
 
   return (
-    <div>
+    <div className="flex justify-center flex-col">
     {!isInComingCall || isAccepted ? (
         <div className="gap-6 flex flex-col">
             <div className=" flex flex-col gap-2 items-center">
@@ -394,7 +385,15 @@ const CallDisplay = () => {
                         <div>
                             <h1>My Stream</h1>
                             <div className="w-[200px] h-[200px] rounded-lg">
-                                <ReactPlayer url={myStream} width={'200px'} height={'200px'} playing/>
+                            <video
+                                ref={(video) => {
+                                    if (video) video.srcObject = myStream;
+                                }}
+                                width="200"
+                                height="200"
+                                autoPlay
+                                playsInline
+                            />
                             </div>
                         </div>
                     )
@@ -403,8 +402,16 @@ const CallDisplay = () => {
                     remoteStream && (
                         <div>
                             <h1>Remote Stream</h1>
-                            <div className="w-[200px] h-[200px] bg-secondary-darker rounded-lg">
-                                <ReactPlayer url={remoteStream} width={'200px'} height={'200px'} playing muted style={{"objectFit":"cover"}}/>
+                            <div className="w-[200px] h-[200px] rounded-lg">
+                            <video
+                                ref={(video) => {
+                                    if (video) video.srcObject = remoteStream;
+                                }}
+                                width="200"
+                                height="200"
+                                autoPlay
+                                playsInline
+                            />
                             </div>
                         </div>
                     )
@@ -430,9 +437,8 @@ const CallDisplay = () => {
                 </button>
             </div>
         </div>
-    )}
 
-    <button onClick={sendStreams}>send Streams</button>
+    )}
     </div>
   )
 }
