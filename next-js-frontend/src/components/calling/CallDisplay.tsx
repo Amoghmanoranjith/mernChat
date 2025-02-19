@@ -99,7 +99,7 @@ const CallDisplay = () => {
 
     // my stream
     const [myStream, setMyStream] = useState<MediaStream | null>(null);
-    const [myAudioStream, setMyAudioStream] = useState<MediaStream | null>(null);
+    const [, setMyAudioStream] = useState<MediaStream | null>(null);
     const [myVideoStream, setMyVideoStream] = useState<MediaStream | null>(null);
 
     // remote stream
@@ -173,6 +173,9 @@ const CallDisplay = () => {
     
     const callUser = useCallback(async()=>{
         const offer = await peer.getOffer();
+        if(!offer){
+            toast.error('unable to create offer man')
+        }
         console.log('offer created');
         if(offer && selectedChatDetails){
             const payload:CallUserEventSendPayload = {
@@ -189,9 +192,7 @@ const CallDisplay = () => {
     },[dispatch, selectedChatDetails, socket])
 
     const handleCallEndClick = useCallback(() => {
-
         if(callHistoryId) {
-            toast.success("call ended");
             const payload:CallEndEventSendPayload = {
                 callHistoryId
             }
@@ -424,7 +425,7 @@ const CallDisplay = () => {
                         </Visualizer>
                         )
                     }
-                    {!remoteAudioStream && (<p className="text-lgr text-red-500">Muted</p>)}
+                    {/* {!remoteAudioStream && (<p className="text-lgr text-red-500">Muted</p>)} */}
                 </div>
             </div>
 
@@ -436,7 +437,7 @@ const CallDisplay = () => {
                 <button onClick={toggleCamera} className="rounded-3xl p-2 bg-green-500">
                     {cameraOn?<CameraOn/>:<CameraOff/>}
                 </button>
-                <button onClick={handleRejectCall} className="bg-red-500 rounded-3xl p-2"><CallHangIcon/></button>
+                <button onClick={handleCallEndClick} className="bg-red-500 rounded-3xl p-2"><CallHangIcon/></button>
             </div>
             
             {/* video stream display */}

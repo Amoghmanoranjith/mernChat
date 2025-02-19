@@ -15,7 +15,7 @@ export const useCallEndListener = () => {
 
         dispatch(setCallDisplay(false));
 
-        peer.closeConnection();
+        // peer.closeConnection();
         toast.success("Call ended");
         
         dispatch(setInComingCallInfo(null));
