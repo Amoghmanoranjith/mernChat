@@ -39,10 +39,6 @@ const authSlice = createSlice({
     setAuthToken:(state,action:PayloadAction<string>)=>{
       state.authToken = action.payload
     }
-    // updateLoggedInUserFcmTokenStatus:(state,action:PayloadAction<string>)=>{
-    //     if(state.loggedInUser)
-    //         state.loggedInUser.fcmtoke = action.payload
-    // },
   },
 });
 
@@ -56,7 +52,6 @@ export const {
   updateLoggedInUserPublicKey,
   updateLoggedInUserNotificationStatus,
   setAuthToken,
-  // updateLoggedInUserFcmTokenStatus,
 } = authSlice.actions;
 
 export default authSlice;

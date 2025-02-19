@@ -11,6 +11,7 @@ type PropTypes = {
   children: React.ReactNode; // The content to render inside the modal
   width?: number; // Optional width of the modal
   height?: number; // Optional height of the modal
+  isCallModal?:boolean
 };
 
 export const Modal = ({
@@ -18,6 +19,7 @@ export const Modal = ({
   onClose,
   children,
   height,
+  isCallModal=false
 }: PropTypes) => {
   // Access the current dark mode state from the Redux store
   const isDarkMode = useAppSelector(selectisDarkMode);
@@ -37,7 +39,7 @@ export const Modal = ({
   // Use React Portals to render the modal content outside of the main DOM hierarchy
   return createPortal(
     <div
-      onClick={onClose} // Clicking outside the modal content triggers the `onClose` function
+      onClick={isCallModal?()=>"":onClose} // Clicking outside the modal content triggers the `onClose` function
       className="z-50 bg-black bg-opacity-15 w-screen h-screen absolute flex items-center justify-center text-text bg-background"
     >
       {/* Use Framer Motion for animation when the modal appears */}

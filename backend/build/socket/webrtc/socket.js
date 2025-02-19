@@ -1,35 +1,11 @@
 import { Events } from "../../enums/event/event.enum.js";
-import { userCallMap, userSocketIds } from "../../index.js";
+import { userSocketIds } from "../../index.js";
 import { prisma } from "../../lib/prisma.lib.js";
 import { sendPushNotification } from "../../utils/generic.js";
 const registerWebRtcHandlers = (socket, io) => {
     socket.on(Events.CALL_USER, async ({ calleeId, offer }) => {
         try {
             console.log('call user event received from', socket.user.username);
-            // setting the caller as busy so that while caller is calling somebody else, he can't be called
-            userCallMap.set(socket.user.id, true);
-            const isCalleeBusy = userCallMap.get(calleeId);
-            // if(isCalleeBusy){
-            //     console.log('busyyyyyyyyy');
-            //     await prisma.callHistory.create({
-            //         data:{
-            //             callerId:socket.user.id,
-            //             calleeId:calleeId,
-            //             status:"MISSED"
-            //         }
-            //     })
-            //     socket.emit(Events.CALLEE_BUSY);
-            //     socket.emit(Events.CALL_END);
-            //     const calleeInfo =  await prisma.user.findUnique({
-            //         where:{id:calleeId},
-            //         select:{notificationsEnabled:true,fcmToken:true}
-            //     });
-            //     if(calleeInfo && calleeInfo.notificationsEnabled && calleeInfo.fcmToken){
-            //         sendPushNotification({fcmToken:calleeInfo.fcmToken,body:`You have missed a call from ${socket.user.username}`,title:"Missed Call"})
-            //     }
-            //     userCallMap.delete(socket.user.id); // making the caller available again
-            //     return;
-            // }
             const calleeSocketId = userSocketIds.get(calleeId);
             if (!calleeSocketId) {
                 socket.emit(Events.CALLEE_OFFLINE);
@@ -48,12 +24,9 @@ const registerWebRtcHandlers = (socket, io) => {
                 if (calleeInfo && calleeInfo.notificationsEnabled && calleeInfo.fcmToken) {
                     sendPushNotification({ fcmToken: calleeInfo.fcmToken, body: `You have missed a call from ${socket.user.username}`, title: "Missed Call" });
                 }
-                userCallMap.delete(socket.user.id); // making the caller available again
                 console.log('Callee is offline');
                 return;
             }
-            // setting the callee as busy, so that he can't be called by anybody else while he is in a call or being called
-            userCallMap.set(calleeId, true);
             const newCall = await prisma.callHistory.create({
                 data: {
                     callerId: socket.user.id,
@@ -74,7 +47,6 @@ const registerWebRtcHandlers = (socket, io) => {
         }
         catch (error) {
             console.log('Error in CALL_USER event', error);
-            userCallMap.delete(socket.user.id); // making the caller available again
             socket.emit(Events.CALL_END);
         }
     });
@@ -94,9 +66,6 @@ const registerWebRtcHandlers = (socket, io) => {
                         status: "MISSED",
                     }
                 });
-                // making the callee,caller available again
-                userCallMap.delete(call.calleeId);
-                userCallMap.delete(call.callerId);
                 const calleeSocketId = userSocketIds.get(call.calleeId);
                 if (calleeSocketId) {
                     io.to(calleeSocketId).emit(Events.CALL_END);
@@ -141,18 +110,6 @@ const registerWebRtcHandlers = (socket, io) => {
         catch (error) {
             console.log('Error in CALL_REJECTED event', error);
         }
-        finally {
-            // making the callee available again
-            // removing the callee from the busy list
-            if (call?.calleeId) {
-                userCallMap.delete(call.calleeId);
-            }
-            // making the caller available again
-            // removing the caller from the busy list
-            if (call?.callerId) {
-                userCallMap.delete(call.callerId);
-            }
-        }
     });
     socket.on(Events.CALL_END, async ({ callHistoryId }) => {
         try {
@@ -171,9 +128,6 @@ const registerWebRtcHandlers = (socket, io) => {
             });
             const callerSocketId = userSocketIds.get(ongoingCall.callerId);
             const calleeSocketId = userSocketIds.get(ongoingCall.calleeId);
-            // and freeing both caller and callee from busy list
-            userCallMap.delete(ongoingCall.callerId);
-            userCallMap.delete(ongoingCall.calleeId);
             if (callerSocketId) {
                 io.to(callerSocketId).emit(Events.CALL_END);
             }
@@ -184,6 +138,26 @@ const registerWebRtcHandlers = (socket, io) => {
         catch (error) {
             console.error(`Error in CALL_END event for callHistoryId: ${callHistoryId}`, error);
         }
+    });
+    socket.on(Events.CALLEE_BUSY, ({ callerId }) => {
+        const callerSocketId = userSocketIds.get(callerId);
+        if (callerSocketId) {
+            socket.to(callerSocketId).emit(Events.CALLEE_BUSY);
+            socket.to(callerSocketId).emit(Events.CALL_END);
+        }
+    });
+    socket.on(Events.ICE_CANDIDATE, async ({ candidate, calleeId }) => {
+        console.log('ice candiate receive from ', socket.user.username);
+        const calleeSocketId = userSocketIds.get(calleeId);
+        if (!calleeSocketId) {
+            console.log('Callee is offline during ice candidate exchange');
+            return;
+        }
+        const payload = {
+            callerId: socket.user.id,
+            candidate
+        };
+        io.to(calleeSocketId).emit(Events.ICE_CANDIDATE, payload);
     });
     socket.on(Events.NEGO_NEEDED, async ({ offer, calleeId, callHistoryId }) => {
         try {
@@ -201,9 +175,6 @@ const registerWebRtcHandlers = (socket, io) => {
                         data: { status: "MISSED" }
                     })
                 ]);
-                // making the callee,caller available again
-                userCallMap.delete(call.calleeId);
-                userCallMap.delete(call.callerId);
                 const callerSocketId = userSocketIds.get(call.callerId);
                 if (callerSocketId) {
                     io.to(callerSocketId).emit(Events.CALLEE_OFFLINE);
@@ -238,9 +209,6 @@ const registerWebRtcHandlers = (socket, io) => {
                         data: { status: "MISSED" }
                     })
                 ]);
-                // making the callee,caller available again
-                userCallMap.delete(call.calleeId);
-                userCallMap.delete(call.callerId);
                 const calleeSocketId = userSocketIds.get(call.calleeId);
                 if (calleeSocketId) {
                     io.to(calleeSocketId).emit(Events.CALL_END);

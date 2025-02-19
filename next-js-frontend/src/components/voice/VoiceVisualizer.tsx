@@ -1,39 +1,73 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
-const VoiceBars = ({ audioStream }: { audioStream: MediaStream | null }) => {
-  const [volume, setVolume] = useState(0);
+interface AudioVisualizerProps {
+  audioStream: MediaStream | null;
+}
+
+const AudioVisualizer = ({ audioStream }: AudioVisualizerProps) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!audioStream) return;
+    if (!audioStream || !canvasRef.current) return;
 
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const analyser = ctx.createAnalyser();
-    const source = ctx.createMediaStreamSource(audioStream);
+    // Create and resume AudioContext
+    const audioCtx = new AudioContext();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch((err) => console.error("Failed to resume AudioContext:", err));
+    }
+
+    const analyser = audioCtx.createAnalyser();
+    const source = audioCtx.createMediaStreamSource(audioStream);
     source.connect(analyser);
+    analyser.fftSize = 512; // Higher FFT size for better frequency resolution
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-    const updateVolume = () => {
+    // Get Canvas Context
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d")!;
+    canvas.width = 400;
+    canvas.height = 100;
+
+    const draw = () => {
       analyser.getByteFrequencyData(dataArray);
-      const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-      setVolume(avg);
-      requestAnimationFrame(updateVolume);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i] / 1.5; // Adjusted scaling
+        ctx.fillStyle = `rgb(${barHeight + 100}, 50, 150)`;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(draw);
     };
 
-    updateVolume();
+    draw();
+
+    // Store references for cleanup
+    audioContextRef.current = audioCtx;
+    analyserRef.current = analyser;
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      audioCtx.close();
+    };
   }, [audioStream]);
 
-  return (
-    <div className="flex gap-1 h-8 items-end">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className="w-2 bg-blue-500 rounded transition-all"
-          style={{ height: `${Math.max(4, (volume / 255) * 32)}px` }}
-        ></div>
-      ))}
-    </div>
-  );
+  return <canvas ref={canvasRef} className="rounded-md shadow-md bg-black" />;
 };
 
-export default VoiceBars;
+export default AudioVisualizer;

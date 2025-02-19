@@ -3,8 +3,9 @@ import { useSocket } from "@/context/socket.context";
 import { useSocketEvent } from "@/hooks/useSocket/useSocketEvent";
 import { Event } from "@/interfaces/events.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
+import { setIsInCall } from "@/lib/client/slices/callSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
-import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay, setInComingCallInfo, setIsIncomingCall } from "@/lib/client/slices/uiSlice";
+import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { peer } from "@/lib/client/webrtc/services/peer";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
@@ -17,6 +18,7 @@ import { CameraOff } from "../ui/icons/CameraOff";
 import { CameraOn } from "../ui/icons/CameraOn";
 import { MicrophoneMuted } from "../ui/icons/MicrophoneMuted";
 import { MicrophoneOn } from "../ui/icons/MicrophoneOn";
+import { Visualizer } from 'react-sound-visualizer';
 
 type CallUserEventSendPayload = {
     calleeId: string;
@@ -76,6 +78,16 @@ type CallEndEventSendPayload = {
     callHistoryId:string
 }
 
+type IceCandidateEventSendPayload = {
+    candidate: RTCIceCandidate;
+    calleeId:string;
+}
+
+type IceCandiateEventReceivePayload = {
+    candidate: RTCIceCandidate;
+    callerId:string;
+}
+
 const CallDisplay = () => {
 
     const selectedChatDetails =  useAppSelector(selectSelectedChatDetails) as fetchUserChatsResponse;
@@ -87,6 +99,8 @@ const CallDisplay = () => {
 
     // my stream
     const [myStream, setMyStream] = useState<MediaStream | null>(null);
+    const [myAudioStream, setMyAudioStream] = useState<MediaStream | null>(null);
+    const [myVideoStream, setMyVideoStream] = useState<MediaStream | null>(null);
 
     // remote stream
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -102,13 +116,11 @@ const CallDisplay = () => {
     const [micOn,setMicOn] = useState<boolean>(true);
     const [cameraOn,setCameraOn] = useState<boolean>(false);
 
-    const toggleMic = useCallback(()=>{
-        setMicOn((prev)=>!prev);
-    },[]);
+    const socket = useSocket();
+    const dispatch = useAppDispatch();
 
-    const toggleCamera = useCallback(()=>{
-        setCameraOn((prev)=>!prev);
-    },[]);
+    const toggleMic = useCallback(()=>setMicOn((prev)=>!prev),[]);
+    const toggleCamera = useCallback(()=>setCameraOn((prev)=>!prev),[]);
 
     const updateStreamAccordingToPreferences = useCallback(async () => {
         try {
@@ -118,8 +130,6 @@ const CallDisplay = () => {
                 myStream?.getTracks().forEach(track => track.stop());
 
                 if (!micOn && !cameraOn) {
-                    toast("As of now you can't turn off both mic and camera at the same time");
-                    toast.success("We are working on fixing this issue as soon as possible");
                     const emptyStream = new MediaStream(); // Empty stream
                     // emptyStream.addTrack(new MediaStreamTrack());
                     // emptyStream.addTrack(new MediaStreamTrack());
@@ -143,28 +153,35 @@ const CallDisplay = () => {
         if(myStream && isAccepted){
             console.log('inside send streams');
             try {
-                for(const track of myStream.getTracks()){
-                  peer.peer?.addTrack(track,myStream);
+                const audioStream = myStream.getAudioTracks()[0];
+                if(audioStream){
+                    setMyAudioStream(new MediaStream([audioStream]));
                 }
+                const videoStream = myStream.getVideoTracks()[0];
+                if(videoStream){
+                    setMyVideoStream(new MediaStream([videoStream]));
+                }
+
+                myStream.getTracks().forEach(track=>{
+                    peer.peer?.addTrack(track,myStream);
+                })
             } catch (error) {
                 console.log('error in sending streams',error);
             }
         }
       },[myStream,isAccepted])
     
-    const socket = useSocket();
-    const dispatch = useAppDispatch();
-
     const callUser = useCallback(async()=>{
         const offer = await peer.getOffer();
+        console.log('offer created');
         if(offer && selectedChatDetails){
             const payload:CallUserEventSendPayload = {
                 calleeId:selectedChatDetails.ChatMembers.filter(member=>member?.user?.id !== loggedInUserId)[0]?.user?.id,
                 offer
             }
-          socket?.emit(Event.CALL_USER,payload);
+            dispatch(setIsInCall(true));
+            socket?.emit(Event.CALL_USER,payload);
         }
-
         else{
           toast.error("Failed to initiate call");
           dispatch(setCallDisplay(false));
@@ -226,34 +243,12 @@ const CallDisplay = () => {
     },[incomingCallInfo, socket]);
 
     const handleCallAcceptedEvent = useCallback(async({answer,callHistoryId,calleeId}:CallAcceptedEventReceivePayload)=>{
-        peer.setLocalDescription(answer);
+        peer.setRemoteDescription(answer);
         setCallHistoryId(callHistoryId);
         setRemoteUserId(calleeId);
         setIsAccepted(true);
     },[]);
 
-    const handleCallEndEvent = useCallback(()=>{
-        toast.success("Call end event received from server");
-
-        // Close peer connection
-        peer.closeConnection();
-        // Stop local media tracks
-        myStream?.getTracks().forEach(track => track.stop());
-        
-        // Reset streams
-        setMyStream(null);
-        setRemoteStream(null);
-        setRemoteAudioStream(null);
-        setRemoteVideoStream(null);
-        dispatch(setInComingCallInfo(null));
-        dispatch(setIsIncomingCall(false));
-
-        // finally close the call display modal
-        setTimeout(() => {
-            dispatch(setCallDisplay(false));    
-        }, 2000);
-
-    },[dispatch, myStream])
     
     const handleNegoNeededEvent = useCallback(async({callerId,offer,callHistoryId}:NegoNeededEventReceivePayload)=>{
         setRemoteUserId(callerId);
@@ -283,7 +278,7 @@ const CallDisplay = () => {
             offer,
             callHistoryId,
           }
-          socket?.emit(Event.NEGO_NEEDED,payload);
+          socket?.emit(Event.NEGO_NEEDED,payload);  
         }
         else{
           toast.error("Error occured in nego needed");
@@ -292,7 +287,7 @@ const CallDisplay = () => {
     
     const handleNegoFinalEvent = useCallback(async({answer,calleeId}:NegoFinalEventReceivePayload)=>{
         try {
-            peer.setLocalDescription(answer);
+            peer.setRemoteDescription(answer);
         } catch (error) {
             console.log('errir in setting local description',error);
         }
@@ -304,20 +299,24 @@ const CallDisplay = () => {
         const remoteStream = e.streams[0];
         setRemoteStream(remoteStream); 
 
-        const audioTracks = remoteStream.getAudioTracks();
-        const videoTracks = remoteStream.getVideoTracks();
+        const audioTrack = remoteStream.getAudioTracks()[0];
+        const videoTrack = remoteStream.getVideoTracks()[0];
 
-        console.log('received audio track',audioTracks[0]);
-        console.log('received video track',videoTracks[0]);
 
-        const receivedAudioStream = ((audioTracks.length > 0 && audioTracks[0].enabled) ? new MediaStream(audioTracks) : null);
-        const receivedVideoStream = ((videoTracks.length > 0 && videoTracks[0].enabled) ? new MediaStream(videoTracks) : null);
+        console.log('received audio track',audioTrack);
+        console.log('received video track',videoTrack);
 
+        const receivedAudioStream = (audioTrack ? new MediaStream([audioTrack]) : null);
+        const receivedVideoStream = (videoTrack ? new MediaStream([videoTrack]) : null);
 
         setRemoteAudioStream(receivedAudioStream);
         setRemoteVideoStream(receivedVideoStream);
-
     },[])
+
+    const handleRemoteIceCandidate = useCallback(async({callerId,candidate}:IceCandiateEventReceivePayload)=>{
+        console.log('remote ice candiate received from ',callerId,'cadidate is',candidate);
+        peer.peer?.addIceCandidate(candidate);
+    },[]);
 
     useEffect(()=>{
         // when we dont have an incomoin call, we will call the user
@@ -360,11 +359,31 @@ const CallDisplay = () => {
         }
     },[handleNegoNeeded])
 
-    useSocketEvent(Event.CALL_ACCEPTED,handleCallAcceptedEvent);
-    useSocketEvent(Event.CALL_END,handleCallEndEvent);    
+
+    const handleICECandidate = useCallback(async (e: RTCPeerConnectionIceEvent) => {
+        if (e.candidate && remoteUserId) {
+            console.log("receiving ice candidate locally");
+            const payload:IceCandidateEventSendPayload = {
+                candidate:e.candidate,
+                calleeId:remoteUserId
+            }
+            console.log('emitted ice candidate');
+            socket?.emit(Event.ICE_CANDIDATE,payload);
+        }
+    },[remoteUserId, socket]);
+
+    useEffect(() => {    
+        peer.peer?.addEventListener("icecandidate", handleICECandidate);
+        return () => {
+            peer.peer?.removeEventListener("icecandidate", handleICECandidate);
+        };
+    }, [handleICECandidate]);
+    
+
+    useSocketEvent(Event.CALL_ACCEPTED,handleCallAcceptedEvent);   
     useSocketEvent(Event.NEGO_NEEDED,handleNegoNeededEvent);
     useSocketEvent(Event.NEGO_FINAL,handleNegoFinalEvent);
-    useSocketEvent(Event.CALL_END,handleCallEndEvent);
+    useSocketEvent(Event.ICE_CANDIDATE,handleRemoteIceCandidate);
 
     const isBothStreamOpen = myStream?.getVideoTracks()[0] && remoteStream?.getVideoTracks()[0];
 
@@ -391,7 +410,21 @@ const CallDisplay = () => {
                 {/* call status and timer */}
                 <div className="flex flex-col gap-2 items-center">
                     <p className="text-secondary-darker text-lgr">{remoteUserId?("Ongoing call"):"Ringing..."}</p>
-                    {remoteUserId && !remoteAudioStream && (<p className="text-lgr text-red-500">Muted</p>)}
+                    {
+                        remoteUserId && (
+                            <Visualizer audio={remoteAudioStream} autoStart mode="continuous">
+                            {({ canvasRef }) => (
+                                <canvas
+                                ref={canvasRef}
+                                width={100}  // Smaller width
+                                height={20} // Smaller height
+                                style={{ width: "100px", height: "20px" }} // Force scaling
+                                />
+                            )}
+                        </Visualizer>
+                        )
+                    }
+                    {!remoteAudioStream && (<p className="text-lgr text-red-500">Muted</p>)}
                 </div>
             </div>
 
@@ -403,18 +436,18 @@ const CallDisplay = () => {
                 <button onClick={toggleCamera} className="rounded-3xl p-2 bg-green-500">
                     {cameraOn?<CameraOn/>:<CameraOff/>}
                 </button>
-                <button onClick={handleCallEndClick} className="bg-red-500 rounded-3xl p-2"><CallHangIcon/></button>
+                <button onClick={handleRejectCall} className="bg-red-500 rounded-3xl p-2"><CallHangIcon/></button>
             </div>
             
             {/* video stream display */}
             <div className={`flex ${isBothStreamOpen?"justify-between":"justify-center"}`}>
                 {
-                    myStream?.getVideoTracks()[0] && (
+                    myVideoStream && (
                         <div className="w-[200px] h-[200px] rounded-lg overflow-hidden">
                             <span>My Stream</span>
                             <video
                                 ref={(video) => {
-                                    if (video) video.srcObject = myStream;
+                                    if (video) video.srcObject = myVideoStream;
                                 }}
                                 width="200"
                                 height="200"
@@ -440,6 +473,15 @@ const CallDisplay = () => {
                         </div>
                     )
                 }
+                {
+                    remoteAudioStream && (
+                        <audio autoPlay
+                        ref={(audio) => {
+                            if (audio) audio.srcObject = remoteAudioStream;
+                        }}
+                        />
+                    )
+                }   
             </div>
 
         </div>

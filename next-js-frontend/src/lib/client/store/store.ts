@@ -9,6 +9,8 @@ import { friendApi } from "../rtk-query/friend.api";
 import authSlice from "../slices/authSlice";
 import chatSlice from "../slices/chatSlice";
 import uiSlice from "../slices/uiSlice";
+import callSlice from "../slices/callSlice";
+
 
 export const makeStore = () => {
   return configureStore({
@@ -16,6 +18,7 @@ export const makeStore = () => {
       [authSlice.name]: authSlice.reducer,
       [chatSlice.name]: chatSlice.reducer,
       [uiSlice.name]: uiSlice.reducer,
+      [callSlice.name]: callSlice.reducer,
 
       [authApi.reducerPath]: authApi.reducer,
       [chatApi.reducerPath]: chatApi.reducer,

@@ -35,9 +35,6 @@ app.set("io",io)
 // userSocketIds
 export const userSocketIds = new Map<string,string>()
 
-// userIToCallMap
-export const userCallMap = new Map<string,boolean>();
-
 // middlewares
 app.use(cors({credentials:true,origin:config.clientUrl}))
 app.use(passport.initialize())

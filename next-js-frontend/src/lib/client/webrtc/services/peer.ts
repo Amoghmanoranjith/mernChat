@@ -1,43 +1,34 @@
+const servers:RTCConfiguration = {
+  iceServers:[
+    {
+      urls:[
+        "stun:stun.l.google.com:19302",
+        "stun:global.stun.twilio.com:3478",
+      ]
+    }
+  ]
+}
+
 class PeerService {
+
     public peer: RTCPeerConnection | null = null;
   
     constructor() {
       try {
         if (!this.peer) {
-          this.peer = new RTCPeerConnection({
-            iceServers: [
-              {
-                urls: [
-                  "stun:stun.l.google.com:19302",
-                  "stun:global.stun.twilio.com:3478",
-                ],
-              },
-            ],
-          });
+          this.peer = new RTCPeerConnection(servers);
+          this.peer.oniceconnectionstatechange = () => {
+            console.log("ICE Connection State:", peer.peer?.iceConnectionState);
+        };
+        
         }
       } catch (error) {
         console.log('Error in PeerService constructor', error);
       }
     }
 
-    private ensurePeerConnection() {
-      if (!this.peer || this.peer.signalingState === "closed") {
-          this.peer = new RTCPeerConnection({
-              iceServers: [
-                  {
-                      urls: [
-                          "stun:stun.l.google.com:19302",
-                          "stun:global.stun.twilio.com:3478",
-                      ],
-                  },
-              ],
-          });
-      }
-  }
-  
     async getAnswer(offer: RTCSessionDescriptionInit) {
       try {
-        this.ensurePeerConnection();
         if (this.peer) {
           await this.peer.setRemoteDescription(offer);
           const ans = await this.peer.createAnswer();
@@ -49,9 +40,8 @@ class PeerService {
       }
     }
   
-    async setLocalDescription(ans: RTCSessionDescriptionInit) {
+    async setRemoteDescription(ans: RTCSessionDescriptionInit) {
       try {
-        this.ensurePeerConnection();
         if (this.peer) {
           await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
         }
@@ -62,7 +52,6 @@ class PeerService {
   
     async getOffer() {
       try {
-        this.ensurePeerConnection();
         if (this.peer) {
           const offer = await this.peer.createOffer();
           await this.peer.setLocalDescription(new RTCSessionDescription(offer));
@@ -81,5 +70,5 @@ class PeerService {
     }
   }
   
-  export const peer = new PeerService();
+export const peer = new PeerService();
   

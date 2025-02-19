@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
-import { userCallMap, userSocketIds } from "../index.js";
+import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
 import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
@@ -616,7 +616,6 @@ const registerSocketHandlers = (io:Server)=>{
                 }
             })
             userSocketIds.delete(socket.user.id);
-            userCallMap.delete(socket.user.id)
 
             const payload:OfflineUserEventSendPayload = {
                 userId:socket.user.id

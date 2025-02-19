@@ -182,7 +182,7 @@ export const ModalWrapper = () => {
         <SettingsForm/>
       </Modal>
 
-      <Modal isOpen={isCallDisplayOpen} onClose={()=>dispatch(setCallDisplay(false))}>
+      <Modal isCallModal={true} isOpen={isCallDisplayOpen} onClose={()=>dispatch(setCallDisplay(false))}>
         <CallDisplay/>
       </Modal>
 

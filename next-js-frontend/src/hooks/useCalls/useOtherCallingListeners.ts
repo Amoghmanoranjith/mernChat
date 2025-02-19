@@ -14,7 +14,6 @@ export const useOtherCallingListeners = () => {
 
   const handleCalleeBusy = useCallback(() => {
     toast.error("User is busy");
-    toast.success("Missed called notification sent");
   }, []);
 
   const handleCallerOffline = useCallback(() => {
