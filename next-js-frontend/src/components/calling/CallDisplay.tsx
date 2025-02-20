@@ -3,7 +3,7 @@ import { useSocket } from "@/context/socket.context";
 import { useSocketEvent } from "@/hooks/useSocket/useSocketEvent";
 import { Event } from "@/interfaces/events.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
-import { selectCallHistoryId, setIsInCall } from "@/lib/client/slices/callSlice";
+import { selectCallHistoryId, setIsInCall, setMyGlobalStream } from "@/lib/client/slices/callSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
@@ -394,12 +394,17 @@ const CallDisplay = () => {
             peer.peer?.removeEventListener("icecandidate", handleICECandidate);
         };
     }, [handleICECandidate]);
+
+    const handleCallEndEvent = useCallback(()=>{
+        dispatch(setMyGlobalStream(myStream));
+    },[dispatch, myStream]);
     
 
     useSocketEvent(Event.CALL_ACCEPTED,handleCallAcceptedEvent);   
     useSocketEvent(Event.NEGO_NEEDED,handleNegoNeededEvent);
     useSocketEvent(Event.NEGO_FINAL,handleNegoFinalEvent);
     useSocketEvent(Event.ICE_CANDIDATE,handleRemoteIceCandidate);
+    useSocketEvent(Event.CALL_END,handleCallEndEvent);
 
     const isBothStreamOpen = myStream?.getVideoTracks()[0] && remoteStream?.getVideoTracks()[0];
 

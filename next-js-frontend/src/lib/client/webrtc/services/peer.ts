@@ -27,8 +27,18 @@ class PeerService {
       }
     }
 
+    ensurePeerConnection(){
+      if(!this.peer){
+        this.peer = new RTCPeerConnection(servers);
+        this.peer.oniceconnectionstatechange = () => {
+          console.log("ICE Connection State:", peer.peer?.iceConnectionState);
+      }
+  }
+}
+
     async getAnswer(offer: RTCSessionDescriptionInit) {
       try {
+        this.ensurePeerConnection();
         if (this.peer) {
           await this.peer.setRemoteDescription(offer);
           const ans = await this.peer.createAnswer();
@@ -42,6 +52,7 @@ class PeerService {
   
     async setRemoteDescription(ans: RTCSessionDescriptionInit) {
       try {
+        this.ensurePeerConnection();
         if (this.peer) {
           await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
         }
@@ -52,6 +63,7 @@ class PeerService {
   
     async getOffer() {
       try {
+        this.ensurePeerConnection();
         if (this.peer) {
           const offer = await this.peer.createOffer();
           await this.peer.setLocalDescription(new RTCSessionDescription(offer));
