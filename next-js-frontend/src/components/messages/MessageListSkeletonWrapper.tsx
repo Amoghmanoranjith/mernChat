@@ -11,9 +11,9 @@ type PropTypes = {
 
 export const MessageListSkeletonWrapper = ({ loggedInUserId }: PropTypes) => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
-  const { currentData, isFetching, isLoading} = useFetchInitialMessagesOnChatSelect();
+  const { currentData,isFetching} = useFetchInitialMessagesOnChatSelect();
 
-  if (isFetching || isLoading) return <MessageListSkeleton />;
+  if (!currentData && isFetching) return <MessageListSkeleton />;
   if (!currentData) return null;
   if (!selectedChatDetails) return null;
 

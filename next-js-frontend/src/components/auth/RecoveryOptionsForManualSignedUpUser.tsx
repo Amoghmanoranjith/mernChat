@@ -72,7 +72,6 @@ function SubmitButton(){
     <button
     key={pending ? "adws":"asdf"}
     type="submit"
-    disabled={pending}
     className={`bg-primary px-14 py-2 self-center rounded-sm ${
       pending ? "bg-transparent" : ""
     }`}

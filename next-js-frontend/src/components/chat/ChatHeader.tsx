@@ -67,7 +67,11 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
         </div>
       </div>
 
-      <span onClick={handleCallClick} className="cursor-pointer"><CallIcon/></span>
+      {
+        !selectedChatDetails.isGroupChat && (
+          <span onClick={handleCallClick} className="cursor-pointer"><CallIcon/></span>
+        )
+      }
     </div>
   );
 };

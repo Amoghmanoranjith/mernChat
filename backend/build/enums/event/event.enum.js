@@ -31,4 +31,5 @@ export var Events;
     Events["CALL_REJECTED"] = "CALL_REJECTED";
     Events["CALLER_OFFLINE"] = "CALLER_OFFLINE";
     Events["ICE_CANDIDATE"] = "ICE_CANDIDATE";
+    Events["CALL_ID"] = "CALL_ID";
 })(Events || (Events = {}));

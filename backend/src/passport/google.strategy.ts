@@ -61,15 +61,12 @@ passport.use(new GoogleStrategy({
             done(null,{...newUser,newUser:true})
           }
       }
-
       else{
         throw new Error("Some Error occured")
       }
-
     } catch (error) {
       console.log(error);
       done('Some error occured',undefined)
     }
-
   }
 ));

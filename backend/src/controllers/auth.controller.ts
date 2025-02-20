@@ -67,11 +67,16 @@ const checkAuth = asyncErrorHandler(async(req:AuthenticatedRequest,res:Response,
 
 const redirectHandler = asyncErrorHandler(async(req:OAuthAuthenticatedRequest,res:Response,next:NextFunction)=>{
 
-    if(req.user){
-        const tempToken =  jwt.sign({user:req.user.id,oAuthNewUser:req.user.newUser},env.JWT_SECRET,{expiresIn:"5m"})
-        return res.redirect(307,`${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`)
-    }
-    else{
+    try {
+        if(req.user){
+            const tempToken =  jwt.sign({user:req.user.id,oAuthNewUser:req.user.newUser},env.JWT_SECRET,{expiresIn:"5m"})
+            return res.redirect(307,`${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`)
+        }
+        else{
+            return res.redirect(`${config.clientUrl}/auth/login`)
+        }
+    } catch (error) {
+        console.log('error duing oauth redirect handler');
         return res.redirect(`${config.clientUrl}/auth/login`)
     }
 })

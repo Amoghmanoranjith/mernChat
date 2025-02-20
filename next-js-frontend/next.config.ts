@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       "media.tenor.com"
     ],
   },
+  reactStrictMode:false
 };
 
 export default nextConfig;

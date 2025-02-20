@@ -56,11 +56,17 @@ const checkAuth = asyncErrorHandler(async (req, res, next) => {
     return next(new CustomError("Token missing, please login again", 401));
 });
 const redirectHandler = asyncErrorHandler(async (req, res, next) => {
-    if (req.user) {
-        const tempToken = jwt.sign({ user: req.user.id, oAuthNewUser: req.user.newUser }, env.JWT_SECRET, { expiresIn: "5m" });
-        return res.redirect(307, `${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`);
+    try {
+        if (req.user) {
+            const tempToken = jwt.sign({ user: req.user.id, oAuthNewUser: req.user.newUser }, env.JWT_SECRET, { expiresIn: "5m" });
+            return res.redirect(307, `${config.clientUrl}/auth/oauth-redirect?token=${tempToken}`);
+        }
+        else {
+            return res.redirect(`${config.clientUrl}/auth/login`);
+        }
     }
-    else {
+    catch (error) {
+        console.log('error duing oauth redirect handler');
         return res.redirect(`${config.clientUrl}/auth/login`);
     }
 });

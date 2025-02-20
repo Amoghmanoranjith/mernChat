@@ -3,7 +3,7 @@ import { useSocket } from "@/context/socket.context";
 import { useSocketEvent } from "@/hooks/useSocket/useSocketEvent";
 import { Event } from "@/interfaces/events.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
-import { setIsInCall } from "@/lib/client/slices/callSlice";
+import { selectCallHistoryId, setIsInCall } from "@/lib/client/slices/callSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
@@ -76,6 +76,7 @@ type NegoFinalEventReceivePayload = {
 
 type CallEndEventSendPayload = {
     callHistoryId:string
+    wasCallAccepted:boolean
 }
 
 type IceCandidateEventSendPayload = {
@@ -111,6 +112,8 @@ const CallDisplay = () => {
 
     const [remoteUserId,setRemoteUserId] = useState<string | null>(null);
     const [callHistoryId,setCallHistoryId] = useState<string | null>(null);
+
+    const callHistoryIdInCallerState = useAppSelector(selectCallHistoryId)
 
     // user-preferences
     const [micOn,setMicOn] = useState<boolean>(true);
@@ -192,13 +195,18 @@ const CallDisplay = () => {
     },[dispatch, selectedChatDetails, socket])
 
     const handleCallEndClick = useCallback(() => {
-        if(callHistoryId) {
+        const callId = callHistoryIdInCallerState || callHistoryId;
+        if(callId) {
             const payload:CallEndEventSendPayload = {
-                callHistoryId
+                callHistoryId:callId,
+                wasCallAccepted:isAccepted
             }
             socket?.emit(Event.CALL_END, payload);
         }
-    }, [callHistoryId, socket]);
+        else{
+            toast.error("Some error occured we are sorry for the inconvenience");
+        }
+    }, [callHistoryId, callHistoryIdInCallerState, isAccepted, socket]);
     
     const handleAcceptCall = useCallback(async()=>{
         if(incomingCallInfo){
@@ -211,7 +219,8 @@ const CallDisplay = () => {
             if(!answer){
                 toast.error("Failed to accept call");
                 const callEndPayload:CallEndEventSendPayload = {
-                    callHistoryId:incomingCallInfo.callHistoryId
+                    callHistoryId:incomingCallInfo.callHistoryId,
+                    wasCallAccepted:isAccepted
                 }
                 socket?.emit(Event.CALL_END,callEndPayload);
                 return;
@@ -323,6 +332,12 @@ const CallDisplay = () => {
         // when we dont have an incomoin call, we will call the user
         if(!isInComingCall) {
             callUser();
+        }
+        return ()=>{
+            // cleanup
+            if(myStream){
+                myStream.getTracks().forEach(track=>track.stop());
+            }
         }
     },[isInComingCall]);
     

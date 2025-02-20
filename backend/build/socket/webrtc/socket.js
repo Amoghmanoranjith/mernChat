@@ -42,6 +42,11 @@ const registerWebRtcHandlers = (socket, io) => {
                 offer,
                 callHistoryId: newCall.id
             };
+            // sending the callId to the caller as well because if the caller wants to cancel the call he can
+            const callIdEventSendPayload = {
+                callHistoryId: newCall.id
+            };
+            socket.emit(Events.CALL_ID, callIdEventSendPayload);
             console.log('emitting incoming call event to', calleeSocketId);
             io.to(calleeSocketId).emit(Events.INCOMING_CALL, payload);
         }
@@ -111,7 +116,7 @@ const registerWebRtcHandlers = (socket, io) => {
             console.log('Error in CALL_REJECTED event', error);
         }
     });
-    socket.on(Events.CALL_END, async ({ callHistoryId }) => {
+    socket.on(Events.CALL_END, async ({ callHistoryId, wasCallAccepted }) => {
         try {
             const ongoingCall = await prisma.callHistory.findUnique({ where: { id: callHistoryId } });
             if (!ongoingCall) {
@@ -123,7 +128,7 @@ const registerWebRtcHandlers = (socket, io) => {
                 data: {
                     endedAt: new Date(),
                     duration: Math.floor((new Date().getTime() - ongoingCall.startedAt.getTime()) / 1000),
-                    status: "COMPLETED"
+                    status: !wasCallAccepted ? "MISSED" : "COMPLETED"
                 }
             });
             const callerSocketId = userSocketIds.get(ongoingCall.callerId);

@@ -3,10 +3,12 @@ import { RootState } from "../store/store";
 
 type InitialState = {
     isInCall:boolean;
+    callHistoryId:string | null;
 };
 
 const initialState: InitialState = {
-    isInCall:false
+    isInCall:false,
+    callHistoryId:null
 };
 
 const callSlice = createSlice({
@@ -16,15 +18,20 @@ const callSlice = createSlice({
 
     setIsInCall:(state,action:PayloadAction<boolean>)=>{
         state.isInCall = action.payload
+    },
+    setCallHistoryId:(state,action:PayloadAction<string | null>)=>{
+        state.callHistoryId = action.payload
     }
     
   },
 });
 
 export const selectIsInCall = (state: RootState) => state.callSlice.isInCall;
+export const selectCallHistoryId = (state: RootState) => state.callSlice.callHistoryId;
 
 export const {
-    setIsInCall
+    setIsInCall,
+    setCallHistoryId,
 } = callSlice.actions;
 
 export default callSlice

@@ -1,4 +1,5 @@
 import { useCallEndListener } from "../useCalls/useCallEndListener";
+import { useCallHistoryIdListener } from "../useCalls/useCallHistoryIdListener";
 import { useIncomingCallListener } from "../useCalls/useIncomingCallListener";
 import { useOtherCallingListeners } from "../useCalls/useOtherCallingListeners";
 import { useDeleteChatListener } from "../useEventListeners/useDeleteChatListener";
@@ -60,4 +61,5 @@ export const useAttachEventListeners = () => {
   useIncomingCallListener();
   useOtherCallingListeners();
   useCallEndListener();
+  useCallHistoryIdListener();
 };

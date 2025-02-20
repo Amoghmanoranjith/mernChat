@@ -56,6 +56,7 @@ type NegoFinalEventSendPayload = {
 
 type CallEndEventReceivePayload = {
     callHistoryId:string
+    wasCallAccepted:boolean
 }
 
 type CallRejectedEventReceivePayload = {
@@ -74,6 +75,10 @@ type IceCandidateEventReceivePayload = {
 type IceCandiateEventSendPayload = {
     candidate: RTCIceCandidate;
     callerId:string;
+}
+
+type CallIdEventSendPayload = {
+    callHistoryId:string
 }
 
 
@@ -125,6 +130,12 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 offer,
                 callHistoryId:newCall.id
             }
+            
+            // sending the callId to the caller as well because if the caller wants to cancel the call he can
+            const callIdEventSendPayload:CallIdEventSendPayload = {
+                callHistoryId:newCall.id
+            }
+            socket.emit(Events.CALL_ID,callIdEventSendPayload);
 
             console.log('emitting incoming call event to',calleeSocketId);
     
@@ -209,7 +220,7 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
         }
     })
     
-    socket.on(Events.CALL_END,async({callHistoryId}:CallEndEventReceivePayload)=>{
+    socket.on(Events.CALL_END,async({callHistoryId,wasCallAccepted}:CallEndEventReceivePayload)=>{
 
         try {
             const ongoingCall = await prisma.callHistory.findUnique({where: {id:callHistoryId}});
@@ -224,7 +235,7 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
                 data:{
                     endedAt:new Date(),
                     duration: Math.floor((new Date().getTime() - ongoingCall.startedAt.getTime()) / 1000), 
-                    status:"COMPLETED"
+                    status: !wasCallAccepted ? "MISSED" : "COMPLETED"
                 }
             })
     
@@ -265,7 +276,6 @@ const registerWebRtcHandlers = (socket: Socket,io:Server) => {
         }
         io.to(calleeSocketId).emit(Events.ICE_CANDIDATE,payload);
     })
-
 
     socket.on(Events.NEGO_NEEDED,async({offer,calleeId,callHistoryId}:NegoNeededEventReceivePayload)=>{
 

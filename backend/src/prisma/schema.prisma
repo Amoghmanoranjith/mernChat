@@ -16,9 +16,9 @@ datasource db {
 enum CallStatus {
   MISSED
   COMPLETED
-  ONGOING
   REJECTED
   INTERRUPTED
+  RINGING
 }
 
 model ChatMembers {
@@ -188,7 +188,7 @@ model CallHistory {
   startedAt DateTime @default(now())
   endedAt   DateTime?
   duration  Int?
-  status   CallStatus @default(ONGOING)
+  status   CallStatus @default(RINGING)
 }
 
 model User {
