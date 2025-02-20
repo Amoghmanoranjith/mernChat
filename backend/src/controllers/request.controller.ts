@@ -164,6 +164,21 @@ export const handleRequest = asyncErrorHandler(async(req:AuthenticatedRequest,re
 
     if(action==='accept'){
 
+      const existingChat = await prisma.chat.findFirst({
+        where: {
+            isGroupChat: false,  // Ensure it's a private chat
+            ChatMembers: {
+                every: {  // Ensure both users are part of the chat
+                    userId: { in: [isExistingRequest.senderId, isExistingRequest.receiverId] }
+                }
+            }
+        }
+     });
+
+     if(existingChat){
+        return next(new CustomError("Your private chat already exists",400));
+     }
+
         const newChat = await prisma.chat.create({
           data:{
             ChatMembers:{

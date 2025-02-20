@@ -5,7 +5,7 @@ import { FriendRequestList } from "./FriendRequestList";
 
 const FriendRequestForm = () => {
   const { data: friendRequests } = useGetUserFriendRequestsQuery();
-  const { handleFriendRequest } = useAcceptOrRejectFriendRequest();
+  const { handleFriendRequest , isLoading } = useAcceptOrRejectFriendRequest();
 
   const friendRequestHandler = (
     requestId: fetchUserFriendRequestResponse['id'],
@@ -18,6 +18,7 @@ const FriendRequestForm = () => {
     <div>
       {friendRequests ? (
         <FriendRequestList
+          isLoading={isLoading}
           users={friendRequests}
           friendRequestHandler={friendRequestHandler}
         />
