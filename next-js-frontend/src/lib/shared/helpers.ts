@@ -252,6 +252,34 @@ const getActiveMembersInChat = (
   return chat.ChatMembers.filter(({user:{id,isOnline}}) => id !== loggedInUserId && isOnline);
 };
 
+const formatCallDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+  });
+
+  if (isToday) {
+      return `Today, ${timeFormatter.format(date)}`;
+  } else if (isYesterday) {
+      return `Yesterday, ${timeFormatter.format(date)}`;
+  } else {
+      const dateFormatter = new Intl.DateTimeFormat("en-US", {
+          day: "numeric",
+          month: "long"
+      });
+      return `${dateFormatter.format(date)}, ${timeFormatter.format(date)}`;
+  }
+};
+
 export {
   base64ToArrayBuffer,
   base64ToUint8Array,
@@ -265,6 +293,7 @@ export {
   isErrorWithMessage,
   isFetchBaseQueryError,
   sortChats,
-  uint8ArrayToBase64
+  uint8ArrayToBase64,
+  formatCallDate
 };
 

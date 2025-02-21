@@ -1,8 +1,10 @@
 import { friendApi } from "@/lib/client/rtk-query/friend.api";
 import { requestApi } from "@/lib/client/rtk-query/request.api";
 import { updateLoggedInUser } from "@/lib/client/slices/authSlice";
+import { setCallHistory } from "@/lib/client/slices/callSlice";
 import { setChats } from "@/lib/client/slices/chatSlice";
 import { useAppDispatch } from "@/lib/client/store/hooks";
+import { fetchUserCallHistoryResponse } from "@/lib/server/services/callService";
 import {
   fetchUserChatsResponse,
   fetchUserFriendRequestResponse,
@@ -16,6 +18,7 @@ type PropTypes = {
   friends: fetchUserFriendsResponse[];
   friendRequest: fetchUserFriendRequestResponse[];
   user: FetchUserInfoResponse;
+  callHistory:fetchUserCallHistoryResponse[];
 };
 
 export const usePopulateStateWithServerSideFetchedData = ({
@@ -23,6 +26,7 @@ export const usePopulateStateWithServerSideFetchedData = ({
   friendRequest,
   friends,
   user,
+  callHistory
 }: PropTypes) => {
   
   const dispatch = useAppDispatch();
@@ -31,7 +35,8 @@ export const usePopulateStateWithServerSideFetchedData = ({
     dispatch(updateLoggedInUser(user));
     dispatch(setChats(chats));
     dispatch(friendApi.util.upsertQueryData("getFriends", undefined, [...friends]));
-    dispatch(requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [...friendRequest])
-    );
-  }, [chats, dispatch, friendRequest, friends, user]);
+    dispatch(requestApi.util.upsertQueryData("getUserFriendRequests", undefined, [...friendRequest]));
+    dispatch(setCallHistory(callHistory));
+
+  }, [callHistory, chats, dispatch, friendRequest, friends, user]);
 };

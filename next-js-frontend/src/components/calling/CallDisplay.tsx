@@ -3,7 +3,7 @@ import { useSocket } from "@/context/socket.context";
 import { useSocketEvent } from "@/hooks/useSocket/useSocketEvent";
 import { Event } from "@/interfaces/events.interface";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
-import { selectCallHistoryId, setIsInCall, setMyGlobalStream } from "@/lib/client/slices/callSlice";
+import { selectCalleeIdPopulatedFromRecentCalls, selectCallHistoryId, setIsInCall, setMyGlobalStream } from "@/lib/client/slices/callSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { selectIncomingCallInfo, selectIsIncomingCall, setCallDisplay } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
@@ -95,7 +95,9 @@ const CallDisplay = () => {
     const isInComingCall = useAppSelector(selectIsIncomingCall);
     const incomingCallInfo = useAppSelector(selectIncomingCallInfo);
 
-    const loggedInUserId = useAppSelector(selectLoggedInUser)?.id as string;
+
+    const loggedInUser = useAppSelector(selectLoggedInUser);
+    const loggedInUserId = loggedInUser?.id as string;
     const otherMember = getOtherMemberOfPrivateChat(selectedChatDetails,loggedInUserId);
 
     // my stream
@@ -121,6 +123,7 @@ const CallDisplay = () => {
 
     const socket = useSocket();
     const dispatch = useAppDispatch();
+    const calleeIdPopulatedFromRecentCalls = useAppSelector(selectCalleeIdPopulatedFromRecentCalls);
 
     const toggleMic = useCallback(()=>setMicOn((prev)=>!prev),[]);
     const toggleCamera = useCallback(()=>setCameraOn((prev)=>!prev),[]);
@@ -180,9 +183,10 @@ const CallDisplay = () => {
             toast.error('unable to create offer man')
         }
         console.log('offer created');
-        if(offer && selectedChatDetails){
+        const calleeId = selectedChatDetails?.ChatMembers?.filter(member=>member?.user?.id !== loggedInUserId)[0]?.user?.id || calleeIdPopulatedFromRecentCalls
+        if(offer && calleeId){
             const payload:CallUserEventSendPayload = {
-                calleeId:selectedChatDetails.ChatMembers.filter(member=>member?.user?.id !== loggedInUserId)[0]?.user?.id,
+                calleeId,
                 offer
             }
             dispatch(setIsInCall(true));
@@ -192,7 +196,7 @@ const CallDisplay = () => {
           toast.error("Failed to initiate call");
           dispatch(setCallDisplay(false));
         }
-    },[dispatch, selectedChatDetails, socket])
+    },[dispatch, selectedChatDetails, socket,calleeIdPopulatedFromRecentCalls])
 
     const handleCallEndClick = useCallback(() => {
         const callId = callHistoryIdInCallerState || callHistoryId;
@@ -423,9 +427,9 @@ const CallDisplay = () => {
                         width={200}
                         height={200}
                         alt="caller-avatar"
-                        className="bg-green-500 rounded-full size-32"
+                        className="rounded-full size-32"
                     />
-                    <span className="text-xl">{incomingCallInfo?incomingCallInfo.caller?.username:otherMember?.user?.username || 'default-user'}</span>
+                    <span className="text-xl">{incomingCallInfo?incomingCallInfo.caller?.username:otherMember?.user?.username || 'You'}</span>
                 </div>
 
                 {/* call status and timer */}

@@ -8,6 +8,7 @@ import { useStoreFcmTokenInDb } from "@/hooks/useFcm/useStoreFcmTokenInDb";
 import { useClearExtraPreviousMessagesOnChatChange } from "@/hooks/useMessages/useClearExtraPreviousMessagesOnChatChange";
 import { useAttachEventListeners } from "@/hooks/useUtils/useAttachEventListeners";
 import { usePopulateStateWithServerSideFetchedData } from "@/hooks/useUtils/usePopulateStateWithServerSideFetchedData";
+import { fetchUserCallHistoryResponse } from "@/lib/server/services/callService";
 import { fetchUserChatsResponse, fetchUserFriendRequestResponse, fetchUserFriendsResponse, FetchUserInfoResponse } from "@/lib/server/services/userService";
 
 
@@ -17,12 +18,13 @@ type PropTypes = {
   friends: fetchUserFriendsResponse[];
   chats: fetchUserChatsResponse[];
   friendRequest: fetchUserFriendRequestResponse[];
+  callHistory:fetchUserCallHistoryResponse[];
 };
 
-export const ChatWrapper = ({children,chats,friendRequest,friends,user}: PropTypes) => {
+export const ChatWrapper = ({children,chats,friendRequest,friends,user,callHistory}: PropTypes) => {
 
   // client side state hydration
-  usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user});
+  usePopulateStateWithServerSideFetchedData({chats,friendRequest,friends,user,callHistory});
 
   // chats
   useUpdateUnreadMessagesAsSeenOnChatSelect();

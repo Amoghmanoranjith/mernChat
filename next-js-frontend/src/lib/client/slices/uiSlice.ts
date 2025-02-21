@@ -35,6 +35,8 @@ interface InitialState {
   callDisplay: boolean;
   isIncomingCall:boolean
   incomingCallInfo: IncomingCallEventReceivePayload | null;
+
+  callHistoryTabSelected: boolean;
 }
 
 const initialState: InitialState = {
@@ -60,7 +62,8 @@ const initialState: InitialState = {
   notificationPermissionForm: false,
   callDisplay:false,
   isIncomingCall:false,
-  incomingCallInfo:null
+  incomingCallInfo:null,
+  callHistoryTabSelected:false
 };
 const uiSlice = createSlice({
   name: "uiSlice",
@@ -145,6 +148,9 @@ const uiSlice = createSlice({
     },
     setInComingCallInfo: (state, action: PayloadAction<IncomingCallEventReceivePayload | null>) => {
       state.incomingCallInfo = action.payload;
+    },
+    setCallHistoryTabSelected: (state, action: PayloadAction<boolean>) => {
+      state.callHistoryTabSelected = action.payload;
     }
   },
 });
@@ -186,6 +192,7 @@ export const selectNotificationPermissionForm = (state: RootState) =>
 export const selectCallDisplay = (state: RootState) => state.uiSlice.callDisplay;
 export const selectIsIncomingCall = (state: RootState) => state.uiSlice.isIncomingCall;
 export const selectIncomingCallInfo = (state: RootState) => state.uiSlice.incomingCallInfo;
+export const selectCallHistoryTabSelected = (state: RootState) => state.uiSlice.callHistoryTabSelected;
 
 // exporting actions
 export const {
@@ -213,6 +220,7 @@ export const {
   setCallDisplay,
   setIsIncomingCall,
   setInComingCallInfo,
+  setCallHistoryTabSelected
 } = uiSlice.actions;
 
 export default uiSlice;
