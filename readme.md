@@ -4,6 +4,7 @@
 
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/group-chat-creation.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/recent-calls.png)
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/poll-creation.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/sending-gif.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/uploading-attachments.png)
