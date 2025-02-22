@@ -8,7 +8,10 @@
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/sending-gif.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/uploading-attachments.png)
 
-<div style="display: flex; overflow-x: scroll; column-gap: 1rem; object-fit: contain;">
+
+## **Responsive Design 📱**
+
+<div>
 <img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/home-screen.png"/>
 <img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/call-history.png"/>
 <img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/incoming-call.png"/>
