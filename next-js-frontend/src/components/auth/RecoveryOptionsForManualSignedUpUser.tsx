@@ -10,8 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { CircleLoading } from "../shared/CircleLoading";
 import toast from "react-hot-toast";
+import { CircleLoading } from "../shared/CircleLoading";
 
 type PropTypes = {
   loggedInUser: FetchUserInfoResponse | null;
@@ -70,7 +70,6 @@ function SubmitButton(){
 
   return (
     <button
-    key={pending ? "adws":"asdf"}
     type="submit"
     className={`bg-primary px-14 py-2 self-center rounded-sm ${
       pending ? "bg-transparent" : ""

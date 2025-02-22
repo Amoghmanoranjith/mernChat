@@ -2,20 +2,27 @@
 
 **[Next.js Chat App](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
-![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)  
-![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/1.png)  
-![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/3.png)  
-![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/4.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/group-chat-creation.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/poll-creation.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/sending-gif.png)  
+![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/uploading-attachments.png)
+
+<div style="display: flex; overflow-x: scroll; column-gap: 1rem; object-fit: contain;">
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/home-screen.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/call-history.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/incoming-call.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/ongoing-call.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/chat-view.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/reaction-and-unsend-feature.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/add-caption-on-photo.png"/>
+<img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/chat-details.png"/>
+</div>
+
 
 ---
 
-
-
 ## **🚀 Features**  
-
-### 🔒 **Privacy & Security**  
-- **End-to-End Encryption (E2EE)** – Secure messages with advanced encryption.  
-- **Private Key Recovery** – Retrieve your encryption key with MFA-protected email verification.  
 
 ### 💬 **Chat & Messaging**  
 - **Real-time Messaging** – Instantly send and receive messages.  
@@ -23,11 +30,14 @@
 - **Message Reactions** – React to messages with emojis (double-tap to like/unlike).  
 - **Message Deletion** – Delete messages after sending.  
 - **Typing Indicators** – See when someone is typing.  
-- **Message Seen Status** – Know when your message is read.  
+
+### 📞 **Audio & Video Calling**
+- **Peer-to-Peer Calls** – High-quality, voice and video calls powered by webrtc.
+- **Call History** – View and manage past call logs.
 
 ### 📢 **Notifications & Presence**  
 - **Push Notifications** – Stay updated with real-time alerts.  
-- **User Presence** – See who’s online in real time.  
+- **User Presence** – See who’s online in real time.
 
 ### 🤝 **Social Features**  
 - **Friends System** – Add friends and chat with them.  
@@ -37,6 +47,10 @@
 ### 📁 **Media & File Sharing**  
 - **GIF Support** – Send animated GIFs (powered by Tenor).  
 - **File Sharing** – Send and receive files securely.  
+
+### 🔒 **Privacy & Security**  
+- **End-to-End Encryption (E2EE)** – Secure messages with advanced encryption.  
+- **Private Key Recovery** – Retrieve your encryption key with MFA-protected email verification.  
 
 ### 🛠️ **Other Features**  
 - **OAuth Integration** – Sign in with Google & GitHub.  
