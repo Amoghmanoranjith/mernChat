@@ -9,7 +9,7 @@
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/uploading-attachments.png)
 
 
-## **Responsive Design 📱**
+<!-- ## **Responsive Design 📱**
 
 <div>
 <img style="object-fit: contain;" src="next-js-frontend/public/images/mobile-screenshots/home-screen.png"/>
@@ -23,7 +23,7 @@
 </div>
 
 
----
+--- -->
 
 ## **🚀 Features**  
 
