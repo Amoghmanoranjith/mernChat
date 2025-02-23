@@ -3,14 +3,16 @@ import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromCloudinary, uploadEncryptedAudioToCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 import registerWebRtcHandlers from "./webrtc/socket.js";
+import { UploadApiResponse } from "cloudinary";
 
 type MessageEventReceivePayload = {
     chatId:string
     isPollMessage:boolean
     textMessageContent?:string | ArrayBuffer
+    encryptedAudio?:Uint8Array<ArrayBuffer>
     url?:string
     pollData?:{
         pollQuestion?:string
@@ -28,6 +30,7 @@ type UnreadMessageEventSendPayload = {
         attachments?:boolean
         poll?:boolean
         createdAt:Date
+        audio?:boolean
     },
     sender:{
         id:string,
@@ -186,11 +189,28 @@ const registerSocketHandlers = (io:Server)=>{
         const chatIds = userChats.map(({chatId})=>chatId);
         socket.join(chatIds)
 
-        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url}:MessageEventReceivePayload)=>{
+        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio}:MessageEventReceivePayload)=>{
             
             let newMessage:Partial<Prisma.MessageCreateInput>
+
+            if(encryptedAudio){
+                const uploadResult = ( await uploadEncryptedAudioToCloudinary({buffer:encryptedAudio})) as UploadApiResponse | undefined;
+                if(!uploadResult) return;
+                
+                newMessage = await prisma.message.create({
+                    data:{
+                        senderId:socket.user.id,
+                        chatId:chatId,
+                        isTextMessage:false,
+                        isPollMessage:false,
+                        audioPublicId:uploadResult.public_id,
+                        audioUrl:uploadResult.secure_url
+                    },
+                })
             
-            if(isPollMessage && pollData?.pollOptions && pollData.pollQuestion){
+            }
+            
+            else if(isPollMessage && pollData?.pollOptions && pollData.pollQuestion){
 
                 const newPoll =  await prisma.poll.create({
                     data:{
@@ -303,10 +323,11 @@ const registerSocketHandlers = (io:Server)=>{
                       }
                     },
                   },
-                  omit:{
+                omit:{
                     senderId:true,
                     pollId:true,
-                  },
+                    audioPublicId:true,
+                },
             })
             
             io.to(chatId).emit(Events.MESSAGE,{...message,isNew:true})
@@ -366,6 +387,7 @@ const registerSocketHandlers = (io:Server)=>{
                     url:newMessage.url ? true : false,
                     attachments:false,
                     poll:newMessage.isPollMessage ? true : false,
+                    audio:newMessage.audioPublicId ? true : false,
                     createdAt:newMessage.createdAt as Date
                 },
                 sender:{

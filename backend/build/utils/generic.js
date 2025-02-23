@@ -29,3 +29,6 @@ export const sendPushNotification = ({ fcmToken, body, title }) => {
         console.log('error while sending push notification', error);
     }
 };
+export const convertBufferToBase64 = (buffer) => {
+    return Buffer.from(buffer).toString("base64");
+};

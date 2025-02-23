@@ -1,7 +1,7 @@
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromCloudinary, uploadEncryptedAudioToCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 import registerWebRtcHandlers from "./webrtc/socket.js";
 const registerSocketHandlers = (io) => {
@@ -34,9 +34,24 @@ const registerSocketHandlers = (io) => {
         // joining the user to all of its chats via chatIds (i.e rooms)
         const chatIds = userChats.map(({ chatId }) => chatId);
         socket.join(chatIds);
-        socket.on(Events.MESSAGE, async ({ chatId, isPollMessage, pollData, textMessageContent, url }) => {
+        socket.on(Events.MESSAGE, async ({ chatId, isPollMessage, pollData, textMessageContent, url, encryptedAudio }) => {
             let newMessage;
-            if (isPollMessage && pollData?.pollOptions && pollData.pollQuestion) {
+            if (encryptedAudio) {
+                const uploadResult = (await uploadEncryptedAudioToCloudinary({ buffer: encryptedAudio }));
+                if (!uploadResult)
+                    return;
+                newMessage = await prisma.message.create({
+                    data: {
+                        senderId: socket.user.id,
+                        chatId: chatId,
+                        isTextMessage: false,
+                        isPollMessage: false,
+                        audioPublicId: uploadResult.public_id,
+                        audioUrl: uploadResult.secure_url
+                    },
+                });
+            }
+            else if (isPollMessage && pollData?.pollOptions && pollData.pollQuestion) {
                 const newPoll = await prisma.poll.create({
                     data: {
                         question: pollData.pollQuestion,
@@ -148,6 +163,7 @@ const registerSocketHandlers = (io) => {
                 omit: {
                     senderId: true,
                     pollId: true,
+                    audioPublicId: true,
                 },
             });
             io.to(chatId).emit(Events.MESSAGE, { ...message, isNew: true });
@@ -200,6 +216,7 @@ const registerSocketHandlers = (io) => {
                     url: newMessage.url ? true : false,
                     attachments: false,
                     poll: newMessage.isPollMessage ? true : false,
+                    audio: newMessage.audioPublicId ? true : false,
                     createdAt: newMessage.createdAt
                 },
                 sender: {

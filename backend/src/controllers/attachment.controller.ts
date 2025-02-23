@@ -22,9 +22,6 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
         return next(new CustomError("ChatId is required",400))
     }
 
-    console.log('chatId', chatId);
-    console.log('attachments',req.files);
-
     const isExistingChat = await prisma.chat.findUnique({
         where:{
             id:chatId
@@ -106,6 +103,7 @@ export const uploadAttachment = asyncErrorHandler(async(req:AuthenticatedRequest
         omit:{
           senderId:true,
           pollId:true,
+          audioPublicId:true
         },
     })
 

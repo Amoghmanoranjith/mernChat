@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { SetStateAction } from "react";
+import { SetStateAction, useCallback, useState } from "react";
 import { useDynamicRowValue } from "../../hooks/useUtils/useDynamicRowValue";
 import { MessageInputExtraOptions } from "../messages/MessageInputExtraOptions";
 import { SendIcon } from "./icons/SendIcon";
@@ -22,23 +22,27 @@ export const MessageInput = ({
   
   const { getRowValue } = useDynamicRowValue();
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Check if the 'Enter' key was pressed without the 'Shift' key
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // Find the closest form element
       const form = e.currentTarget.closest("form");
-      // If a form element is found, dispatch a submit event to trigger form submission
       if (form) form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
     }
-  };
+  },[]);
+
+  const [isRecording,setIsRecording] = useState<boolean>(false);
+  const [voiceNoteActive,setVoiceNoteActive] = useState<boolean>(false);
 
   return (
     <div className="flex rounded-xl text-text items-center bg-secondary">
 
-      <button className="hover:text-primary" type="button" onClick={()=>setEmojiFormOpen(true)}>
-        <SmileIcon />
-      </button>
+      {
+        !isRecording && (
+          <button className="hover:text-primary" type="button" onClick={()=>setEmojiFormOpen(true)}>
+            <SmileIcon />
+          </button>
+        )
+      }
 
       <textarea
         value={messageVal}
@@ -47,7 +51,7 @@ export const MessageInput = ({
         aria-autocomplete="none"
         style={{ scrollbarWidth: "none" }}
         autoComplete="off"
-        placeholder="Your message"
+        placeholder={(isRecording || voiceNoteActive) ?"Recording ... ":"Your message"}
         name="chatMessageBaatchit"
         inputMode="text"
         id="message-input"
@@ -56,12 +60,17 @@ export const MessageInput = ({
         autoCapitalize="none"
         maxLength={1000}
         rows={getRowValue(messageVal.length)}
+        disabled={isRecording}
         onKeyDown={handleKeyDown}
       />
 
       {!messageVal.trim().length && (
         <MessageInputExtraOptions
+          isRecording={isRecording}
+          setIsRecording={setIsRecording}
           toggleAttachmentsMenu={setAttachmentsMenuOpen}
+          setVoiceNoteActive={setVoiceNoteActive}
+          voiceNoteActive={voiceNoteActive}
         />
       )}
 

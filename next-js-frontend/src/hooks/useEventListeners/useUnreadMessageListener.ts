@@ -12,6 +12,7 @@ interface UnreadMessageEventReceivePayload {
       url?:boolean | undefined | null
       attachments?:boolean
       poll?:boolean
+      audio?:boolean
       createdAt:Date
   },
   sender:{

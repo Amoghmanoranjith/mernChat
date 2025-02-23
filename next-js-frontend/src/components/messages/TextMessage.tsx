@@ -33,7 +33,7 @@ export const TextMessage = ({
   });
 
   const [readMore, setReadMore] = useState<boolean>(false);
-  const isMessageLong = decryptedMessage.length > 500;
+  const isMessageLong = decryptedMessage?.length > 500;
   const inEditState = editMessageId === messageId;
 
   return inEditState ? (
@@ -46,7 +46,7 @@ export const TextMessage = ({
   ) : (
     <>
       <span className="break-words max-sm:text-sm">
-        {readMore ? decryptedMessage : decryptedMessage.substring(0, 400)}
+        {readMore ? decryptedMessage : decryptedMessage?.substring(0, 400)}
         {isMessageLong && (
           <span
             className="font-medium cursor-pointer"

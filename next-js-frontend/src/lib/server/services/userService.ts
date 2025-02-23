@@ -129,6 +129,7 @@ const fetchUserChats = async ({loggedInUserId}:{loggedInUserId:string}) => {
                   isPollMessage:true,
                   createdAt:true,
                   textMessageContent:true,
+                  audioUrl:true,
                 }
               },
               sender:{
@@ -293,6 +294,7 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
             isPollMessage:true,
             createdAt:true,
             textMessageContent:true,
+            audioUrl:true,
           }
         },
         sender:{
@@ -337,6 +339,7 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
     omit:{
         senderId:true,
         pollId:true,
+        audioPublicId:true,
     },
     }
   }

@@ -10,6 +10,7 @@ import { useGetSharedKey } from "../useAuth/useGetSharedKey";
 type MessageEventSendPayload = {
   chatId:string
   isPollMessage:boolean
+  encryptedAudio?:Uint8Array<ArrayBuffer>
   textMessageContent?:string | ArrayBuffer
   url?:string
   pollData?:{
@@ -26,9 +27,26 @@ export const useSendMessage = () => {
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
   const { getSharedKey } = useGetSharedKey();
 
-  const sendMessage = async (messageVal?: string, url?: string, pollQuestion?: string, pollOptions?: Array<string>, isMultipleAnswers?: boolean) => {
+  const sendMessage = async (messageVal?: string, url?: string, pollQuestion?: string, pollOptions?: Array<string>, isMultipleAnswers?: boolean, encryptedAudio?:Uint8Array<ArrayBuffer>) => {
 
     let encryptedMessage;
+
+    if(encryptedAudio && selectedChatDetails){
+      const newMessage: MessageEventSendPayload = {
+        chatId:selectedChatDetails.id,
+        isPollMessage: pollOptions?.length && pollQuestion?.length ? true : false,
+        textMessageContent: encryptedMessage ? encryptedMessage : messageVal? messageVal : undefined,
+        url: url ? url : undefined,
+        pollData:{
+          isMultipleAnswers,
+          pollOptions,
+          pollQuestion
+        },
+        encryptedAudio: encryptedAudio ? encryptedAudio : undefined
+      };
+      socket?.emit(Event.MESSAGE, newMessage);
+      return;
+    }
 
     if (messageVal && loggedInUserId && selectedChatDetails && !selectedChatDetails?.isGroupChat) {
 
@@ -58,7 +76,8 @@ export const useSendMessage = () => {
           isMultipleAnswers,
           pollOptions,
           pollQuestion
-        }
+        },
+        encryptedAudio: encryptedAudio ? encryptedAudio : undefined
       };
       socket?.emit(Event.MESSAGE, newMessage);
     }

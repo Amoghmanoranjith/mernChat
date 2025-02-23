@@ -67,6 +67,38 @@ const encryptMessage = async ({
   return base64Payload;
 };
 
+const encryptAudioBlob = async ({
+  sharedKey,
+  audioBlob,
+}: {
+  sharedKey: CryptoKey;
+  audioBlob: Blob;
+}): Promise<Uint8Array<ArrayBuffer> | undefined> => {
+  if (typeof window === "undefined") return;
+  const crypto = window.crypto.subtle;
+
+  // Convert Blob to ArrayBuffer
+  const audioArrayBuffer = await audioBlob.arrayBuffer();
+
+  // Generate a random IV
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+  // Encrypt the audio data
+  const encryptedData = await crypto.encrypt(
+    { name: "AES-GCM", iv },
+    sharedKey,
+    audioArrayBuffer
+  );
+
+  // Combine IV and encrypted data
+  const combinedBuffer = new Uint8Array(iv.length + encryptedData.byteLength);
+  combinedBuffer.set(iv, 0);
+  combinedBuffer.set(new Uint8Array(encryptedData), iv.length);
+
+  return combinedBuffer;
+};
+
+
 // message decryption function
 const decryptMessage = async (
   sharedKey: CryptoKey,
@@ -108,6 +140,37 @@ const decryptMessage = async (
     return null;
   }
 };
+
+const decryptAudioBlob = async ({
+  sharedKey,
+  encryptedAudio,
+}: {
+  sharedKey: CryptoKey;
+  encryptedAudio: Uint8Array<ArrayBuffer>;
+}): Promise<Blob | null> => {
+  if (typeof window === "undefined") return null;
+  const crypto = window.crypto.subtle;
+
+  try {
+    // Extract IV and encrypted data
+    const iv = encryptedAudio.slice(0, 12);
+    const audioEncrypted = encryptedAudio.slice(12);
+
+    // Decrypt the message
+    const decryptedArrayBuffer = await crypto.decrypt(
+      { name: "AES-GCM", iv },
+      sharedKey,
+      audioEncrypted
+    );
+
+    // Convert decrypted ArrayBuffer back to a Blob
+    return new Blob([decryptedArrayBuffer], { type: "audio/webm" }); // Change type based on actual format
+  } catch (error) {
+    console.error("Decryption failed:", error);
+    return null;
+  }
+};
+
 
 // Function to derive a shared secret key using ECDH and the provided private and public keys
 const deriveSharedSecretKey = async ({
@@ -393,4 +456,6 @@ export {
   encryptMessage,
   encryptPrivateKey,
   generateKeyPair,
+  encryptAudioBlob,
+  decryptAudioBlob
 };

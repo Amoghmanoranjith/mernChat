@@ -115,13 +115,14 @@ const chatSlice = createSlice({
         url?:boolean | undefined | null
         attachments?:boolean
         poll?:boolean
+        audio?:boolean
         createdAt:Date
       },
       sender:{
         id:string,
         avatar:string,
         username:string
-    }
+      }
     }>)=>{
 
         const {chatId,message,sender} = action.payload;
@@ -142,7 +143,8 @@ const chatSlice = createSlice({
                 isTextMessage: true,
                 textMessageContent: message?.textMessageContent || null,
                 isPollMessage: message?.poll || false,
-                url: message?.url ? 'asdf' : null
+                url: message?.url ? 'asdf' : null,
+                audioUrl: message?.audio ? 'audio-url' : null,
               },
               sender
             });
@@ -159,6 +161,7 @@ const chatSlice = createSlice({
             else if (message?.textMessageContent?.length) chat.UnreadMessages[0].message.textMessageContent = message.textMessageContent;
             else if (message?.attachments) chat.UnreadMessages[0].message.attachments = [{secureUrl:"demo-url"}];
             else if (message?.url) chat.UnreadMessages[0].message.url = 'yes it is a gif';
+            else if(message?.audio) chat.UnreadMessages[0].message.audioUrl = 'audio-url';
           }
         }
 

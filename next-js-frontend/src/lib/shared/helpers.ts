@@ -196,7 +196,8 @@ const getAppropriateLastLatestMessageForGroupChats = (
     : latestMessage?.attachments.length
     ? "Sent an attachment"
     : latestMessage?.isTextMessage
-    ? truncateTextMessage(latestMessage.textMessageContent)
+    ? truncateTextMessage(latestMessage?.textMessageContent)
+    : latestMessage?.audioUrl ? "Sent a voice note" 
     : null;
 };
 
@@ -207,8 +208,9 @@ const getAppropriateLastLatestMessageForPrivateChats = (
     ? "Sent a poll"
     : latestMessage?.url
     ? "Sent a gif"
-    : latestMessage?.attachments.length
+    : latestMessage?.attachments?.length
     ? "Sent an attachment"
+    : latestMessage?.audioUrl ? "Sent a voice note" 
     : null;
 };
 
@@ -223,6 +225,7 @@ const getAppropriateUnreadMessageForGroupChats = (
     ? "Sent an attachment"
     : unreadMessage[0]?.message?.isTextMessage
     ? truncateTextMessage(unreadMessage[0]?.message.textMessageContent)
+    : unreadMessage[0]?.message?.audioUrl ? "Sent a voice note"
     : null;
 };
 
@@ -235,6 +238,7 @@ const getAppropriateUnreadMessageForPrivateChats = (
     ? "Sent a gif"
     : unreadMessage[0]?.message?.attachments
     ? "Sent an attachment"
+    : unreadMessage[0]?.message?.audioUrl ? "Sent a voice note"
     : null;
 };
 

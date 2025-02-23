@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { convertBufferToBase64 } from './generic.js';
 
 
 const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
@@ -36,6 +37,19 @@ export const deleteFilesFromCloudinary = async({publicIds}:{publicIds:string[]})
         console.log(error);
     }
 }
+
+export const uploadEncryptedAudioToCloudinary = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<any | undefined> => {
+    try {
+      const base64Audio = `data:audio/webm;base64,${convertBufferToBase64(buffer)}`; // Adjust MIME type if needed
+      const uploadResult = await cloudinary.uploader.upload(base64Audio, {
+        resource_type: "raw", // "raw" for non-standard formats (or "video" for MP4)
+        folder: "encrypted-audio",
+      });
+      return uploadResult;
+    } catch (error) {
+      console.error("Error uploading encrypted audio to Cloudinary:", error);
+    }
+};
 
 export const getSecureUserInfo = (user:any):any=>{
     return {

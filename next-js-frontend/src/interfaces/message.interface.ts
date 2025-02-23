@@ -35,6 +35,7 @@ export interface Message {
     url: string | null;
     isPollMessage: boolean;
     isEdited: boolean;
+    audioUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
     isNew?:boolean
