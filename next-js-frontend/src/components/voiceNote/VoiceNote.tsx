@@ -43,23 +43,26 @@ export const VoiceNote = ({audioUrl,loggedInUserId,selectedChatDetails}:PropType
 
     useEffect(()=>{
         fetchAudioAsBuffer(audioUrl);
-        setSharedKeyInState();
+        if(!selectedChatDetails.isGroupChat){
+            // as because group chats audio are not encrypted
+            setSharedKeyInState();
+        }
     },[])
 
     useEffect(()=>{
         if(base64Audio && sharedKey){
             handleSetDecryptAudio({encryptedAudio:base64Audio,sharedKey})
         }
+        else if(base64Audio && selectedChatDetails.isGroupChat){
+            const blob = new Blob([base64Audio], { type: "audio/webm" });
+            setUrl(URL.createObjectURL(blob));
+        }
     },[base64Audio,sharedKey])
       
 
   return (
-    <div>
-        {
-            url && (
-                <audio src={url} controls></audio>
-            )
-        }
-    </div>
+    url && (
+        <audio src={url} className="max-sm:w-56 max-sm:h-[40px]" controls></audio>
+    )   
   )
 }

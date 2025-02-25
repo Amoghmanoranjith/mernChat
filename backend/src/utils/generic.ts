@@ -38,3 +38,11 @@ export const sendPushNotification = ({fcmToken,body,title}:{fcmToken:string,body
 export const convertBufferToBase64 = (buffer: Uint8Array<ArrayBuffer>): string => {
   return Buffer.from(buffer).toString("base64");
 };
+
+export const bufferToBase64 = (buffer: Buffer): string => {
+  return buffer.toString("base64");
+};
+
+
+
+

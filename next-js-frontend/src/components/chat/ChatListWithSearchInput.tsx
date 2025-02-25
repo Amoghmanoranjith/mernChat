@@ -44,7 +44,14 @@ export const ChatListWithSearchInput = ({ chats }: PropTypes) => {
         callHistoryTabSelected?(
           <div className="flex flex-col gap-6">
             <h1 className="text-text text-2xl">Recent Calls</h1>
-            <CallHistoryList callHistory={callHistory}/>
+            {
+              callHistory.length === 0 ? (
+                <span className="text-text self-center text-center mt-4 mb-4">No recent calls</span>
+              ):
+              (
+                <CallHistoryList callHistory={callHistory}/>
+              )
+            }
           </div>
         ):
         (
@@ -53,10 +60,16 @@ export const ChatListWithSearchInput = ({ chats }: PropTypes) => {
               searchVal={searchVal}
               setSearchVal={setSearchVal}
             />
-            <ChatList
-              chats={showFilteredChats ? filteredChats : chats}
-              isFiltered={showFilteredChats}
-            />
+            {
+              chats.length === 0 ? (
+                  <span className="text-text self-center text-center px-2 mt-4 mb-4">Click on your profile, make friends by sending a friend request<br /> and start chatting</span>
+              ):(
+                <ChatList
+                  chats={showFilteredChats ? filteredChats : chats}
+                  isFiltered={showFilteredChats}
+                />
+              )
+            }
           </>
         )
       }

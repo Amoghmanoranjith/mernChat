@@ -34,7 +34,7 @@ const encryptMessage = async ({
 }: {
   sharedKey: CryptoKey;
   message: string;
-}): Promise<string> => {
+}): Promise<string | null> => {
   if (typeof window === "undefined") return "";
   const crypto = window.crypto.subtle;
   // Generate a random initialization vector (IV) for each encryption. AES-GCM requires a unique IV for every encryption operation.
@@ -64,7 +64,10 @@ const encryptMessage = async ({
   const base64Payload = uint8ArrayToBase64(combinedBuffer); // Helper function that converts the array buffer to base64.
 
   // Return the encrypted message as a base64 string which can be transmitted safely.
-  return base64Payload;
+  if(base64Payload){
+    return base64Payload;
+  }
+  return null;
 };
 
 const encryptAudioBlob = async ({
@@ -104,40 +107,46 @@ const decryptMessage = async (
   sharedKey: CryptoKey,
   encryptedDataWithIv: string
 ) => {
-  if (typeof window === "undefined") return;
-  const crypto = window.crypto.subtle;
-
-  // Convert the base64-encoded encrypted data (which includes both the IV and the ciphertext) back to a Uint8Array.
-  // The helper function `base64ToUint8Array` decodes the base64 string into a binary array (Uint8Array).
-  const encryptedDataWithIvUint8Array = base64ToUint8Array(encryptedDataWithIv);
-
-  // Extract the IV (Initialization Vector) from the encrypted data.
-  // AES-GCM typically uses a 12-byte IV, which is extracted from the first 12 bytes of the combined data.
-  const iv = encryptedDataWithIvUint8Array.slice(0, 12); // Slice the first 12 bytes for the IV.
-
-  // Extract the actual encrypted message (ciphertext), which follows the IV in the combined data.
-  const encryptedMessage = encryptedDataWithIvUint8Array.slice(12); // The remaining bytes are the encrypted message.
-
   try {
-    // Decrypt the encrypted message using the AES-GCM algorithm with the provided shared key and the extracted IV.
-    // The `crypto.decrypt` method is used to decrypt the encrypted message with the specified configuration.
-    const decryptedArrayBuffer = await crypto.decrypt(
-      { name: "AES-GCM", iv }, // Specify the AES-GCM algorithm with the IV used for encryption.
-      sharedKey, // The shared key that was used during encryption.
-      encryptedMessage // The actual encrypted message (ciphertext) to be decrypted.
-    );
-
-    // Convert the decrypted data (ArrayBuffer) back into a readable string using TextDecoder.
-    // The `TextDecoder().decode()` method converts the decrypted ArrayBuffer into a text string.
-    const decryptedMessage = new TextDecoder().decode(decryptedArrayBuffer);
-
-    // Return the decrypted message as a string.
-    return decryptedMessage;
-  } catch (error) {
-    console.log(error);
-    // If decryption fails (e.g., due to incorrect key or corrupted data), handle the error.
-    // Here, instead of logging the error, the function returns `null` to indicate decryption failure.
-    return null;
+    if (typeof window === "undefined") return;
+    const crypto = window.crypto.subtle;
+  
+    // Convert the base64-encoded encrypted data (which includes both the IV and the ciphertext) back to a Uint8Array.
+    // The helper function `base64ToUint8Array` decodes the base64 string into a binary array (Uint8Array).
+    const encryptedDataWithIvUint8Array = base64ToUint8Array(encryptedDataWithIv);
+  
+    if(!encryptedDataWithIvUint8Array) return;
+  
+    // Extract the IV (Initialization Vector) from the encrypted data.
+    // AES-GCM typically uses a 12-byte IV, which is extracted from the first 12 bytes of the combined data.
+    const iv = encryptedDataWithIvUint8Array.slice(0, 12); // Slice the first 12 bytes for the IV.
+  
+    // Extract the actual encrypted message (ciphertext), which follows the IV in the combined data.
+    const encryptedMessage = encryptedDataWithIvUint8Array.slice(12); // The remaining bytes are the encrypted message.
+  
+    try {
+      // Decrypt the encrypted message using the AES-GCM algorithm with the provided shared key and the extracted IV.
+      // The `crypto.decrypt` method is used to decrypt the encrypted message with the specified configuration.
+      const decryptedArrayBuffer = await crypto.decrypt(
+        { name: "AES-GCM", iv }, // Specify the AES-GCM algorithm with the IV used for encryption.
+        sharedKey, // The shared key that was used during encryption.
+        encryptedMessage // The actual encrypted message (ciphertext) to be decrypted.
+      );
+  
+      // Convert the decrypted data (ArrayBuffer) back into a readable string using TextDecoder.
+      // The `TextDecoder().decode()` method converts the decrypted ArrayBuffer into a text string.
+      const decryptedMessage = new TextDecoder().decode(decryptedArrayBuffer);
+  
+      // Return the decrypted message as a string.
+      return decryptedMessage;
+    } catch {
+      // console.log(error);
+      // If decryption fails (e.g., due to incorrect key or corrupted data), handle the error.
+      // Here, instead of logging the error, the function returns `null` to indicate decryption failure.
+      return null;
+    }
+  } catch {
+    // console.log('error at decryptMessage',error);
   }
 };
 

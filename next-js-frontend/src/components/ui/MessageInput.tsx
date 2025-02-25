@@ -31,46 +31,50 @@ export const MessageInput = ({
   },[]);
 
   const [isRecording,setIsRecording] = useState<boolean>(false);
-  const [voiceNoteActive,setVoiceNoteActive] = useState<boolean>(false);
+  const [voiceNoteRecorded,setVoiceNoteRecorded] = useState<boolean>(false);
 
   return (
-    <div className="flex rounded-xl text-text items-center bg-secondary">
+    <div className="flex rounded-xl text-text items-center bg-secondary justify-end">
 
       {
-        !isRecording && (
+        (!isRecording && !voiceNoteRecorded) && (
           <button className="hover:text-primary" type="button" onClick={()=>setEmojiFormOpen(true)}>
             <SmileIcon />
           </button>
         )
       }
 
-      <textarea
-        value={messageVal}
-        onChange={e => setMessageVal(e.target.value)}
-        className="px-3 py-5 bg-secondary outline-none rounded-sm w-full max-sm:text-sm resize-none scroll-smooth"
-        aria-autocomplete="none"
-        style={{ scrollbarWidth: "none" }}
-        autoComplete="off"
-        placeholder={(isRecording || voiceNoteActive) ?"Recording ... ":"Your message"}
-        name="chatMessageBaatchit"
-        inputMode="text"
-        id="message-input"
-        spellCheck="false"
-        autoCorrect="off"
-        autoCapitalize="none"
-        maxLength={1000}
-        rows={getRowValue(messageVal.length)}
-        disabled={isRecording}
-        onKeyDown={handleKeyDown}
-      />
+      {
+        !voiceNoteRecorded && (
+          <textarea
+            value={messageVal}
+            onChange={e => setMessageVal(e.target.value)}
+            className="px-3 py-5 bg-secondary outline-none rounded-sm w-full max-sm:text-sm resize-none scroll-smooth"
+            aria-autocomplete="none"
+            style={{ scrollbarWidth: "none" }}
+            autoComplete="off"
+            placeholder={isRecording?"Recording ... ":"Your message"}
+            name="chatMessageBaatchit"
+            inputMode="text"
+            id="message-input"
+            spellCheck="false"
+            autoCorrect="off"
+            autoCapitalize="none"
+            maxLength={1000}
+            rows={getRowValue(messageVal.length)}
+            disabled={isRecording || voiceNoteRecorded}
+            onKeyDown={handleKeyDown}
+          />
+        )
+      }
 
       {!messageVal.trim().length && (
         <MessageInputExtraOptions
           isRecording={isRecording}
           setIsRecording={setIsRecording}
           toggleAttachmentsMenu={setAttachmentsMenuOpen}
-          setVoiceNoteActive={setVoiceNoteActive}
-          voiceNoteActive={voiceNoteActive}
+          voiceNoteRecorded={voiceNoteRecorded}
+          setVoiceNoteRecorded={setVoiceNoteRecorded}
         />
       )}
 

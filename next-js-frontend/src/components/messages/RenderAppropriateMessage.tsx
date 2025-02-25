@@ -40,7 +40,7 @@ export const RenderAppropriateMessage = ({
         <AttachmentList attachments={message.attachments} />
       )}
       {message.url && <Gif url={message.url} />}
-      {message.isTextMessage && (
+      {(message.isTextMessage && message.textMessageContent && message.textMessageContent.length) && (
         <TextMessage
           cipherText={message.textMessageContent!}
           editMessageId={editMessageId}

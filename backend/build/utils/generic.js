@@ -32,3 +32,6 @@ export const sendPushNotification = ({ fcmToken, body, title }) => {
 export const convertBufferToBase64 = (buffer) => {
     return Buffer.from(buffer).toString("base64");
 };
+export const bufferToBase64 = (buffer) => {
+    return buffer.toString("base64");
+};

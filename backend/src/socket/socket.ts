@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { Events } from "../enums/event/event.enum.js";
 import { userSocketIds } from "../index.js";
 import { prisma } from "../lib/prisma.lib.js";
-import { deleteFilesFromCloudinary, uploadEncryptedAudioToCloudinary } from "../utils/auth.util.js";
+import { deleteFilesFromCloudinary, uploadAudioToCloudinary, uploadEncryptedAudioToCloudinary } from "../utils/auth.util.js";
 import { sendPushNotification } from "../utils/generic.js";
 import registerWebRtcHandlers from "./webrtc/socket.js";
 import { UploadApiResponse } from "cloudinary";
@@ -13,6 +13,7 @@ type MessageEventReceivePayload = {
     isPollMessage:boolean
     textMessageContent?:string | ArrayBuffer
     encryptedAudio?:Uint8Array<ArrayBuffer>
+    audio?:Uint8Array<ArrayBuffer>
     url?:string
     pollData?:{
         pollQuestion?:string
@@ -189,11 +190,26 @@ const registerSocketHandlers = (io:Server)=>{
         const chatIds = userChats.map(({chatId})=>chatId);
         socket.join(chatIds)
 
-        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio}:MessageEventReceivePayload)=>{
+        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio,audio}:MessageEventReceivePayload)=>{
             
             let newMessage:Partial<Prisma.MessageCreateInput>
 
-            if(encryptedAudio){
+            if(audio){
+                const uploadResult =  await uploadAudioToCloudinary({buffer:audio}) as UploadApiResponse | undefined;
+                if(!uploadResult) return;
+                newMessage = await prisma.message.create({
+                    data:{
+                        senderId:socket.user.id,
+                        chatId:chatId,
+                        isTextMessage:false,
+                        isPollMessage:false,
+                        audioPublicId:uploadResult.public_id,
+                        audioUrl:uploadResult.secure_url
+                    },
+                })
+            }
+
+            else if(encryptedAudio){
                 const uploadResult = ( await uploadEncryptedAudioToCloudinary({buffer:encryptedAudio})) as UploadApiResponse | undefined;
                 if(!uploadResult) return;
                 

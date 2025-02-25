@@ -12,7 +12,7 @@ export const TypingIndicatorWithUserList = ({
   isGroupChat,
 }: PropTypes) => {
   return (
-    <div className="flex flex-col gap-y-3 self-start">
+    <div className="flex flex-col gap-1 self-start">
       {users.length > 0 && (
         <div className="w-24 max-xl:w-20">
           <TypingIndicatorAnimation />

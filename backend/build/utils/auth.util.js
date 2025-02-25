@@ -47,6 +47,19 @@ export const uploadEncryptedAudioToCloudinary = async ({ buffer }) => {
         console.error("Error uploading encrypted audio to Cloudinary:", error);
     }
 };
+export const uploadAudioToCloudinary = async ({ buffer }) => {
+    try {
+        const base64Audio = `data:audio/webm;base64,${convertBufferToBase64(buffer)}`; // Adjust MIME type if needed
+        const uploadResult = await cloudinary.uploader.upload(base64Audio, {
+            resource_type: "raw", // "raw" for non-standard formats (or "video" for MP4)
+            folder: "group-audio",
+        });
+        return uploadResult;
+    }
+    catch (error) {
+        console.error("Error uploading audio to Cloudinary:", error);
+    }
+};
 export const getSecureUserInfo = (user) => {
     return {
         id: user._id,

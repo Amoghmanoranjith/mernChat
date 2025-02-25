@@ -7,7 +7,7 @@ import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
-import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
+import { blobToUint8Array, getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import { AttachmentIcon } from "../ui/icons/AttachmentIcon";
@@ -15,21 +15,22 @@ import { DeleteIcon } from "../ui/icons/DeleteIcon";
 import { GifIcon } from "../ui/icons/GifIcon";
 import { SendIcon } from "../ui/icons/SendIcon";
 import { VoiceNoteMicIcon } from "../ui/icons/VoiceNoteMicIcon";
+import {} from '@/lib/shared/helpers'
 
 type PropTypes = {
   toggleAttachmentsMenu: React.Dispatch<React.SetStateAction<boolean>>;
   isRecording: boolean;
   setIsRecording: Dispatch<SetStateAction<boolean>>;
-  voiceNoteActive: boolean;
-  setVoiceNoteActive: Dispatch<SetStateAction<boolean>>;
+  voiceNoteRecorded: boolean;
+  setVoiceNoteRecorded: Dispatch<SetStateAction<boolean>>;
 };
 
 export const MessageInputExtraOptions = ({
   toggleAttachmentsMenu,
   isRecording,
   setIsRecording,
-  voiceNoteActive,
-  setVoiceNoteActive
+  voiceNoteRecorded,
+  setVoiceNoteRecorded,
 }: PropTypes) => {
 
 
@@ -46,9 +47,11 @@ export const MessageInputExtraOptions = ({
 
   const {sendMessage} = useSendMessage();
 
+ 
   const startRecording = async () => {
     try {
-      setVoiceNoteActive(true);
+      setVoiceNoteRecorded(false);
+      setIsRecording(true);
       setAudioURL(null);
       audioChunks.current = [];
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -69,11 +72,11 @@ export const MessageInputExtraOptions = ({
         const audioBlob = new Blob(audioChunks.current, { type: mimeType });
         const url = URL.createObjectURL(audioBlob);
         setAudioBlob(audioBlob);
+        setVoiceNoteRecorded(true);
         setAudioURL(url);
       };
 
       recorder.start();
-      setIsRecording(true);
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
@@ -88,11 +91,11 @@ export const MessageInputExtraOptions = ({
 
   const handleDeleteVoiceNote = useCallback(()=>{
     setIsRecording(false);
-    setVoiceNoteActive(false);
+    setVoiceNoteRecorded(false);
     setAudioURL(null);
     audioChunks.current = [];
     mediaRecorder.current?.stop();
-  },[setIsRecording, setVoiceNoteActive]);
+  },[setIsRecording, setVoiceNoteRecorded]);
 
   const {getSharedKey} = useGetSharedKey();
 
@@ -100,12 +103,19 @@ export const MessageInputExtraOptions = ({
 
     const sharedKey = await getSharedKey({loggedInUserId,otherMember:otherMember.user})
 
-    if(sharedKey && audioBlob){
-      const encryptedAudioBlob = await encryptAudioBlob({audioBlob,sharedKey});
-      sendMessage(undefined,undefined,undefined,[],undefined,encryptedAudioBlob);
+    if(sharedKey && audioBlob && selectedChatDetails){
+
+      if(selectedChatDetails.isGroupChat){
+        sendMessage(undefined,undefined,undefined,[],undefined,undefined,(await blobToUint8Array(audioBlob)) as Uint8Array<ArrayBuffer>);
+      }
+      else{
+        const encryptedAudioBlob = await encryptAudioBlob({audioBlob,sharedKey});
+        sendMessage(undefined,undefined,undefined,[],undefined,encryptedAudioBlob);
+      }
       handleDeleteVoiceNote();
       mediaRecorder.current?.stop();
     }
+
   },[audioBlob, getSharedKey, handleDeleteVoiceNote, loggedInUserId, otherMember.user, sendMessage]);
 
   return (
@@ -113,7 +123,7 @@ export const MessageInputExtraOptions = ({
       variants={{ hide: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
       initial="hide"
       animate="show"
-      className="flex"
+      className={`flex ${voiceNoteRecorded?"max-sm:w-full max-sm:justify-between":""}`}
     >
 
 
@@ -124,13 +134,13 @@ export const MessageInputExtraOptions = ({
         </button>
 
         {audioURL && (
-            <audio controls>
+            <audio controls className="w-[20rem] max-[520px]:w-[15rem] max-[428px]:w-[12rem] max-[380px]:w-[9rem]">
               <source src={audioURL!} type="audio/webm" />
             </audio>
         )}
       </div>
         
-      {!isRecording && !voiceNoteActive && (
+      {(!isRecording && !voiceNoteRecorded) && (
         <>
           <button
             key={1}
@@ -152,25 +162,26 @@ export const MessageInputExtraOptions = ({
       )}
 
       {
-        !isRecording && voiceNoteActive && (
-          <>
+        voiceNoteRecorded && (
+          <div className="flex items-center">
           <button
-            key={1}
             onClick={handleDeleteVoiceNote}
             className="px-3 py-4 justify-center items-center flex relative"
           >
             <DeleteIcon />
           </button>
 
-          <button
-            key={2}
+          <motion.button
+            onMouseDown={(e) => e.preventDefault()}
+            initial={{ x: 5, opacity: 0, position: "fixed" }}
+            animate={{ x: 0, opacity: 1, position: "static" }}
+            type="submit"
+            className="bg-primary-dark h-fit self-center p-2 hover:bg-transparent transition-colors rounded-full"
             onClick={handleSendVoiceNote}
-            type="button"
-            className="px-3 py-4 hover:text-primary"
-          >
+        >
             <SendIcon/>
-          </button>
-        </>
+          </motion.button>
+        </div>
         )
       }
 

@@ -51,6 +51,19 @@ export const uploadEncryptedAudioToCloudinary = async ({buffer}: {buffer: Uint8A
     }
 };
 
+export const uploadAudioToCloudinary = async ({buffer}: {buffer: Uint8Array<ArrayBuffer>}): Promise<any | undefined> => {
+    try {
+      const base64Audio = `data:audio/webm;base64,${convertBufferToBase64(buffer)}`; // Adjust MIME type if needed
+      const uploadResult = await cloudinary.uploader.upload(base64Audio, {
+        resource_type: "raw", // "raw" for non-standard formats (or "video" for MP4)
+        folder: "group-audio",
+      });
+      return uploadResult;
+    } catch (error) {
+      console.error("Error uploading audio to Cloudinary:", error);
+    }
+};
+
 export const getSecureUserInfo = (user:any):any=>{
     return {
         id:user._id,
