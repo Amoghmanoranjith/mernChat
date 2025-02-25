@@ -1,5 +1,7 @@
 import { useGetSharedKey } from "@/hooks/useAuth/useGetSharedKey";
 import { decryptAudioBlob } from "@/lib/client/encryption";
+import { setNewMessageFormed } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import { useCallback, useEffect, useState } from "react";
@@ -17,6 +19,8 @@ export const VoiceNote = ({audioUrl,loggedInUserId,selectedChatDetails}:PropType
 
     const [sharedKey, setSharedKey] = useState<CryptoKey>();
     const [url,setUrl] = useState<string | null>(null);
+
+    const dispatch = useAppDispatch();
 
     const fetchAudioAsBuffer = useCallback(async (audioUrl: string) => {
         try {
@@ -58,6 +62,12 @@ export const VoiceNote = ({audioUrl,loggedInUserId,selectedChatDetails}:PropType
             setUrl(URL.createObjectURL(blob));
         }
     },[base64Audio,sharedKey])
+
+    useEffect(()=>{
+        if(url){
+            dispatch(setNewMessageFormed(true));
+        }
+    },[url])
       
 
   return (

@@ -35,7 +35,7 @@ interface InitialState {
   callDisplay: boolean;
   isIncomingCall:boolean
   incomingCallInfo: IncomingCallEventReceivePayload | null;
-
+  newMessageFormed: boolean;
   callHistoryTabSelected: boolean;
 }
 
@@ -63,7 +63,8 @@ const initialState: InitialState = {
   callDisplay:false,
   isIncomingCall:false,
   incomingCallInfo:null,
-  callHistoryTabSelected:false
+  callHistoryTabSelected:false,
+  newMessageFormed:false
 };
 const uiSlice = createSlice({
   name: "uiSlice",
@@ -151,6 +152,9 @@ const uiSlice = createSlice({
     },
     setCallHistoryTabSelected: (state, action: PayloadAction<boolean>) => {
       state.callHistoryTabSelected = action.payload;
+    },
+    setNewMessageFormed: (state, action: PayloadAction<boolean>) => {
+      state.newMessageFormed = action.payload;
     }
   },
 });
@@ -193,6 +197,7 @@ export const selectCallDisplay = (state: RootState) => state.uiSlice.callDisplay
 export const selectIsIncomingCall = (state: RootState) => state.uiSlice.isIncomingCall;
 export const selectIncomingCallInfo = (state: RootState) => state.uiSlice.incomingCallInfo;
 export const selectCallHistoryTabSelected = (state: RootState) => state.uiSlice.callHistoryTabSelected;
+export const selectNewMessageFormed = (state: RootState) => state.uiSlice.newMessageFormed;
 
 // exporting actions
 export const {
@@ -220,7 +225,8 @@ export const {
   setCallDisplay,
   setIsIncomingCall,
   setInComingCallInfo,
-  setCallHistoryTabSelected
+  setCallHistoryTabSelected,
+  setNewMessageFormed
 } = uiSlice.actions;
 
 export default uiSlice;

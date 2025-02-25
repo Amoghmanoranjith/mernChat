@@ -1,5 +1,7 @@
 import { Message } from "@/interfaces/message.interface";
-import { RefObject, useEffect } from "react";
+import { selectNewMessageFormed } from "@/lib/client/slices/uiSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
+import { RefObject, useEffect, useState } from "react";
 
 type PropTypes = {
   container: RefObject<HTMLDivElement | null> // The container element that holds the chat messages
@@ -16,19 +18,41 @@ export const useScrollToBottomOnNewMessageWhenUserIsNearBottom = ({
   prevHeightRef,
   prevScrollTopRef,
 }: PropTypes) => {
-  useEffect(() => {
-    if (!container) return;
 
-    if (isNearBottom) {
-      prevHeightRef.current = 0;
-      prevScrollTopRef.current = 0;
 
-      // Ensure the container scrolls to the bottom
-      setTimeout(() => {
-        if (container.current) {
-          container.current.scrollTop = container.current.scrollHeight;
-        }
-      }, 10); // adding delay to ensure that first the new message is rendered and then scroll to bottom
+  const newMessageFormed = useAppSelector(selectNewMessageFormed);
+  
+  const [isChanged,setIsChanged] = useState<boolean>(false);
+
+  useEffect(()=>{
+    prevHeightRef.current = 0;
+    prevScrollTopRef.current = 0;
+        setTimeout(() => {
+          console.log('ran man');
+          if(container.current && isNearBottom){
+            container.current.scrollTop = container.current.scrollHeight;
+            setIsChanged(!isChanged);
+          }
+        }, 50);
+      
+  },[container, container?.current?.scrollHeight, isNearBottom, messages.length, prevHeightRef, prevScrollTopRef,newMessageFormed])
+
+
+  useEffect(()=>{
+    if(newMessageFormed && isNearBottom){
+      setIsChanged(!isChanged);
     }
-  }, [messages]); // Only depend on 'messages'
+  },[newMessageFormed,isNearBottom]);
+  
+  useEffect(()=>{
+    setTimeout(() => {
+      if(container.current){
+        console.log('TRIGGERED FALLBACK');
+        container.current.scrollTop = container.current.scrollHeight;
+      }
+    }, 300);
+  },[isChanged]);
+
 };
+
+
