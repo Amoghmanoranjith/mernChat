@@ -1,6 +1,6 @@
-# **Next.js Chat App – Secure, End-to-End Encrypted (E2EE) Real-Time Messaging** 🗨️  
+# **Mernchat – Secure, End-to-End Encrypted (E2EE) Real-Time Messaging** 🗨️  
 
-**[Next.js Chat App](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
+**[Mernchat](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/group-chat-creation.png)  
@@ -25,22 +25,59 @@
 
 
 --- -->
+---
+## 🔐 Privacy & Encryption Commitment  
 
+At this project [Mernchat](https://mernchat.in), i have taken **privacy and security** seriously. The app is **built, designed, and structured** with user privacy in mind, ensuring that **certain messages remain completely inaccessible—even to me as a developer**.  
+
+### **End-to-End Encryption (E2EE)**  
+Private **one-on-one text messages and voice notes** are **end-to-end encrypted** using **AES-256-GCM + ECDH**. This means:  
+
+✅ **No one—including me as the developer—can access your private chats or private voice notes.**  
+✅ **Text messages sent in private chats (between two users) and voice notes sent in private chats (between two users) are encrypted at the sender’s device and only decrypted on the recipient’s device.**  
+✅ **Even if I access the database directly, I cannot read or retrieve private messages or private voice notes in plain text/data**  
+
+For **full transparency**, here’s a snapshot of how private messages and private voice notes are stored in the database—fully encrypted and unreadable to anyone, including myself.  
+
+### This is how your private chat text messages that are e2ee looks like in database
+![](next-js-frontend/public/images/privacy/e2ee-messages-in-database.png)
+
+### This is how your private chat voice notes that are also e2ee looks like
+
+##### Here each file in this folder `encrypted-audio` represents a single e2ee voice note
+![](next-js-frontend/public/images/privacy/encrypted-audio-cloudinary-folder.png)
+##### And this is how your encrypted voice note data looks like
+![](next-js-frontend/public/images/privacy/encrypted-voice-note-data.png)
+
+### **What’s Not E2EE?**  
+While all data is stored securely, end-to-end encryption is **only applied to private text messages and private voice notes**. The following are **not** end-to-end encrypted:  
+
+❌ **Group chats**  
+❌ **Audio & video calls (powered by webrtc)**  
+❌ **Media files (images, videos, GIFs, documents, attachments, etc.)**  
+
+These features are still securely transmitted and stored, but they do not follow the same encryption standard as private messages and private voice notes.  
+
+At [Mernchat](https://mernchat.in), i am committed to transparency and security. As i continue improving, my aim is to enhance encryption features for even greater privacy in future updates.
+
+---
 ## **🚀 Features**  
 
 ### 💬 **Chat & Messaging**  
 - **Real-time Messaging** – Instantly send and receive messages.  
+- **Voice Notes** – Record and send encrypted voice messages in private chats (not encrypted in group chats). 
 - **Message Editing** – Edit messages after sending (with an edit indicator).  
 - **Message Reactions** – React to messages with emojis (double-tap to like/unlike).  
 - **Message Deletion** – Delete messages after sending.  
-- **Typing Indicators** – See when someone is typing.  
+- **Typing Indicators** – See when someone is typing (supports multiple users typing simultaneously in group chats).  
+
 
 ### 📞 **Audio & Video Calling**
-- **Peer-to-Peer Calls** – High-quality, voice and video calls powered by webrtc.
+- **Peer-to-Peer Calls** – High-quality, voice and video calls (powered by Webrtc).
 - **Call History** – View and manage past call logs.
 
 ### 📢 **Notifications & Presence**  
-- **Push Notifications** – Stay updated with real-time alerts.  
+- **Push Notifications** – Stay updated with real-time alerts (powered by Firebase).  
 - **User Presence** – See who’s online in real time.
 
 ### 🤝 **Social Features**  
