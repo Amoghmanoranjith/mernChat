@@ -340,6 +340,7 @@ type fetchUserChatsResponse = Prisma.ChatGetPayload<{
         senderId:true,
         pollId:true,
         audioPublicId:true,
+        replyToMessageId:true,
     },
     }
   }
