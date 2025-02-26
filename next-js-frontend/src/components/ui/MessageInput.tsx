@@ -5,6 +5,7 @@ import { useDynamicRowValue } from "../../hooks/useUtils/useDynamicRowValue";
 import { MessageInputExtraOptions } from "../messages/MessageInputExtraOptions";
 import { SendIcon } from "./icons/SendIcon";
 import { SmileIcon } from "./icons/SmileIcon";
+import { useMessageInputRef } from "@/context/message-input-ref.context";
 
 type PropTypes = {
   messageVal: string;
@@ -33,6 +34,8 @@ export const MessageInput = ({
   const [isRecording,setIsRecording] = useState<boolean>(false);
   const [voiceNoteRecorded,setVoiceNoteRecorded] = useState<boolean>(false);
 
+  const ref =  useMessageInputRef();
+
   return (
     <div className="flex rounded-xl text-text items-center bg-secondary justify-end">
 
@@ -47,6 +50,7 @@ export const MessageInput = ({
       {
         !voiceNoteRecorded && (
           <textarea
+            ref={ref}
             value={messageVal}
             onChange={e => setMessageVal(e.target.value)}
             className="px-3 py-5 bg-secondary outline-none rounded-sm w-full max-sm:text-sm resize-none scroll-smooth"

@@ -35,7 +35,7 @@ export const useScrollToBottomOnNewMessageWhenUserIsNearBottom = ({
           }
         }, 50);
       
-  },[container, container?.current?.scrollHeight, isNearBottom, messages.length, prevHeightRef, prevScrollTopRef,newMessageFormed])
+  },[container,isNearBottom, messages.length, prevHeightRef, prevScrollTopRef,newMessageFormed])
 
 
   useEffect(()=>{

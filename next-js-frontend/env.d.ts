@@ -19,5 +19,9 @@ declare namespace NodeJS {
     EMAIL: string;
     PASSWORD: string;
     PRIVATE_KEY_RECOVERY_SECRET: string;
+
+    RAZORPAY_KEY_ID: string;
+    RAZORPAY_KEY_SECRET: string;
+    NEXT_PUBLIC_RAZORPAY_KEY_ID: string;
   }
 }

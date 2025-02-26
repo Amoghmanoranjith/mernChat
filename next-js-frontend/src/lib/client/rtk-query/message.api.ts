@@ -40,5 +40,6 @@ export const messageApi = createApi({
 })
 
 export const {
-    useLazyGetMessagesByChatIdQuery
+    useLazyGetMessagesByChatIdQuery,
+    useGetMessagesByChatIdQuery
 } = messageApi

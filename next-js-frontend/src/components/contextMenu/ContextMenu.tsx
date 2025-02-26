@@ -1,9 +1,9 @@
+import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
 import { EmojiClickData } from "emoji-picker-react";
 import { motion } from "framer-motion";
+import { useRef } from "react";
 import { EmojiPickerForm } from "../emoji/EmojiPickerForm";
 import { ContextMenuOptions } from "./ContextMenuOptions";
-import { useRef } from "react";
-import { useHandleOutsideClick } from "@/hooks/useUtils/useHandleOutsideClick";
 
 type PropTypes = {
   onEmojiClick: (e: EmojiClickData) => void | null;
@@ -31,6 +31,7 @@ export const ContextMenu = ({
 
   useHandleOutsideClick(contextRef,()=>setOpenContextMenuMessageId(undefined));
 
+
   return (
     <motion.div
      ref={contextRef}
@@ -45,15 +46,16 @@ export const ContextMenu = ({
         onEmojiClick={onEmojiClick}
         reactionsDefaultOpen={true}
       />
-      {myMessage && (
-        <ContextMenuOptions
-          messageId={messageId}
-          setEditMessageId={setEditMessageId}
-          setOpenContextMenuMessageId={setOpenContextMenuMessageId}
-          isTextMessage={isTextMessage}
-          isAttachmentMessage={isAttachmentMessage}
-        />
-      )}
+      
+      <ContextMenuOptions
+        messageId={messageId}
+        setEditMessageId={setEditMessageId}
+        setOpenContextMenuMessageId={setOpenContextMenuMessageId}
+        isTextMessage={isTextMessage}
+        isAttachmentMessage={isAttachmentMessage}
+        myMessage={myMessage}
+      />
     </motion.div>
+    
   );
 };

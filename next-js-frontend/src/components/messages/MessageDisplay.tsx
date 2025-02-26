@@ -1,5 +1,8 @@
 import { useDoubleClickReactionFeature } from "@/hooks/useMessages/useDoubleClickReactionFeature";
 import { Message } from "@/interfaces/message.interface";
+import { useGetMessagesByChatIdQuery } from "@/lib/client/rtk-query/message.api";
+import { selectReplyingToMessageId } from "@/lib/client/slices/uiSlice";
+import { useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -34,12 +37,30 @@ export const MessageDisplay = ({
     reactions: message.reactions,
   });
 
+  const replyMessageId =  useAppSelector(selectReplyingToMessageId);
+
+  const { messageWeRepliedTo } = useGetMessagesByChatIdQuery({chatId:selectedChatDetails.id,page:1},{
+    selectFromResult:({data})=>({
+      messageWeRepliedTo: data?.messages.find(msg=>msg.id === message?.replyToMessage?.id)
+    })
+  })
+
   return (
     <motion.div
       whileTap={{ scale: message.isPollMessage ? 1 : 0.98 }}
       onDoubleClick={handleDoubleClick}
-      className={`${myMessage ? "bg-primary text-white" : "bg-secondary-dark"} ${isContextMenuOpen? "border-2 border-double border-spacing-4 border-": null} max-w-96 min-w-10 rounded-2xl px-4 py-2 flex flex-col gap-y-1 justify-center max-md:max-w-80 max-sm:max-w-64`}
+      className={`${myMessage ? "bg-primary text-white" : "bg-secondary-dark"} ${isContextMenuOpen? "border-2 border-double border-spacing-4 border-": null} max-w-96 min-w-20 rounded-2xl px-4 py-2 flex flex-col gap-y-1 justify-center max-md:max-w-80 max-sm:max-w-64
+      ${replyMessageId === message.id ? `border-2 border-double border-spacing-4 ${myMessage?"white":"border-primary"}` : null}
+      `}
     >
+      {
+        message.replyToMessage && (
+        <div className="flex flex-col bg-white/35 px-4 py-2 mb-2 rounded-xl max-sm:text-sm">
+          <span className="text-sm font-semibold">{message.replyToMessage.sender.id === loggedInUserId ? "You" : message.replyToMessage.sender.username}</span>
+          <span>{message.replyToMessage.attachments.length ? "attachment" : message.replyToMessage.audioUrl ? 'Voice note' : message.replyToMessage.isPollMessage ? 'Poll' : message.replyToMessage.textMessageContent ? messageWeRepliedTo?.decryptedMessage || '' : message.replyToMessage.url ? "Gif" : "n/a"}</span>
+        </div>
+        )
+      }
       <RenderAppropriateMessage
         editMessageId={editMessageId}
         loggedInUserId={loggedInUserId}

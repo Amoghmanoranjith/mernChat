@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/navbar/Navbar";
+import { MessageInputProvider } from "@/context/message-input-ref.context";
 import { Metadata } from "next";
 
 export const metadata:Metadata = {
@@ -57,7 +58,11 @@ export default function ChatLayout({
       <header>
         <Navbar />
       </header>
-      <main className="h-[calc(100vh-3.5rem)]">{children}</main>
+      <main className="h-[calc(100vh-3.5rem)]">
+        <MessageInputProvider>
+          {children}
+        </MessageInputProvider>
+      </main>
     </>
   );
 }

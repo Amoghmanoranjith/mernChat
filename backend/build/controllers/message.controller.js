@@ -58,6 +58,27 @@ export const getMessages = asyncErrorHandler(async (req, res, next) => {
                     reaction: true,
                 }
             },
+            replyToMessage: {
+                select: {
+                    sender: {
+                        select: {
+                            id: true,
+                            username: true,
+                            avatar: true,
+                        }
+                    },
+                    id: true,
+                    textMessageContent: true,
+                    isPollMessage: true,
+                    url: true,
+                    audioUrl: true,
+                    attachments: {
+                        select: {
+                            secureUrl: true
+                        }
+                    }
+                }
+            }
         },
         omit: {
             senderId: true,

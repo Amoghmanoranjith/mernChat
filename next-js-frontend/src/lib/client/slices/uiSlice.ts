@@ -37,6 +37,8 @@ interface InitialState {
   incomingCallInfo: IncomingCallEventReceivePayload | null;
   newMessageFormed: boolean;
   callHistoryTabSelected: boolean;
+  replyingToMessageData:string | null
+  replyingToMessageId:string | null
 }
 
 const initialState: InitialState = {
@@ -64,7 +66,9 @@ const initialState: InitialState = {
   isIncomingCall:false,
   incomingCallInfo:null,
   callHistoryTabSelected:false,
-  newMessageFormed:false
+  newMessageFormed:false,
+  replyingToMessageData:null,
+  replyingToMessageId:null
 };
 const uiSlice = createSlice({
   name: "uiSlice",
@@ -155,6 +159,12 @@ const uiSlice = createSlice({
     },
     setNewMessageFormed: (state, action: PayloadAction<boolean>) => {
       state.newMessageFormed = action.payload;
+    },
+    setReplyingToMessageData: (state, action: PayloadAction<string | null>) => {
+      state.replyingToMessageData = action.payload;
+    },
+    setReplyingToMessageId:(state, action: PayloadAction<string | null>)=>{
+      state.replyingToMessageId = action.payload
     }
   },
 });
@@ -198,6 +208,9 @@ export const selectIsIncomingCall = (state: RootState) => state.uiSlice.isIncomi
 export const selectIncomingCallInfo = (state: RootState) => state.uiSlice.incomingCallInfo;
 export const selectCallHistoryTabSelected = (state: RootState) => state.uiSlice.callHistoryTabSelected;
 export const selectNewMessageFormed = (state: RootState) => state.uiSlice.newMessageFormed;
+export const selectReplyingToMessageData = (state: RootState) => state.uiSlice.replyingToMessageData;
+export const selectReplyingToMessageId = (state:RootState) => state.uiSlice.replyingToMessageId;
+
 
 // exporting actions
 export const {
@@ -226,7 +239,9 @@ export const {
   setIsIncomingCall,
   setInComingCallInfo,
   setCallHistoryTabSelected,
-  setNewMessageFormed
+  setNewMessageFormed,
+  setReplyingToMessageData,
+  setReplyingToMessageId
 } = uiSlice.actions;
 
 export default uiSlice;

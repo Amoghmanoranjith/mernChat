@@ -19,7 +19,8 @@ type MessageEventReceivePayload = {
         pollQuestion?:string
         pollOptions?:string[]
         isMultipleAnswers?:boolean
-    }
+    },
+    replyToMessageId?:string
 }
 
 
@@ -190,7 +191,7 @@ const registerSocketHandlers = (io:Server)=>{
         const chatIds = userChats.map(({chatId})=>chatId);
         socket.join(chatIds)
 
-        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio,audio}:MessageEventReceivePayload)=>{
+        socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio,audio,replyToMessageId}:MessageEventReceivePayload)=>{
             
             let newMessage:Partial<Prisma.MessageCreateInput>
 
@@ -204,7 +205,8 @@ const registerSocketHandlers = (io:Server)=>{
                         isTextMessage:false,
                         isPollMessage:false,
                         audioPublicId:uploadResult.public_id,
-                        audioUrl:uploadResult.secure_url
+                        audioUrl:uploadResult.secure_url,
+                        replyToMessageId
                     },
                 })
             }
@@ -220,7 +222,8 @@ const registerSocketHandlers = (io:Server)=>{
                         isTextMessage:false,
                         isPollMessage:false,
                         audioPublicId:uploadResult.public_id,
-                        audioUrl:uploadResult.secure_url
+                        audioUrl:uploadResult.secure_url,
+                        replyToMessageId
                     },
                 })
             
@@ -243,6 +246,7 @@ const registerSocketHandlers = (io:Server)=>{
                         pollId:newPoll.id,
                         isPollMessage:true,
                         isTextMessage:false,
+                        replyToMessageId
                     },
                 })
             }
@@ -254,6 +258,7 @@ const registerSocketHandlers = (io:Server)=>{
                         url,
                         isPollMessage:false,
                         isTextMessage:false,
+                        replyToMessageId
                     },
                 })
             }
@@ -265,6 +270,7 @@ const registerSocketHandlers = (io:Server)=>{
                         isPollMessage:false,
                         isTextMessage:true,
                         textMessageContent:textMessageContent as string,
+                        replyToMessageId
                     },
                 })
             }
@@ -337,6 +343,27 @@ const registerSocketHandlers = (io:Server)=>{
                         },
                         reaction:true,
                       }
+                    },
+                    replyToMessage:{
+                        select:{
+                          sender:{
+                            select:{
+                              id:true,
+                              username:true,
+                              avatar:true,
+                            }
+                          },
+                          id:true,
+                          textMessageContent:true,
+                          isPollMessage:true,
+                          url:true,
+                          audioUrl:true,
+                          attachments:{
+                            select:{
+                              secureUrl:true
+                            }
+                          }
+                        }
                     },
                   },
                 omit:{

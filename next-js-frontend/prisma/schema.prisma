@@ -115,12 +115,18 @@ model Message {
   audioUrl           String?
   audioPublicId      String?
   isEdited           Boolean      @default(false)
+
+  replyToMessage     Message?    @relation("replyOf",fields: [replyToMessageId], references: [id])
+  replyToMessageId   String?
+
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
   UnreadMessages UnreadMessages[]
   Chat           Chat[]           @relation("latestMessage")
   reactions      Reactions[]
+
+  Message Message[]  @relation("replyOf")
 }
 
 model Otp {

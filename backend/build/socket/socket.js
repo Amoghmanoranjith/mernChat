@@ -34,7 +34,7 @@ const registerSocketHandlers = (io) => {
         // joining the user to all of its chats via chatIds (i.e rooms)
         const chatIds = userChats.map(({ chatId }) => chatId);
         socket.join(chatIds);
-        socket.on(Events.MESSAGE, async ({ chatId, isPollMessage, pollData, textMessageContent, url, encryptedAudio, audio }) => {
+        socket.on(Events.MESSAGE, async ({ chatId, isPollMessage, pollData, textMessageContent, url, encryptedAudio, audio, replyToMessageId }) => {
             let newMessage;
             if (audio) {
                 const uploadResult = await uploadAudioToCloudinary({ buffer: audio });
@@ -47,7 +47,8 @@ const registerSocketHandlers = (io) => {
                         isTextMessage: false,
                         isPollMessage: false,
                         audioPublicId: uploadResult.public_id,
-                        audioUrl: uploadResult.secure_url
+                        audioUrl: uploadResult.secure_url,
+                        replyToMessageId
                     },
                 });
             }
@@ -62,7 +63,8 @@ const registerSocketHandlers = (io) => {
                         isTextMessage: false,
                         isPollMessage: false,
                         audioPublicId: uploadResult.public_id,
-                        audioUrl: uploadResult.secure_url
+                        audioUrl: uploadResult.secure_url,
+                        replyToMessageId
                     },
                 });
             }
@@ -81,6 +83,7 @@ const registerSocketHandlers = (io) => {
                         pollId: newPoll.id,
                         isPollMessage: true,
                         isTextMessage: false,
+                        replyToMessageId
                     },
                 });
             }
@@ -92,6 +95,7 @@ const registerSocketHandlers = (io) => {
                         url,
                         isPollMessage: false,
                         isTextMessage: false,
+                        replyToMessageId
                     },
                 });
             }
@@ -103,6 +107,7 @@ const registerSocketHandlers = (io) => {
                         isPollMessage: false,
                         isTextMessage: true,
                         textMessageContent: textMessageContent,
+                        replyToMessageId
                     },
                 });
             }
@@ -172,6 +177,27 @@ const registerSocketHandlers = (io) => {
                                 }
                             },
                             reaction: true,
+                        }
+                    },
+                    replyToMessage: {
+                        select: {
+                            sender: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                    avatar: true,
+                                }
+                            },
+                            id: true,
+                            textMessageContent: true,
+                            isPollMessage: true,
+                            url: true,
+                            audioUrl: true,
+                            attachments: {
+                                select: {
+                                    secureUrl: true
+                                }
+                            }
                         }
                     },
                 },

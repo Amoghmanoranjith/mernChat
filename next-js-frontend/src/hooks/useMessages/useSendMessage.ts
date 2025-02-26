@@ -6,6 +6,7 @@ import { selectLoggedInUser } from "../../lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "../../lib/client/slices/chatSlice";
 import { useAppSelector } from "../../lib/client/store/hooks";
 import { useGetSharedKey } from "../useAuth/useGetSharedKey";
+import { selectReplyingToMessageId } from "@/lib/client/slices/uiSlice";
 
 type MessageEventSendPayload = {
   chatId:string
@@ -19,6 +20,7 @@ type MessageEventSendPayload = {
       pollOptions?:string[]
       isMultipleAnswers?:boolean
   }
+  replyToMessageId?:string
 }
 
 export const useSendMessage = () => {
@@ -27,6 +29,8 @@ export const useSendMessage = () => {
   const selectedChatDetails = useAppSelector(selectSelectedChatDetails);
   const loggedInUserId = useAppSelector(selectLoggedInUser)?.id;
   const { getSharedKey } = useGetSharedKey();
+
+  const replyToMessageId = useAppSelector(selectReplyingToMessageId);
 
   const sendMessage = async (messageVal?: string, url?: string, pollQuestion?: string, pollOptions?: Array<string>, isMultipleAnswers?: boolean, encryptedAudio?:Uint8Array<ArrayBuffer>,audio?:Uint8Array<ArrayBuffer>) => {
 
@@ -44,7 +48,8 @@ export const useSendMessage = () => {
           pollQuestion
         },
         encryptedAudio: encryptedAudio ? encryptedAudio : undefined,
-        audio:audio? audio : undefined
+        audio:audio? audio : undefined,
+        replyToMessageId:replyToMessageId ? replyToMessageId : undefined
       };
       socket?.emit(Event.MESSAGE, newMessage);
       return;
@@ -61,7 +66,8 @@ export const useSendMessage = () => {
           pollOptions,
           pollQuestion
         },
-        encryptedAudio: encryptedAudio ? encryptedAudio : undefined
+        encryptedAudio: encryptedAudio ? encryptedAudio : undefined,
+        replyToMessageId:replyToMessageId ? replyToMessageId : undefined
       };
       socket?.emit(Event.MESSAGE, newMessage);
       return;
@@ -80,7 +86,9 @@ export const useSendMessage = () => {
         otherMember,
       });
       
-      if(sharedSecretKey) encryptedMessage = await encryptMessage({message: messageVal,sharedKey: sharedSecretKey});
+      if(sharedSecretKey){
+        encryptedMessage = await encryptMessage({message: messageVal,sharedKey: sharedSecretKey});
+      }
     }
 
     if(selectedChatDetails && (messageVal || url || pollOptions || pollQuestion || isMultipleAnswers)) {
@@ -96,7 +104,8 @@ export const useSendMessage = () => {
           pollOptions,
           pollQuestion
         },
-        encryptedAudio: encryptedAudio ? encryptedAudio : undefined
+        encryptedAudio: encryptedAudio ? encryptedAudio : undefined,
+        replyToMessageId:replyToMessageId ? replyToMessageId : undefined
       };
       socket?.emit(Event.MESSAGE, newMessage);
     }

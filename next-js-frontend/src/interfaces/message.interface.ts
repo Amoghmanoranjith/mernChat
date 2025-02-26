@@ -7,6 +7,21 @@ export interface Message {
     attachments: {
         secureUrl: string;
     }[];
+    replyToMessage: {
+        id: string;
+        textMessageContent: string | null;
+        url: string | null;
+        isPollMessage: boolean;
+        audioUrl: string | null;
+        sender: {
+            id: string;
+            username: string;
+            avatar: string;
+        };
+        attachments: {
+            secureUrl: string;
+        }[];
+    } | null;
     poll: ({
         votes: ({
             user: {
@@ -39,4 +54,8 @@ export interface Message {
     createdAt: Date;
     updatedAt: Date;
     isNew?:boolean
+
+    // client side added variable
+    // this does not comes from the server
+    decryptedMessage?:string
 }
