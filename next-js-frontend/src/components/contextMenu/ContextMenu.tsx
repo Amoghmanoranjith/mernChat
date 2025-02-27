@@ -24,7 +24,8 @@ export const ContextMenu = ({
   messageId,
   myMessage,
   isTextMessage,
-  isAttachmentMessage
+  isAttachmentMessage,
+
 }: PropTypes) => {
 
   const contextRef = useRef<HTMLDivElement>(null);

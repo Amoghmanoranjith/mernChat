@@ -7,6 +7,7 @@ import { setReplyingToMessageData, setReplyingToMessageId } from "@/lib/client/s
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useCallback } from "react";
+import { CopyIcon } from "../ui/icons/CopyIcon";
 import { DeleteIcon } from "../ui/icons/DeleteIcon";
 import { EditIcon } from "../ui/icons/EditIcon";
 import { ReplyIcon } from "../ui/icons/ReplyIcon";
@@ -33,13 +34,12 @@ export const ContextMenuOptions = ({
   messageId,
   isTextMessage,
   isAttachmentMessage,
-  myMessage
+  myMessage, 
 }: PropTypes) => {
+
+
   const dispatch = useAppDispatch();
-
   const ref =  useMessageInputRef();
-
-
   const selectedChatDetails =  useAppSelector(selectSelectedChatDetails) as fetchUserChatsResponse;
   const socket = useSocket();
 
@@ -66,6 +66,15 @@ export const ContextMenuOptions = ({
     }
     socket?.emit(Event.MESSAGE_DELETE,payload);
   },[messageId, selectedChatDetails.id, socket]);
+
+  const handleCopyClick = useCallback(async()=>{
+    try {
+      await navigator.clipboard.writeText(message?.decryptedMessage as string);
+      setOpenContextMenuMessageId(undefined);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  },[message?.decryptedMessage, setOpenContextMenuMessageId])
 
   return (
     <div className={`flex flex-col bg-secondary-dark text-text p-2 rounded-2xl shadow-2xl min-w-32 self-end`}>
@@ -105,6 +114,19 @@ export const ContextMenuOptions = ({
                   <DeleteIcon/>
                 </span>
               </div>
+            )
+          }
+          {
+            message?.decryptedMessage && (
+            <div
+                  onClick={handleCopyClick}
+                  className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
+                >
+                  <p>Copy</p>
+                  <span>
+                    <CopyIcon/>
+                  </span>
+            </div>
             )
           }
       </div>
