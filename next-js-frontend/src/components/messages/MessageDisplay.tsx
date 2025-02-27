@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import { RenderAppropriateMessage } from "./RenderAppropriateMessage";
+import Image from "next/image";
 
 type PropTypes = {
   isContextMenuOpen: boolean;
@@ -57,7 +58,9 @@ export const MessageDisplay = ({
         message.replyToMessage && (
         <div className="flex flex-col bg-white/35 px-4 py-2 mb-2 rounded-xl max-sm:text-sm">
           <span className="text-sm font-semibold">{message.replyToMessage.sender.id === loggedInUserId ? "You" : message.replyToMessage.sender.username}</span>
-          <span>{message.replyToMessage.attachments.length ? "attachment" : message.replyToMessage.audioUrl ? 'Voice note' : message.replyToMessage.isPollMessage ? 'Poll' : message.replyToMessage.textMessageContent ? messageWeRepliedTo?.decryptedMessage || '' : message.replyToMessage.url ? "Gif" : "n/a"}</span>
+          <div>{message.replyToMessage.attachments.length ? "attachment" : message.replyToMessage.audioUrl ? 'Voice note' : message.replyToMessage.isPollMessage ? 'Poll' : message.replyToMessage.textMessageContent ? messageWeRepliedTo?.decryptedMessage || 'deleted' : message.replyToMessage.url ? 
+            <Image unoptimized className="size-10 object-contain" width={10} height={10} src={message.replyToMessage.url} alt="gif" />
+           : "n/a"}</div>
         </div>
         )
       }

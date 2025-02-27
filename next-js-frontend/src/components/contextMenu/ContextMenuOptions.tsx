@@ -1,10 +1,13 @@
 import { useMessageInputRef } from "@/context/message-input-ref.context";
+import { useSocket } from "@/context/socket.context";
+import { Event } from "@/interfaces/events.interface";
 import { useGetMessagesByChatIdQuery } from "@/lib/client/rtk-query/message.api";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { setReplyingToMessageData, setReplyingToMessageId } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { useCallback } from "react";
+import { DeleteIcon } from "../ui/icons/DeleteIcon";
 import { EditIcon } from "../ui/icons/EditIcon";
 import { ReplyIcon } from "../ui/icons/ReplyIcon";
 
@@ -19,6 +22,11 @@ type PropTypes = {
   myMessage: boolean;
 };
 
+type MessageDeleteEventSendPayload = {
+  chatId:string
+  messageId:string
+}
+
 export const ContextMenuOptions = ({
   setEditMessageId,
   setOpenContextMenuMessageId,
@@ -27,13 +35,13 @@ export const ContextMenuOptions = ({
   isAttachmentMessage,
   myMessage
 }: PropTypes) => {
-  // const { deleteMessage } = useDeleteMessage();
   const dispatch = useAppDispatch();
 
   const ref =  useMessageInputRef();
 
 
   const selectedChatDetails =  useAppSelector(selectSelectedChatDetails) as fetchUserChatsResponse;
+  const socket = useSocket();
 
   const { message } = useGetMessagesByChatIdQuery({chatId:selectedChatDetails.id,page:1},{
     selectFromResult:({data})=>({
@@ -49,6 +57,15 @@ export const ContextMenuOptions = ({
       setOpenContextMenuMessageId(undefined)
     }
   },[dispatch, message?.audioUrl, message?.decryptedMessage, message?.isPollMessage, message?.isTextMessage, message?.url, messageId, ref, setOpenContextMenuMessageId])
+
+
+  const deleteMessage = useCallback(()=>{
+    const payload:MessageDeleteEventSendPayload = {
+      chatId:selectedChatDetails.id,
+      messageId
+    }
+    socket?.emit(Event.MESSAGE_DELETE,payload);
+  },[messageId, selectedChatDetails.id, socket]);
 
   return (
     <div className={`flex flex-col bg-secondary-dark text-text p-2 rounded-2xl shadow-2xl min-w-32 self-end`}>
@@ -76,16 +93,20 @@ export const ContextMenuOptions = ({
             <span>
               <ReplyIcon/>
             </span>
-          </div>
-        {/* <div
-          onClick={() => deleteMessage({ messageId })}
-          className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
-        >
-          <p>Unsend</p>
-          <span>
-            <DeleteIcon />
-          </span>
-        </div> */}
+        </div>
+          {
+            myMessage && (
+              <div
+                onClick={deleteMessage}
+                className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
+              >
+                <p>Unsend</p>
+                <span>
+                  <DeleteIcon/>
+                </span>
+              </div>
+            )
+          }
       </div>
     </div>
   );

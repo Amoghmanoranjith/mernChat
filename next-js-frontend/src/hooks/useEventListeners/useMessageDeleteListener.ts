@@ -13,6 +13,7 @@ export const useMessageDeleteListener = () => {
   const dispatch = useAppDispatch();
 
   useSocketEvent(Event.MESSAGE_DELETE,({chatId,messageId}:MessageDeleteEventReceivePayload) => {
+    console.log({chatId,messageId});
       dispatch(
         messageApi.util.updateQueryData("getMessagesByChatId",{ chatId, page: 1 },(draft) => {
             draft.messages = draft.messages.filter(message => message.id !== messageId);

@@ -318,20 +318,44 @@ const registerSocketHandlers = (io) => {
             io.to(chatId).emit(Events.MESSAGE_EDIT, payload);
         });
         socket.on(Events.MESSAGE_DELETE, async ({ chatId, messageId }) => {
-            const deletedMessage = await prisma.message.delete({
-                where: {
-                    chatId: chatId,
-                    id: messageId
-                },
-                select: {
-                    id: true,
-                    attachments: true,
-                }
+            // First, find all reply messages
+            const replyMessages = await prisma.message.findMany({
+                where: { replyToMessageId: messageId },
+                select: { id: true },
             });
-            if (deletedMessage.attachments.length) {
-                const attachmentPublicIds = deletedMessage.attachments.map(({ cloudinaryPublicId }) => cloudinaryPublicId);
-                await deleteFilesFromCloudinary({ publicIds: attachmentPublicIds });
+            const replyMessageIds = replyMessages.map(msg => msg.id);
+            // Delete unread messages of replies first (to avoid constraint issues)
+            if (replyMessageIds.length) {
+                await prisma.unreadMessages.deleteMany({
+                    where: { messageId: { in: replyMessageIds } },
+                });
             }
+            // Delete reply messages
+            await prisma.message.deleteMany({
+                where: { replyToMessageId: messageId },
+            });
+            // Delete unread messages, reactions, and attachments of the original message
+            await prisma.unreadMessages.deleteMany({ where: { messageId } });
+            await prisma.reactions.deleteMany({ where: { messageId } });
+            const messageToBeDeleted = await prisma.message.findUnique({ where: { chatId, id: messageId }, select: { audioPublicId: true, attachments: { select: { cloudinaryPublicId: true } } } });
+            if (!messageToBeDeleted)
+                return;
+            // Delete files from Cloudinary first
+            if (messageToBeDeleted?.attachments.length) {
+                console.log('deleting attachments from Cloudinary');
+                const attachmentPublicIds = messageToBeDeleted?.attachments.map(({ cloudinaryPublicId }) => cloudinaryPublicId);
+                await deleteFilesFromCloudinary({ publicIds: attachmentPublicIds });
+                await prisma.attachment.deleteMany({ where: { messageId } });
+            }
+            if (messageToBeDeleted?.audioPublicId) {
+                console.log('deleting audio from Cloudinary');
+                await deleteFilesFromCloudinary({ publicIds: [messageToBeDeleted.audioPublicId] });
+            }
+            // Now safely delete the original message
+            const deletedMessage = await prisma.message.delete({
+                where: { id: messageId },
+                select: { id: true }
+            });
             if (deletedMessage.id) {
                 const payload = {
                     messageId: deletedMessage.id,
