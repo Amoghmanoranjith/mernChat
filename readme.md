@@ -66,10 +66,11 @@ At [Mernchat](https://mernchat.in), i am committed to transparency and security.
 ### 💬 **Chat & Messaging**  
 - **Real-time Messaging** – Instantly send and receive messages.  
 - **Voice Notes** – Record and send encrypted voice messages in private chats (not encrypted in group chats). 
+- **Typing Indicators** – See when someone is typing (supports multiple users typing simultaneously in group chats).
 - **Message Editing** – Edit messages after sending (with an edit indicator).  
 - **Message Reactions** – React to messages with emojis (double-tap to like/unlike).  
 - **Message Deletion** – Delete messages after sending.  
-- **Typing Indicators** – See when someone is typing (supports multiple users typing simultaneously in group chats).  
+- **Message Replies** – Reply to specific messages in a chat, whether sent by you or others.
 
 
 ### 📞 **Audio & Video Calling**
