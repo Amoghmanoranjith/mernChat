@@ -201,7 +201,10 @@ const chatSlice = createSlice({
 
       state.chats.map(chat => {
         const user = chat.ChatMembers.find(member => member.user.id === userId)?.user;
-        if (user)  user.isOnline = false;
+        if (user){
+          user.isOnline = false;
+          user.lastSeen = new Date();
+        }
       });
 
       state.selectedChatDetails?.ChatMembers.map(member=>{
