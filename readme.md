@@ -2,6 +2,8 @@
 
 **[Mernchat](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
+# Note 🔊: Mernchat in under maintainence, it will be live again properly on 2nd March 2025
+
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/group-chat-creation.png)  
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/recent-calls.png)
