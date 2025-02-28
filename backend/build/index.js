@@ -53,4 +53,7 @@ server.listen(env.PORT, () => {
     if (env.NODE_ENV === 'PRODUCTION') {
         console.log('Started in PRODUCTION mode');
     }
+    else {
+        console.log('Started in DEVELOPMENT mode');
+    }
 });
