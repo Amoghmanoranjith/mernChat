@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:push:dev": "dotenv -e .env.development -- npx prisma db push",
     "db:push:prod": "dotenv -e .env.production -- npx prisma db push",
-    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev",
+    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate deploy",
     "migrate:prod": "dotenv -e .env.production -- npx prisma migrate deploy"
   },
   "dependencies": {

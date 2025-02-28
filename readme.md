@@ -27,40 +27,6 @@
 
 
 --- -->
----
-## 🔐 Privacy & Encryption Commitment  
-
-At this project [Mernchat](https://mernchat.in), i have taken **privacy and security** seriously. The app is **built, designed, and structured** with user privacy in mind, ensuring that **certain messages remain completely inaccessible—even to me as a developer**.  
-
-### **End-to-End Encryption (E2EE)**  
-Private **one-on-one text messages and voice notes** are **end-to-end encrypted** using **AES-256-GCM + ECDH**. This means:  
-
-✅ **No one—including me as the developer—can access your private chats or private voice notes.**  
-✅ **Text messages sent in private chats (between two users) and voice notes sent in private chats (between two users) are encrypted at the sender’s device and only decrypted on the recipient’s device.**  
-✅ **Even if I access the database directly, I cannot read or retrieve private messages or private voice notes in plain text/data**  
-
-For **full transparency**, here’s a snapshot of how private messages and private voice notes are stored in the database—fully encrypted and unreadable to anyone, including myself.  
-
-### This is how your private chat text messages that are e2ee looks like in database
-![](next-js-frontend/public/images/privacy/e2ee-messages-in-database.png)
-
-### This is how your private chat voice notes that are also e2ee looks like
-
-##### Here each file in this folder `encrypted-audio` represents a single e2ee voice note
-![](next-js-frontend/public/images/privacy/encrypted-audio-cloudinary-folder.png)
-##### And this is how your encrypted voice note data looks like
-![](next-js-frontend/public/images/privacy/encrypted-voice-note-data.png)
-
-### **What’s Not E2EE?**  
-While all data is stored securely, end-to-end encryption is **only applied to private text messages and private voice notes**. The following are **not** end-to-end encrypted:  
-
-❌ **Group chats**  
-❌ **Audio & video calls (powered by webrtc)**  
-❌ **Media files (images, videos, GIFs, documents, attachments, etc.)**  
-
-These features are still securely transmitted and stored, but they do not follow the same encryption standard as private messages and private voice notes.  
-
-At [Mernchat](https://mernchat.in), i am committed to transparency and security. As i continue improving, my aim is to enhance encryption features for even greater privacy in future updates.
 
 ---
 ## **🚀 Features**  
@@ -101,6 +67,40 @@ At [Mernchat](https://mernchat.in), i am committed to transparency and security.
 - **PWA Support** – Install next-js-chat-app as a Progressive Web App for a native-like experience.  
 
 ---
+
+## 🔐 Privacy & Encryption Commitment  
+
+At this project [Mernchat](https://mernchat.in), i have taken **privacy and security** seriously. The app is **built, designed, and structured** with user privacy in mind, ensuring that **certain messages remain completely inaccessible—even to me as a developer**.  
+
+### **End-to-End Encryption (E2EE)**  
+Private **one-on-one text messages and voice notes** are **end-to-end encrypted** using **AES-256-GCM + ECDH**. This means:  
+
+✅ **No one—including me as the developer—can access your private chats or private voice notes.**  
+✅ **Text messages sent in private chats (between two users) and voice notes sent in private chats (between two users) are encrypted at the sender’s device and only decrypted on the recipient’s device.**  
+✅ **Even if I access the database directly, I cannot read or retrieve private messages or private voice notes in plain text/data**  
+
+For **full transparency**, here’s a snapshot of how private messages and private voice notes are stored in the database—fully encrypted and unreadable to anyone, including myself.  
+
+### This is how your private chat text messages that are e2ee looks like in database
+![](next-js-frontend/public/images/privacy/e2ee-messages-in-database.png)
+
+### This is how your private chat voice notes that are also e2ee looks like
+
+##### Here each file in this folder `encrypted-audio` represents a single e2ee voice note
+![](next-js-frontend/public/images/privacy/encrypted-audio-cloudinary-folder.png)
+##### And this is how your encrypted voice note data looks like
+![](next-js-frontend/public/images/privacy/encrypted-voice-note-data.png)
+
+### **What’s Not E2EE?**  
+While all data is stored securely, end-to-end encryption is **only applied to private text messages and private voice notes**. The following are **not** end-to-end encrypted:  
+
+❌ **Group chats**  
+❌ **Audio & video calls (powered by webrtc)**  
+❌ **Media files (images, videos, GIFs, documents, attachments, etc.)**  
+
+These features are still securely transmitted and stored, but they do not follow the same encryption standard as private messages and private voice notes.  
+
+At [Mernchat](https://mernchat.in), i am committed to transparency and security. As i continue improving, my aim is to enhance encryption features for even greater privacy in future updates.
 
 
 ## **Who Can Use This Chat App?**  
@@ -210,9 +210,51 @@ cd next-js-frontend
 npm install
 npm run dev
 ```
-Visit **http://localhost:3000** in your browser.  
+Visit **http://localhost:3000** in your browser.
 
 ---
+### **4️⃣ Database Setup & Migrations**  
+
+#### **Available Database Commands**  
+These scripts are defined in `package.json` under the **next-js-frontend** folder:  
+
+```json
+{
+  "db:push:dev": "dotenv -e .env.development -- npx prisma db push",
+  "db:push:prod": "dotenv -e .env.production -- npx prisma db push",
+  "migrate:dev": "dotenv -e .env.development -- npx prisma migrate deploy",
+  "migrate:prod": "dotenv -e .env.production -- npx prisma migrate deploy"
+}
+```
+
+#### **Push the Schema (Non-Migratory Approach)**  
+If you just need to sync the database schema without migrations:  
+- **Development:**  
+  ```bash
+  npm run db:push:dev
+  ```
+- **Production:**  
+  ```bash
+  npm run db:push:prod
+  ```
+
+#### **Run Migrations (For Versioned Changes)**  
+If you are making structural changes and need to apply existing migrations:  
+- **Development:**  
+  ```bash
+  npm run migrate:dev
+  ```
+- **Production:**  
+  ```bash
+  npm run migrate:prod
+  ```
+
+🚀 **Note:**  
+- `db push` is useful when setting up the database initially or for quick schema changes **without** migration tracking.  
+- `migrate deploy` ensures **existing** migrations are applied in production and development.  
+
+---
+
 
 ## **💡 Contribution Guide**  
 Contributions are welcome! To contribute:  
