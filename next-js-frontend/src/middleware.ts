@@ -28,83 +28,72 @@ export async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
-  const cookie = req.cookies.get("token")?.value;
-
-  // If no token and it's a protected route, redirect to login
-  if (!cookie && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
+  const token = req.cookies.get("token")?.value;
 
   // Decrypt session from token
-  const session = cookie ? (await decrypt(cookie) as SessionPayload) : null;
-
+  const session = token ? (await decrypt(token) as SessionPayload) : null;
+  
   // If session is invalid, redirect for protected routes
   if (!session?.userId && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    const redirectResponse =  NextResponse.redirect(new URL("/auth/login", req.url));
+    redirectResponse.cookies.set("token","", {expires: new Date(0), path: "/"});
+    return redirectResponse;
   }
-
+  // Redirect logged-in users away from public routes
+  if (session?.userId && isPublicRoute) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
+  
   let userInfo: FetchUserInfoResponse | null = null;
 
   // Only fetch user info if necessary
   if (isProtectedRoute && session?.userId) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/user`, {
-        headers: { "Cookie": `token=${cookie}` },
+        headers: { "Cookie": `token=${token}` },
       });
-
       if (res.ok) {
         userInfo = await res.json() as FetchUserInfoResponse;
-      } else {
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+      }
+      else {
+        const redirectResponse =  NextResponse.redirect(new URL("/auth/login", req.url))
+        redirectResponse.cookies.set("token","", {expires: new Date(0), path: "/"});
+        return redirectResponse;
       }
     } catch (error) {
       console.error("Error fetching user info in middleware:", error);
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+      return NextResponse.redirect(new URL("/auth/login", req.url)).cookies.set("token","", {expires: new Date(0), path: "/"});
     }
   }
 
   // Redirect unverified users to verification page (unless already there)
-  if (userInfo && !userInfo.emailVerified && path !== "/auth/verification") {
-    const response = NextResponse.redirect(new URL("/auth/verification", req.url));
+  if (userInfo && !userInfo.emailVerified) {
+
+    let response = null;
+
+    if(path !== "/auth/verification") response = NextResponse.redirect(new URL("/auth/verification", req.url));
+    else response = NextResponse.next();
+
     response.cookies.set("tempUserInfo", JSON.stringify(userInfo), {
       httpOnly: true,
       sameSite: "strict",
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
-    return response;
+    return response
   }
 
-  // If user is already on verification, just set the temp cookie
-  if (userInfo && !userInfo.emailVerified && path === "/auth/verification") {
-    const response = NextResponse.next();
-    response.cookies.set("tempUserInfo", JSON.stringify(userInfo), {
-      httpOnly: true,
-      sameSite: "strict",
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-    });
-    return response;
-  }
-
-  // Redirect logged-in users away from public routes
-  if (isPublicRoute && session?.userId) {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
-  }
-
-  const response = NextResponse.next();
-
-  // Store userId in a cookie to avoid unnecessary decryption
   if (session?.userId) {
+    const response = NextResponse.next();
     response.cookies.set("loggedInUserId", session.userId, {
       httpOnly: true,
       sameSite: "strict",
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
+    return response;
   }
 
-  response.headers.set("Cookie", `token=${cookie}`);
+  return NextResponse.next();
 
-  return response;
 }
