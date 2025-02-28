@@ -1,8 +1,8 @@
 # **Mernchat – Secure, End-to-End Encrypted (E2EE) Real-Time Messaging** 🗨️  
+# Note 🔊: Mernchat in under maintainence, it will be live again properly on 2nd March 2025
 
 **[Mernchat](https://mernchat.in)** is a **secure, real-time messaging platform** built with **Next.js 15, Socket.IO, and end-to-end encryption (E2EE)** to ensure **privacy-first communication**. Designed for seamless **group chats, reactions, file sharing, and OAuth login**, this app is the perfect solution for **secure online conversations**.
 
-# Note 🔊: Mernchat in under maintainence, it will be live again properly on 2nd March 2025
 
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/og/og-image.png)
 ![Next.js-chat-app Screenshot](next-js-frontend/public/images/dekstop-screenshots/group-chat-creation.png)  
@@ -159,39 +159,37 @@ cd nextjs-chat-app
 
 #### **Backend Configuration**  
 1. Navigate to the **backend** folder.  
-2. Copy `.env.example` and rename it to `.env`.  
-3. Replace the placeholder values with actual credentials.  
-4. Make sure `backend/src/firebase-admin-cred.json` is correctly set up for Firebase authentication.  
-
-📝 **Example (`backend/.env`)**:  
-```ini
-NODE_ENV=DEVELOPMENT
-PORT=8000
-JWT_SECRET=your-secure-jwt-secret
-DATABASE_URL=your-database-url
-FIREBASE_CREDENTIALS_PATH=./src/firebase-admin-cred.json
+2. Rename `.env.development.example` to `.env.development`.  
+3. Rename `.env.production.example` to `.env.production`.  
+4. Replace the placeholder values with actual credentials.  
+5. Create a `firebase-admin-cred.json` file inside `backend/src/` (root level of `src`). This file should contain your Firebase service account credentials required for Firebase push notifications.
+6. 📝 **Example `backend/src/firebase-admin-cred.json` file**, Paste your own cred here provided by firebase  
+```json
+{
+    "type": "service_account",
+    "project_id": "your-project-id",
+    "private_key_id": "your-private-key-id",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n",
+    "client_email": "your-client-email",
+    "client_id": "your-client-id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "your-client-x509-cert-url",
+    "universe_domain": "googleapis.com"
+}
 ```
-
 ---
 
 #### **Frontend Configuration**  
 1. Navigate to the **frontend** folder.  
-2. Copy `.env.development.example` and rename it to `.env.development`.  
-3. Copy `.env.production.example` and rename it to `.env.production`.  
-4. Fill in your API keys and URLs.  
-
-📝 **Example (`frontend/.env.development`)**:  
-```ini
-NEXT_PUBLIC_TENOR_API_KEY=your-tenor-api-key
-NEXT_PUBLIC_FIREBASE_API_KEY=your-firebase-api-key
-NEXT_PUBLIC_BASE_URL=http://localhost:8000/api/v1
-NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
-```
+2. Rename `.env.development.example` to `.env.development`.  
+3. Rename `.env.production.example` to `.env.production`.  
+4. Replace the placeholder values with actual credentials.  
 
 🚨 **Important Notes:**  
-- Never expose sensitive credentials in `NEXT_PUBLIC_` variables.  
-- Ensure the correct Firebase and API URLs are set.  
-
+- Never expose sensitive credentials to client side by prefixing them with `NEXT_PUBLIC_`.  
+- Ensure the correct Firebase cred and API URLs are set.  
 ---
 
 ### **3️⃣ Install Dependencies & Run the Application**  
@@ -208,7 +206,7 @@ The backend will start at **http://localhost:8000**.
 
 #### **Then Start the Frontend**  
 ```bash
-cd frontend
+cd next-js-frontend
 npm install
 npm run dev
 ```
@@ -237,6 +235,8 @@ Contributions are welcome! To contribute:
 
 ## **📧 Contact**  
 For feedback or queries, reach out:  
+🔗 **[LinkedIn @Rishi Bakshi](https://www.linkedin.com/in/rishi-bakshi/)**
+<br/>
 📩 **[rishibakshiofficial@gmail.com](mailto:rishibakshiofficial@gmail.com)**  
 
 ---
