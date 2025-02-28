@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   // Ignore Next.js assets & API routes
-  if (ignoredPaths.some((ignored) => path.startsWith(ignored))) {
+  if (ignoredPaths.some(ignoredPath => path.startsWith(ignoredPath))) {
     return NextResponse.next();
   }
 

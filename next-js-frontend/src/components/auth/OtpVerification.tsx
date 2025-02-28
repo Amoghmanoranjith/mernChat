@@ -1,11 +1,12 @@
 "use client";
 
-import { sendOtp } from "@/actions/auth.actions";
+import { logout, sendOtp } from "@/actions/auth.actions";
 import { FormEvent, startTransition, useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import { CircleLoading } from "../shared/CircleLoading";
 import { OtpVerificationForm } from "./OtpVerificationForm";
+import { useRouter } from "next/navigation";
 
 type PropTypes = {
   email: string;
@@ -29,15 +30,26 @@ export const OtpVerification = ({email,loggedInUserId,username}:PropTypes) => {
     })
   }
 
+  const router = useRouter();
+
+  const handleLogoutClick = async()=>{
+    await logout();
+    router.push("/auth/login");
+  }
+
   return (
     state?.success.message?.length ? (
       <OtpVerificationForm loggedInUserId={loggedInUserId}/>
     )
     :
     (
+      <div className="flex gap-4">
     <form onSubmit={handleSubmit}>
       <SubmitButton/>
     </form>
+    <button onClick={handleLogoutClick} className={"bg-primary px-6 py-2 rounded-sm max-sm:w-full"}>
+        Logout Instead</button>
+    </div>
     )
   );
 };
