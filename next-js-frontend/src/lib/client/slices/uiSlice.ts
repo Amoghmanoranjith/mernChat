@@ -39,6 +39,8 @@ interface InitialState {
   callHistoryTabSelected: boolean;
   replyingToMessageData:string | null
   replyingToMessageId:string | null
+  pinnedMessageDisplay:boolean
+  pinnedMessageData:Message | null
 }
 
 const initialState: InitialState = {
@@ -68,7 +70,10 @@ const initialState: InitialState = {
   callHistoryTabSelected:false,
   newMessageFormed:false,
   replyingToMessageData:null,
-  replyingToMessageId:null
+  replyingToMessageId:null,
+  pinnedMessageDisplay:false,
+  pinnedMessageData:null
+
 };
 const uiSlice = createSlice({
   name: "uiSlice",
@@ -165,7 +170,14 @@ const uiSlice = createSlice({
     },
     setReplyingToMessageId:(state, action: PayloadAction<string | null>)=>{
       state.replyingToMessageId = action.payload
-    }
+    },
+    setPinnedMessageDisplay:(state, action: PayloadAction<boolean>)=>{
+      state.pinnedMessageDisplay = action.payload
+    },
+    setPinnedMessageData:(state, action: PayloadAction<Message | null>)=>{
+      state.pinnedMessageData = action.payload
+    },
+
   },
 });
 
@@ -210,7 +222,8 @@ export const selectCallHistoryTabSelected = (state: RootState) => state.uiSlice.
 export const selectNewMessageFormed = (state: RootState) => state.uiSlice.newMessageFormed;
 export const selectReplyingToMessageData = (state: RootState) => state.uiSlice.replyingToMessageData;
 export const selectReplyingToMessageId = (state:RootState) => state.uiSlice.replyingToMessageId;
-
+export const selectPinnedMessageDisplay = (state:RootState) => state.uiSlice.pinnedMessageDisplay;
+export const selectPinnedMessageData = (state:RootState) => state.uiSlice.pinnedMessageData;
 
 // exporting actions
 export const {
@@ -241,7 +254,9 @@ export const {
   setCallHistoryTabSelected,
   setNewMessageFormed,
   setReplyingToMessageData,
-  setReplyingToMessageId
+  setReplyingToMessageId,
+  setPinnedMessageDisplay,
+  setPinnedMessageData
 } = uiSlice.actions;
 
 export default uiSlice;

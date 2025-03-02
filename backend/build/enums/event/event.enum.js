@@ -32,4 +32,7 @@ export var Events;
     Events["CALLER_OFFLINE"] = "CALLER_OFFLINE";
     Events["ICE_CANDIDATE"] = "ICE_CANDIDATE";
     Events["CALL_ID"] = "CALL_ID";
+    Events["PIN_MESSAGE"] = "PIN_MESSAGE";
+    Events["UNPIN_MESSAGE"] = "UNPIN_MESSAGE";
+    Events["PIN_LIMIT_REACHED"] = "PIN_LIMIT_REACHED";
 })(Events || (Events = {}));

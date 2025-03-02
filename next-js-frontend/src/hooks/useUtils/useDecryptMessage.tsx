@@ -41,7 +41,7 @@ export const useDecryptMessage = ({
   };
 
   useEffect(() => {
-    if (!selectedChatDetails.isGroupChat) {
+    if (!selectedChatDetails.isGroupChat && cipherText && cipherText.length) {
       handleSetSharedKey();
     } else {
       setDecryptedMessage(cipherText);

@@ -11,6 +11,7 @@ import {
   getChatAvatar,
   getOtherMemberOfPrivateChat,
 } from "../../lib/shared/helpers";
+import { PinMessageArea } from "../pin/PinMessageArea";
 import { CallIcon } from "../ui/icons/CallIcon";
 import { ChatHeaderBasicInfo } from "./ChatHeaderBasicInfo";
 import { ChatHeaderSecondaryInfo } from "./ChatHeaderSecondaryInfo";
@@ -41,35 +42,42 @@ export const ChatHeader = ({ selectedChatDetails }: PropTypes) => {
   },[dispatch])
 
   return (
-    <div
-      onClick={handleChatHeaderClick}
-      className="flex items-center justify-between text-text"
-    >
-      <div className="flex gap-x-3">
-        <Image
-          className="w-14 h-14 rounded-full max-sm:w-10 max-sm:h-10 object-cover"
-          src={chatAvatar || DEFAULT_AVATAR}
-          alt={"chat-avatar"}
-          width={200}
-          height={200}
-        />
-        <div className="flex flex-col gap-y-1 max-sm:gap-y-[.5px]">
-          <ChatHeaderBasicInfo
-            loggedInUserId={loggedInUserId}
-            otherMemberOfPrivateChat={otherMemberOfPrivateChat}
-            selectedChatDetails={selectedChatDetails}
+    <div className="flex flex-col gap-1">
+      <div
+        onClick={handleChatHeaderClick}
+        className="flex items-center justify-between text-text"
+      >
+        <div className="flex gap-x-3">
+          <Image
+            className="w-14 h-14 rounded-full max-sm:w-10 max-sm:h-10 object-cover"
+            src={chatAvatar || DEFAULT_AVATAR}
+            alt={"chat-avatar"}
+            width={200}
+            height={200}
           />
-          <ChatHeaderSecondaryInfo
-            otherMemberOfPrivateChat={otherMemberOfPrivateChat}
-            selectedChatDetails={selectedChatDetails}
-            loggedInUserId={loggedInUserId}
-          />
+          <div className="flex flex-col gap-y-1 max-sm:gap-y-[.5px]">
+            <ChatHeaderBasicInfo
+              loggedInUserId={loggedInUserId}
+              otherMemberOfPrivateChat={otherMemberOfPrivateChat}
+              selectedChatDetails={selectedChatDetails}
+            />
+            <ChatHeaderSecondaryInfo
+              otherMemberOfPrivateChat={otherMemberOfPrivateChat}
+              selectedChatDetails={selectedChatDetails}
+              loggedInUserId={loggedInUserId}
+            />
+          </div>
         </div>
-      </div>
 
+        {
+          !selectedChatDetails.isGroupChat && (
+            <span onClick={handleCallClick} className="cursor-pointer"><CallIcon/></span>
+          )
+        }
+      </div>
       {
-        !selectedChatDetails.isGroupChat && (
-          <span onClick={handleCallClick} className="cursor-pointer"><CallIcon/></span>
+        selectedChatDetails.PinnedMessages.length > 0 && (
+          <PinMessageArea selectedChatDetails={selectedChatDetails}/>
         )
       }
     </div>

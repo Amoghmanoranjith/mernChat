@@ -9,6 +9,7 @@ import {
   selectFriendRequestForm,
   selectGifForm,
   selectGroupChatForm,
+  selectPinnedMessageDisplay,
   selectPollForm,
   selectProfileForm,
   selectRecoverPrivateKeyForm,
@@ -22,6 +23,7 @@ import {
   setFriendRequestForm,
   setGifForm,
   setNewgroupChatForm,
+  setPinnedMessageDisplay,
   setPollForm,
   setProfileForm,
   setRemoveMemberForm,
@@ -31,6 +33,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import dynamic from "next/dynamic";
 import { Modal } from "./Modal";
+import { PinMessageDisplay } from "../pin/PinMessageDisplay";
 const RecoverPrivateKeyForm = dynamic(
   () => import("../auth/RecoverPrivateKeyForm"),
   { ssr: false }
@@ -90,6 +93,7 @@ export const ModalWrapper = () => {
   const isChatUpdateFormOpen = useAppSelector(selectChatUpdateForm);
 
   const isCallDisplayOpen = useAppSelector(selectCallDisplay);
+  const isPinnedMessageDisplayOpen = useAppSelector(selectPinnedMessageDisplay);
 
   const isRecoverPrivateKeyFormOpen = useAppSelector(
     selectRecoverPrivateKeyForm
@@ -184,6 +188,10 @@ export const ModalWrapper = () => {
 
       <Modal isCallModal={true} isOpen={isCallDisplayOpen} onClose={()=>dispatch(setCallDisplay(false))}>
         <CallDisplay/>
+      </Modal>
+
+      <Modal isOpen={isPinnedMessageDisplayOpen} onClose={()=>dispatch(setPinnedMessageDisplay(false))}>
+        <PinMessageDisplay/>
       </Modal>
 
     </>

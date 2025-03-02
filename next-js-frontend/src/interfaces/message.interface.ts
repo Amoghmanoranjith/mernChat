@@ -54,6 +54,7 @@ export interface Message {
     createdAt: Date;
     updatedAt: Date;
     isNew?:boolean
+    isPinned:boolean
 
     // client side added variable
     // this does not comes from the server

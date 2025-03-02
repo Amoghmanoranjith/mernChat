@@ -245,8 +245,46 @@ const chatSlice = createSlice({
         const {chatId,membersIds} = action.payload;
         const chat = state.chats.find(draft => draft.id === chatId);
         if(chat) chat.ChatMembers = chat.ChatMembers.filter(member => !membersIds.includes(member.user.id));
-    }
+    },
 
+    addNewPinnedMessage:(state,action:PayloadAction<{
+      message: Message
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }>)=>{
+      if(state.selectedChatDetails && state.selectedChatDetails.id === action.payload.message.chatId){
+        state.selectedChatDetails.PinnedMessages.push(action.payload as any);
+      }
+      state.chats.forEach(chat=>{
+        if(chat.id === action.payload.message.chatId){
+          chat.PinnedMessages.push(action.payload as any);
+        }
+      })
+    },
+
+    removePinnedMessage:(state,action:PayloadAction<{pinId:string}>)=>{
+      if(state.selectedChatDetails){
+        state.selectedChatDetails.PinnedMessages = state.selectedChatDetails.PinnedMessages.filter(pin => pin.id !== action.payload.pinId);
+      }
+      state.chats.forEach(chat=>{
+        chat.PinnedMessages = chat.PinnedMessages.filter(pin => pin.id !== action.payload.pinId);
+      })
+    },
+
+
+    deletePinnedMessageOnMessageDeletion:(state,action:PayloadAction<{messageId:string,chatId:string}>)=>{
+
+      if(state.selectedChatDetails?.id === action.payload.chatId){
+        state.selectedChatDetails.PinnedMessages = state.selectedChatDetails.PinnedMessages.filter(pinMessage=>pinMessage.message.id != action.payload.messageId)
+      }
+
+      state.chats.forEach(chat=>{
+        if(chat.id === action.payload.chatId){
+          chat.PinnedMessages = chat.PinnedMessages.filter(pinMessages=>pinMessages.message.id != action.payload.messageId)
+        }
+      })
+    },
   },
 });
 
@@ -274,7 +312,10 @@ export const {
   updateOnlineStatusOfMembersInChats,
   addNewChat,
   updateChatMembers,
-  removeChatMembers
+  removeChatMembers,
+  addNewPinnedMessage,
+  removePinnedMessage,
+  deletePinnedMessageOnMessageDeletion
 } = chatSlice.actions;
 
 export default chatSlice;

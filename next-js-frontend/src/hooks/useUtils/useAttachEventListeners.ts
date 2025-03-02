@@ -17,7 +17,10 @@ import { useNewReactionListener } from "../useEventListeners/useNewReactionListe
 import { useOfflineUserListener } from "../useEventListeners/useOfflineUserListener";
 import { useOnlineUserListener } from "../useEventListeners/useOnlineUserListener";
 import { useOnlineUsersListListener } from "../useEventListeners/useOnlineUsersListListener";
+import { usePinLimitReachedListener } from "../useEventListeners/usePinLimitReachedListener";
+import { usePinMessageListener } from "../useEventListeners/usePinMessageListener";
 import { useTypingListener } from "../useEventListeners/useTypingListener";
+import { useUnpinMessageListener } from "../useEventListeners/useUnpinMessageListener";
 import { useUnreadMessageListener } from "../useEventListeners/useUnreadMessageListener";
 import { useVoteInListener } from "../useEventListeners/useVoteInListener";
 import { useVoteOutListener } from "../useEventListeners/useVoteOutListener";
@@ -34,6 +37,9 @@ export const useAttachEventListeners = () => {
   useMessageEditListener();
   useMessageDeleteListener();
   useTypingListener();
+  usePinMessageListener();
+  useUnpinMessageListener();
+  usePinLimitReachedListener();
 
   
   // user status

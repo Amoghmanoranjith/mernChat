@@ -318,50 +318,54 @@ const registerSocketHandlers = (io) => {
             io.to(chatId).emit(Events.MESSAGE_EDIT, payload);
         });
         socket.on(Events.MESSAGE_DELETE, async ({ chatId, messageId }) => {
-            // First, find all reply messages
-            const replyMessages = await prisma.message.findMany({
-                where: { replyToMessageId: messageId },
-                select: { id: true },
-            });
-            const replyMessageIds = replyMessages.map(msg => msg.id);
-            // Delete unread messages of replies first (to avoid constraint issues)
-            if (replyMessageIds.length) {
-                await prisma.unreadMessages.deleteMany({
-                    where: { messageId: { in: replyMessageIds } },
+            try {
+                await prisma.pinnedMessages.deleteMany({ where: { messageId } });
+                // if this message had any replies, then breaking the connection of the replies with this message
+                // and this message will be deleted
+                await prisma.message.updateMany({
+                    where: { replyToMessageId: messageId },
+                    data: { replyToMessageId: null },
                 });
+                // deleting unreadMessages of this message
+                await prisma.unreadMessages.deleteMany({ where: { messageId } });
+                // deleting reactions of this message
+                await prisma.reactions.deleteMany({ where: { messageId } });
+                const messageToBeDeleted = await prisma.message.findUnique({
+                    where: { chatId, id: messageId },
+                    select: { audioPublicId: true, attachments: { select: { cloudinaryPublicId: true } } }
+                });
+                if (!messageToBeDeleted)
+                    return;
+                let publicIds = [];
+                // Delete files from Cloudinary first
+                if (messageToBeDeleted?.attachments.length) {
+                    console.log('deleting attachments from Cloudinary');
+                    const cloudinaryPublicIdsOfAttachments = messageToBeDeleted?.attachments.map(({ cloudinaryPublicId }) => cloudinaryPublicId);
+                    publicIds.push(...cloudinaryPublicIdsOfAttachments);
+                    await prisma.attachment.deleteMany({ where: { messageId } });
+                }
+                if (messageToBeDeleted?.audioPublicId) {
+                    console.log('deleting audio from Cloudinary');
+                    publicIds.push(messageToBeDeleted.audioPublicId);
+                }
+                if (publicIds.length) {
+                    await deleteFilesFromCloudinary({ publicIds });
+                }
+                // Now safely delete the original message
+                const deletedMessage = await prisma.message.delete({
+                    where: { id: messageId },
+                    select: { id: true }
+                });
+                if (deletedMessage.id) {
+                    const payload = {
+                        messageId: deletedMessage.id,
+                        chatId,
+                    };
+                    io.to(chatId).emit(Events.MESSAGE_DELETE, payload);
+                }
             }
-            // Delete reply messages
-            await prisma.message.deleteMany({
-                where: { replyToMessageId: messageId },
-            });
-            // Delete unread messages, reactions, and attachments of the original message
-            await prisma.unreadMessages.deleteMany({ where: { messageId } });
-            await prisma.reactions.deleteMany({ where: { messageId } });
-            const messageToBeDeleted = await prisma.message.findUnique({ where: { chatId, id: messageId }, select: { audioPublicId: true, attachments: { select: { cloudinaryPublicId: true } } } });
-            if (!messageToBeDeleted)
-                return;
-            // Delete files from Cloudinary first
-            if (messageToBeDeleted?.attachments.length) {
-                console.log('deleting attachments from Cloudinary');
-                const attachmentPublicIds = messageToBeDeleted?.attachments.map(({ cloudinaryPublicId }) => cloudinaryPublicId);
-                await deleteFilesFromCloudinary({ publicIds: attachmentPublicIds });
-                await prisma.attachment.deleteMany({ where: { messageId } });
-            }
-            if (messageToBeDeleted?.audioPublicId) {
-                console.log('deleting audio from Cloudinary');
-                await deleteFilesFromCloudinary({ publicIds: [messageToBeDeleted.audioPublicId] });
-            }
-            // Now safely delete the original message
-            const deletedMessage = await prisma.message.delete({
-                where: { id: messageId },
-                select: { id: true }
-            });
-            if (deletedMessage.id) {
-                const payload = {
-                    messageId: deletedMessage.id,
-                    chatId,
-                };
-                io.to(chatId).emit(Events.MESSAGE_DELETE, payload);
+            catch (error) {
+                console.log('Error deleting message:', error);
             }
         });
         socket.on(Events.NEW_REACTION, async ({ chatId, messageId, reaction }) => {
@@ -418,73 +422,221 @@ const registerSocketHandlers = (io) => {
             socket.broadcast.to(chatId).emit(Events.USER_TYPING, payload);
         });
         socket.on(Events.VOTE_IN, async ({ chatId, messageId, optionIndex }) => {
-            const isValidPoll = await prisma.message.findFirst({
-                where: { chatId, id: messageId },
-                include: {
-                    poll: {
-                        select: {
-                            id: true
+            console.log('vote in received');
+            try {
+                const isValidPoll = await prisma.message.findFirst({
+                    where: { chatId, id: messageId },
+                    include: {
+                        poll: {
+                            select: {
+                                id: true
+                            }
                         }
                     }
-                }
-            });
-            if (!isValidPoll?.poll?.id)
-                return;
-            await prisma.vote.create({
-                data: {
-                    pollId: isValidPoll.poll.id,
-                    userId: socket.user.id,
-                    optionIndex
-                }
-            });
-            const payload = {
-                messageId,
-                optionIndex,
-                user: {
-                    id: socket.user.id,
-                    avatar: socket.user.avatar,
-                    username: socket.user.username
-                },
-                chatId
-            };
-            io.to(chatId).emit(Events.VOTE_IN, payload);
+                });
+                if (!isValidPoll?.poll?.id)
+                    return;
+                await prisma.vote.create({
+                    data: {
+                        pollId: isValidPoll.poll.id,
+                        userId: socket.user.id,
+                        optionIndex
+                    }
+                });
+                const payload = {
+                    messageId,
+                    optionIndex,
+                    user: {
+                        id: socket.user.id,
+                        avatar: socket.user.avatar,
+                        username: socket.user.username
+                    },
+                    chatId
+                };
+                io.to(chatId).emit(Events.VOTE_IN, payload);
+            }
+            catch (error) {
+                console.log('error in vote in:', error);
+            }
         });
         socket.on(Events.VOTE_OUT, async ({ chatId, messageId, optionIndex }) => {
-            const isValidPoll = await prisma.message.findFirst({
-                where: { chatId, id: messageId },
-                include: {
-                    poll: {
-                        select: {
-                            id: true
+            console.log('vote out received');
+            try {
+                const isValidPoll = await prisma.message.findFirst({
+                    where: { chatId, id: messageId },
+                    include: {
+                        poll: {
+                            select: {
+                                id: true
+                            }
                         }
+                    },
+                });
+                if (!isValidPoll?.poll?.id)
+                    return;
+                const vote = await prisma.vote.findFirst({
+                    where: {
+                        userId: socket.user.id,
+                        pollId: isValidPoll.poll.id,
+                        optionIndex
                     }
-                },
-            });
-            if (!isValidPoll?.poll?.id)
-                return;
-            const vote = await prisma.vote.findFirst({
-                where: {
-                    userId: socket.user.id,
-                    pollId: isValidPoll.poll.id,
-                    optionIndex
+                });
+                if (!vote)
+                    return;
+                await prisma.vote.deleteMany({
+                    where: {
+                        userId: socket.user.id,
+                        pollId: isValidPoll.poll.id,
+                        optionIndex
+                    }
+                });
+                const payload = {
+                    chatId,
+                    messageId,
+                    optionIndex,
+                    userId: socket.user.id
+                };
+                io.to(chatId).emit(Events.VOTE_OUT, payload);
+            }
+            catch (error) {
+                console.log('error in vote out:', error);
+            }
+        });
+        socket.on(Events.PIN_MESSAGE, async ({ chatId, messageId }) => {
+            try {
+                console.log('messageId for pinning message is:', messageId);
+                const pinnedMessages = await prisma.pinnedMessages.findMany({
+                    where: { chatId },
+                    orderBy: { createdAt: "asc" } // Get the oldest pinned message first
+                });
+                if (pinnedMessages.length === 3) {
+                    await prisma.pinnedMessages.delete({ where: { id: pinnedMessages[0].id } });
+                    const unpinnedMessage = await prisma.message.update({ where: { id: pinnedMessages[0].messageId }, data: { isPinned: false }, select: { id: true } });
+                    const payload = {
+                        oldestPinId: pinnedMessages[0].id,
+                        messageId: unpinnedMessage.id,
+                        chatId
+                    };
+                    io.to(chatId).emit(Events.PIN_LIMIT_REACHED, payload);
                 }
-            });
-            if (!vote)
-                return;
-            await prisma.vote.deleteMany({
-                where: {
-                    userId: socket.user.id,
-                    pollId: isValidPoll.poll.id,
-                    optionIndex
-                }
-            });
-            const payload = {
-                chatId,
-                messageId,
-                optionIndex,
-                userId: socket.user.id
-            };
-            io.to(chatId).emit(Events.VOTE_OUT, payload);
+                const pinnedMessage = await prisma.pinnedMessages.create({
+                    data: {
+                        messageId,
+                        chatId
+                    },
+                    include: {
+                        message: {
+                            include: {
+                                sender: {
+                                    select: {
+                                        id: true,
+                                        username: true,
+                                        avatar: true,
+                                    }
+                                },
+                                attachments: {
+                                    select: {
+                                        secureUrl: true,
+                                    }
+                                },
+                                poll: {
+                                    omit: {
+                                        id: true,
+                                    },
+                                    include: {
+                                        votes: {
+                                            include: {
+                                                user: {
+                                                    select: {
+                                                        id: true,
+                                                        username: true,
+                                                        avatar: true
+                                                    }
+                                                }
+                                            },
+                                            omit: {
+                                                id: true,
+                                                pollId: true,
+                                                userId: true,
+                                            }
+                                        },
+                                    }
+                                },
+                                reactions: {
+                                    select: {
+                                        user: {
+                                            select: {
+                                                id: true,
+                                                username: true,
+                                                avatar: true
+                                            }
+                                        },
+                                        reaction: true,
+                                    }
+                                },
+                                replyToMessage: {
+                                    select: {
+                                        sender: {
+                                            select: {
+                                                id: true,
+                                                username: true,
+                                                avatar: true,
+                                            }
+                                        },
+                                        id: true,
+                                        textMessageContent: true,
+                                        isPollMessage: true,
+                                        url: true,
+                                        audioUrl: true,
+                                        attachments: {
+                                            select: {
+                                                secureUrl: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            omit: {
+                                senderId: true,
+                                pollId: true,
+                            },
+                        }
+                    },
+                    omit: {
+                        chatId: true,
+                        messageId: true
+                    }
+                });
+                await prisma.message.update({ where: { id: messageId }, data: { isPinned: true } });
+                io.to(chatId).emit(Events.PIN_MESSAGE, pinnedMessage);
+            }
+            catch (error) {
+                console.log('error pinning message:', error);
+            }
+        });
+        socket.on(Events.UNPIN_MESSAGE, async ({ pinId }) => {
+            try {
+                const deletedPinnedMessage = await prisma.pinnedMessages.delete({
+                    where: {
+                        id: pinId
+                    },
+                    select: {
+                        id: true,
+                        chatId: true,
+                        messageId: true
+                    }
+                });
+                await prisma.message.update({ where: { id: deletedPinnedMessage.messageId }, data: { isPinned: false } });
+                const payload = {
+                    pinId: deletedPinnedMessage.id,
+                    chatId: deletedPinnedMessage.chatId,
+                    messageId: deletedPinnedMessage.messageId
+                };
+                io.to(deletedPinnedMessage.chatId).emit(Events.UNPIN_MESSAGE, payload);
+            }
+            catch (error) {
+                console.log('error un-pinning message:', error);
+            }
         });
         registerWebRtcHandlers(socket, io);
         socket.on("disconnect", async () => {

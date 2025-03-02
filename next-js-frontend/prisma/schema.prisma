@@ -48,6 +48,8 @@ model Chat {
   messages       Message[]
   UnreadMessages UnreadMessages[]
   ChatMembers    ChatMembers[]
+
+  PinnedMessages PinnedMessages[]
 }
 
 model Friends {
@@ -122,6 +124,8 @@ model Message {
   replyToMessage     Message?    @relation("replyOf",fields: [replyToMessageId], references: [id])
   replyToMessageId   String?
 
+  isPinned           Boolean      @default(false)
+
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
@@ -130,6 +134,8 @@ model Message {
   reactions      Reactions[]
 
   Message Message[]  @relation("replyOf")
+
+  PinnedMessages PinnedMessages[]
 }
 
 model Otp {
@@ -200,6 +206,18 @@ model CallHistory {
   endedAt   DateTime?
   duration  Int?
   status   CallStatus @default(RINGING)
+}
+
+model PinnedMessages {
+  id String @id @default(cuid())
+  chat Chat @relation(fields: [chatId], references: [id])
+  chatId String
+  message Message @relation(fields: [messageId], references: [id])
+  messageId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chatId, messageId])
 }
 
 model User {

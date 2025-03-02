@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import { RenderAppropriateMessage } from "./RenderAppropriateMessage";
 import Image from "next/image";
+import { PinIcon } from "../ui/icons/PinIcon";
 
 type PropTypes = {
   isContextMenuOpen: boolean;
@@ -72,15 +73,22 @@ export const MessageDisplay = ({
         setEditMessageId={setEditMessageId}
         setOpenContextMenuMessageId={setOpenContextMenuMessageId}
       />
-      <div className="flex items-center ml-auto gap-x-1 flex-nowrap shrink-0">
+      <div className="flex items-center ml-auto gap-2 flex-nowrap shrink-0">
         {message.isEdited && 
-          <p className="text-secondary font-medim text-sm max-sm:text-xs">
+          <span className="text-secondary font-medim text-sm max-sm:text-xs">
             Edited
-          </p>
+          </span>
         }
-        <p className={`text-xs ${myMessage ? "text-gray-200" : "text-secondary-darker"}`}>
+        {
+          message.isPinned && (
+            <span>
+              <PinIcon size={4}/>
+            </span>
+          )
+        }
+        <span className={`text-xs ${myMessage ? "text-gray-200" : "text-secondary-darker"}`}>
           {format(message.createdAt, "h:mm a").toLowerCase()}
-        </p>
+        </span>
       </div>
     </motion.div>
   );

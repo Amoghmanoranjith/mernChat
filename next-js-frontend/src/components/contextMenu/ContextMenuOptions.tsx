@@ -6,11 +6,13 @@ import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
 import { setReplyingToMessageData, setReplyingToMessageId } from "@/lib/client/slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
-import { useCallback } from "react";
+import { MouseEvent, useCallback } from "react";
 import { CopyIcon } from "../ui/icons/CopyIcon";
 import { DeleteIcon } from "../ui/icons/DeleteIcon";
 import { EditIcon } from "../ui/icons/EditIcon";
 import { ReplyIcon } from "../ui/icons/ReplyIcon";
+import { PinIcon } from "../ui/icons/PinIcon";
+import toast from "react-hot-toast";
 
 type PropTypes = {
   setOpenContextMenuMessageId: React.Dispatch<
@@ -26,6 +28,15 @@ type PropTypes = {
 type MessageDeleteEventSendPayload = {
   chatId:string
   messageId:string
+}
+
+type PinMessageEventSendPayload = {
+  chatId:string
+  messageId:string
+}
+
+type UnpinMessageEventSendPayload = {
+  pinId:string
 }
 
 export const ContextMenuOptions = ({
@@ -60,12 +71,13 @@ export const ContextMenuOptions = ({
 
 
   const deleteMessage = useCallback(()=>{
+    setOpenContextMenuMessageId(undefined)
     const payload:MessageDeleteEventSendPayload = {
       chatId:selectedChatDetails.id,
       messageId
     }
     socket?.emit(Event.MESSAGE_DELETE,payload);
-  },[messageId, selectedChatDetails.id, socket]);
+  },[messageId, selectedChatDetails.id, setOpenContextMenuMessageId, socket]);
 
   const handleCopyClick = useCallback(async()=>{
     try {
@@ -75,6 +87,32 @@ export const ContextMenuOptions = ({
       console.error("Failed to copy:", err);
     }
   },[message?.decryptedMessage, setOpenContextMenuMessageId])
+
+  const handlePinClick = useCallback((e:MouseEvent<HTMLDivElement, globalThis.MouseEvent>)=>{
+    e.stopPropagation();
+    const payload:PinMessageEventSendPayload = {
+      chatId:selectedChatDetails.id,
+      messageId
+    }
+    socket?.emit(Event.PIN_MESSAGE,payload);
+    setOpenContextMenuMessageId(undefined);
+  },[messageId, selectedChatDetails.id, setOpenContextMenuMessageId, socket]);
+
+  const handleUnpinClick = useCallback((e:MouseEvent<HTMLDivElement, globalThis.MouseEvent>)=>{
+      e.stopPropagation();
+
+      const pinId = selectedChatDetails.PinnedMessages.find(pin=>pin.message.id === messageId)?.id;
+
+      if(!pinId){
+        toast.error("Some error occurred while unpinning the message");
+        return;
+      }
+      const payload:UnpinMessageEventSendPayload = {
+          pinId
+      }
+      socket?.emit(Event.UNPIN_MESSAGE,payload);
+      setOpenContextMenuMessageId(undefined);
+  },[messageId, selectedChatDetails.PinnedMessages, setOpenContextMenuMessageId, socket]);
 
   return (
     <div className={`flex flex-col bg-secondary-dark text-text p-2 rounded-2xl shadow-2xl min-w-32 self-end`}>
@@ -125,6 +163,19 @@ export const ContextMenuOptions = ({
                   <p>Copy</p>
                   <span>
                     <CopyIcon/>
+                  </span>
+            </div>
+            )
+          }
+          {
+            myMessage && (
+            <div
+                  onClick={message?.isPinned?handleUnpinClick:handlePinClick}
+                  className="cursor-pointer p-2 rounded-sm hover:bg-secondary-darker flex items-center justify-between"
+                >
+                  <p>{message?.isPinned ? "Unpin" : "Pin"}</p>
+                  <span>
+                    <PinIcon/>
                   </span>
             </div>
             )
