@@ -5,7 +5,7 @@ import { useToggleGif } from "@/hooks/useUI/useToggleGif";
 import { encryptAudioBlob } from "@/lib/client/encryption";
 import { selectLoggedInUser } from "@/lib/client/slices/authSlice";
 import { selectSelectedChatDetails } from "@/lib/client/slices/chatSlice";
-import { useAppSelector } from "@/lib/client/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/client/store/hooks";
 import { fetchUserChatsResponse } from "@/lib/server/services/userService";
 import { blobToUint8Array, getOtherMemberOfPrivateChat } from "@/lib/shared/helpers";
 import { motion } from "framer-motion";
@@ -16,6 +16,7 @@ import { GifIcon } from "../ui/icons/GifIcon";
 import { SendIcon } from "../ui/icons/SendIcon";
 import { VoiceNoteMicIcon } from "../ui/icons/VoiceNoteMicIcon";
 import {} from '@/lib/shared/helpers'
+import { setReplyingToMessageData, setReplyingToMessageId } from "@/lib/client/slices/uiSlice";
 
 type PropTypes = {
   toggleAttachmentsMenu: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,6 +48,7 @@ export const MessageInputExtraOptions = ({
 
   const {sendMessage} = useSendMessage();
 
+  const dispatch = useAppDispatch();
  
   const startRecording = async () => {
     try {
@@ -102,6 +104,8 @@ export const MessageInputExtraOptions = ({
   const handleSendVoiceNote = useCallback(async()=>{
 
     const sharedKey = await getSharedKey({loggedInUserId,otherMember:otherMember.user})
+      dispatch(setReplyingToMessageData(null));
+      dispatch(setReplyingToMessageId(null));
 
     if(sharedKey && audioBlob && selectedChatDetails){
 
@@ -116,7 +120,7 @@ export const MessageInputExtraOptions = ({
       mediaRecorder.current?.stop();
     }
 
-  },[audioBlob, getSharedKey, handleDeleteVoiceNote, loggedInUserId, otherMember.user, sendMessage]);
+  },[audioBlob, dispatch, getSharedKey, handleDeleteVoiceNote, loggedInUserId, otherMember.user, selectedChatDetails, sendMessage]);
 
   return (
     <motion.div

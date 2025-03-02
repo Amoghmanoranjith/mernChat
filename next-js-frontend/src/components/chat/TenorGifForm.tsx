@@ -1,8 +1,8 @@
 import GifPicker, { TenorImage, Theme } from "gif-picker-react";
 import { useSendMessage } from "../../hooks/useMessages/useSendMessage";
 import { useToggleGif } from "../../hooks/useUI/useToggleGif";
-import { selectisDarkMode } from "../../lib/client/slices/uiSlice";
-import { useAppSelector } from "../../lib/client/store/hooks";
+import { selectisDarkMode, setReplyingToMessageData, setReplyingToMessageId } from "../../lib/client/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/client/store/hooks";
 import { useCallback } from "react";
 
 const TenorGifForm = () => {
@@ -10,10 +10,14 @@ const TenorGifForm = () => {
   const isDarkMode = useAppSelector(selectisDarkMode);
   const { toggleGifForm } = useToggleGif();
 
+  const dispatch = useAppDispatch();
+
   const handleGifClick = useCallback((image: TenorImage) => {
     toggleGifForm();
     sendMessage(undefined, image.url);
-  },[sendMessage, toggleGifForm]);
+    dispatch(setReplyingToMessageData(null));
+    dispatch(setReplyingToMessageId(null));
+  },[dispatch, sendMessage, toggleGifForm]);
 
   const tenorApiKey = process.env.NEXT_PUBLIC_TENOR_API_KEY;
 

@@ -35,287 +35,302 @@ const registerSocketHandlers = (io) => {
         const chatIds = userChats.map(({ chatId }) => chatId);
         socket.join(chatIds);
         socket.on(Events.MESSAGE, async ({ chatId, isPollMessage, pollData, textMessageContent, url, encryptedAudio, audio, replyToMessageId }) => {
-            let newMessage;
-            if (audio) {
-                const uploadResult = await uploadAudioToCloudinary({ buffer: audio });
-                if (!uploadResult)
-                    return;
-                newMessage = await prisma.message.create({
-                    data: {
-                        senderId: socket.user.id,
-                        chatId: chatId,
-                        isTextMessage: false,
-                        isPollMessage: false,
-                        audioPublicId: uploadResult.public_id,
-                        audioUrl: uploadResult.secure_url,
-                        replyToMessageId
-                    },
-                });
-            }
-            else if (encryptedAudio) {
-                const uploadResult = (await uploadEncryptedAudioToCloudinary({ buffer: encryptedAudio }));
-                if (!uploadResult)
-                    return;
-                newMessage = await prisma.message.create({
-                    data: {
-                        senderId: socket.user.id,
-                        chatId: chatId,
-                        isTextMessage: false,
-                        isPollMessage: false,
-                        audioPublicId: uploadResult.public_id,
-                        audioUrl: uploadResult.secure_url,
-                        replyToMessageId
-                    },
-                });
-            }
-            else if (isPollMessage && pollData?.pollOptions && pollData.pollQuestion) {
-                const newPoll = await prisma.poll.create({
-                    data: {
-                        question: pollData.pollQuestion,
-                        options: pollData.pollOptions,
-                        multipleAnswers: pollData.isMultipleAnswers ? pollData.isMultipleAnswers : false
-                    }
-                });
-                newMessage = await prisma.message.create({
-                    data: {
-                        senderId: socket.user.id,
-                        chatId: chatId,
-                        pollId: newPoll.id,
-                        isPollMessage: true,
-                        isTextMessage: false,
-                        replyToMessageId
-                    },
-                });
-            }
-            else if (url) {
-                newMessage = await prisma.message.create({
-                    data: {
-                        senderId: socket.user.id,
-                        chatId: chatId,
-                        url,
-                        isPollMessage: false,
-                        isTextMessage: false,
-                        replyToMessageId
-                    },
-                });
-            }
-            else {
-                newMessage = await prisma.message.create({
-                    data: {
-                        senderId: socket.user.id,
-                        chatId: chatId,
-                        isPollMessage: false,
-                        isTextMessage: true,
-                        textMessageContent: textMessageContent,
-                        replyToMessageId
-                    },
-                });
-            }
-            const currentChat = await prisma.chat.update({
-                where: { id: chatId },
-                data: { latestMessageId: newMessage.id },
-                include: {
-                    ChatMembers: {
-                        select: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    isOnline: true,
-                                    notificationsEnabled: true,
-                                    fcmToken: true,
+            try {
+                let newMessage;
+                if (audio) {
+                    const uploadResult = await uploadAudioToCloudinary({ buffer: audio });
+                    if (!uploadResult)
+                        return;
+                    newMessage = await prisma.message.create({
+                        data: {
+                            senderId: socket.user.id,
+                            chatId: chatId,
+                            isTextMessage: false,
+                            isPollMessage: false,
+                            audioPublicId: uploadResult.public_id,
+                            audioUrl: uploadResult.secure_url,
+                            replyToMessageId
+                        },
+                    });
+                }
+                else if (encryptedAudio) {
+                    const uploadResult = (await uploadEncryptedAudioToCloudinary({ buffer: encryptedAudio }));
+                    if (!uploadResult)
+                        return;
+                    newMessage = await prisma.message.create({
+                        data: {
+                            senderId: socket.user.id,
+                            chatId: chatId,
+                            isTextMessage: false,
+                            isPollMessage: false,
+                            audioPublicId: uploadResult.public_id,
+                            audioUrl: uploadResult.secure_url,
+                            replyToMessageId
+                        },
+                    });
+                }
+                else if (isPollMessage && pollData?.pollOptions && pollData.pollQuestion) {
+                    const newPoll = await prisma.poll.create({
+                        data: {
+                            question: pollData.pollQuestion,
+                            options: pollData.pollOptions,
+                            multipleAnswers: pollData.isMultipleAnswers ? pollData.isMultipleAnswers : false
+                        }
+                    });
+                    newMessage = await prisma.message.create({
+                        data: {
+                            senderId: socket.user.id,
+                            chatId: chatId,
+                            pollId: newPoll.id,
+                            isPollMessage: true,
+                            isTextMessage: false,
+                            replyToMessageId
+                        },
+                    });
+                }
+                else if (url) {
+                    newMessage = await prisma.message.create({
+                        data: {
+                            senderId: socket.user.id,
+                            chatId: chatId,
+                            url,
+                            isPollMessage: false,
+                            isTextMessage: false,
+                            replyToMessageId
+                        },
+                    });
+                }
+                else {
+                    newMessage = await prisma.message.create({
+                        data: {
+                            senderId: socket.user.id,
+                            chatId: chatId,
+                            isPollMessage: false,
+                            isTextMessage: true,
+                            textMessageContent: textMessageContent,
+                            replyToMessageId
+                        },
+                    });
+                }
+                const currentChat = await prisma.chat.update({
+                    where: { id: chatId },
+                    data: { latestMessageId: newMessage.id },
+                    include: {
+                        ChatMembers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        isOnline: true,
+                                        notificationsEnabled: true,
+                                        fcmToken: true,
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-            const message = await prisma.message.findUnique({
-                where: { chatId: chatId, id: newMessage.id },
-                include: {
-                    sender: {
-                        select: {
-                            id: true,
-                            username: true,
-                            avatar: true,
-                        }
-                    },
-                    attachments: {
-                        select: {
-                            secureUrl: true,
-                        }
-                    },
-                    poll: {
-                        omit: {
-                            id: true,
+                });
+                const message = await prisma.message.findUnique({
+                    where: { chatId: chatId, id: newMessage.id },
+                    include: {
+                        sender: {
+                            select: {
+                                id: true,
+                                username: true,
+                                avatar: true,
+                            }
                         },
-                        include: {
-                            votes: {
-                                include: {
-                                    user: {
-                                        select: {
-                                            id: true,
-                                            username: true,
-                                            avatar: true
+                        attachments: {
+                            select: {
+                                secureUrl: true,
+                            }
+                        },
+                        poll: {
+                            omit: {
+                                id: true,
+                            },
+                            include: {
+                                votes: {
+                                    include: {
+                                        user: {
+                                            select: {
+                                                id: true,
+                                                username: true,
+                                                avatar: true
+                                            }
                                         }
+                                    },
+                                    omit: {
+                                        id: true,
+                                        pollId: true,
+                                        userId: true,
                                     }
                                 },
-                                omit: {
-                                    id: true,
-                                    pollId: true,
-                                    userId: true,
-                                }
-                            },
-                        }
-                    },
-                    reactions: {
-                        select: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    username: true,
-                                    avatar: true
-                                }
-                            },
-                            reaction: true,
-                        }
-                    },
-                    replyToMessage: {
-                        select: {
-                            sender: {
-                                select: {
-                                    id: true,
-                                    username: true,
-                                    avatar: true,
-                                }
-                            },
-                            id: true,
-                            textMessageContent: true,
-                            isPollMessage: true,
-                            url: true,
-                            audioUrl: true,
-                            attachments: {
-                                select: {
-                                    secureUrl: true
+                            }
+                        },
+                        reactions: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        username: true,
+                                        avatar: true
+                                    }
+                                },
+                                reaction: true,
+                            }
+                        },
+                        replyToMessage: {
+                            select: {
+                                sender: {
+                                    select: {
+                                        id: true,
+                                        username: true,
+                                        avatar: true,
+                                    }
+                                },
+                                id: true,
+                                textMessageContent: true,
+                                isPollMessage: true,
+                                url: true,
+                                audioUrl: true,
+                                attachments: {
+                                    select: {
+                                        secureUrl: true
+                                    }
                                 }
                             }
-                        }
+                        },
                     },
-                },
-                omit: {
-                    senderId: true,
-                    pollId: true,
-                    audioPublicId: true,
-                },
-            });
-            io.to(chatId).emit(Events.MESSAGE, { ...message, isNew: true });
-            const currentChatMembers = currentChat.ChatMembers.filter(({ user: { id } }) => id != socket.user.id);
-            const updateOrCreateUnreadMessagePromises = currentChatMembers.map(async (member) => {
-                if (!member.user.isOnline && member.user.notificationsEnabled && member.user.fcmToken) {
-                    sendPushNotification({ fcmToken: member.user.fcmToken, body: `New message from ${socket.user.username}` });
-                }
-                const isExistingUnreadMessage = await prisma.unreadMessages.findUnique({
-                    where: {
-                        userId_chatId: {
-                            userId: member.user.id,
-                            chatId: chatId
-                        }
-                    }
+                    omit: {
+                        senderId: true,
+                        pollId: true,
+                        audioPublicId: true,
+                    },
                 });
-                if (isExistingUnreadMessage) {
-                    return prisma.unreadMessages.update({
+                io.to(chatId).emit(Events.MESSAGE, { ...message, isNew: true });
+                const currentChatMembers = currentChat.ChatMembers.filter(({ user: { id } }) => id != socket.user.id);
+                const updateOrCreateUnreadMessagePromises = currentChatMembers.map(async (member) => {
+                    if (!member.user.isOnline && member.user.notificationsEnabled && member.user.fcmToken) {
+                        sendPushNotification({ fcmToken: member.user.fcmToken, body: `New message from ${socket.user.username}` });
+                    }
+                    const isExistingUnreadMessage = await prisma.unreadMessages.findUnique({
                         where: {
                             userId_chatId: {
                                 userId: member.user.id,
                                 chatId: chatId
                             }
-                        },
-                        data: {
-                            count: {
-                                increment: 1
+                        }
+                    });
+                    if (isExistingUnreadMessage) {
+                        return prisma.unreadMessages.update({
+                            where: {
+                                userId_chatId: {
+                                    userId: member.user.id,
+                                    chatId: chatId
+                                }
                             },
-                            messageId: newMessage.id
-                        }
-                    });
-                }
-                else {
-                    return prisma.unreadMessages.create({
-                        data: {
-                            userId: member.user.id,
-                            chatId: chatId,
-                            count: 1,
-                            senderId: socket.user.id,
-                            messageId: newMessage.id
-                        }
-                    });
-                }
-            });
-            await Promise.all(updateOrCreateUnreadMessagePromises);
-            const unreadMessagePayload = {
-                chatId: chatId,
-                message: {
-                    textMessageContent: newMessage.isTextMessage ? newMessage.textMessageContent : undefined,
-                    url: newMessage.url ? true : false,
-                    attachments: false,
-                    poll: newMessage.isPollMessage ? true : false,
-                    audio: newMessage.audioPublicId ? true : false,
-                    createdAt: newMessage.createdAt
-                },
-                sender: {
-                    id: socket.user.id,
-                    avatar: socket.user.avatar,
-                    username: socket.user.username
-                }
-            };
-            io.to(chatId).emit(Events.UNREAD_MESSAGE, unreadMessagePayload);
+                            data: {
+                                count: {
+                                    increment: 1
+                                },
+                                messageId: newMessage.id
+                            }
+                        });
+                    }
+                    else {
+                        return prisma.unreadMessages.create({
+                            data: {
+                                userId: member.user.id,
+                                chatId: chatId,
+                                count: 1,
+                                senderId: socket.user.id,
+                                messageId: newMessage.id
+                            }
+                        });
+                    }
+                });
+                await Promise.all(updateOrCreateUnreadMessagePromises);
+                const unreadMessagePayload = {
+                    chatId: chatId,
+                    message: {
+                        textMessageContent: newMessage.isTextMessage ? newMessage.textMessageContent : undefined,
+                        url: newMessage.url ? true : false,
+                        attachments: false,
+                        poll: newMessage.isPollMessage ? true : false,
+                        audio: newMessage.audioPublicId ? true : false,
+                        createdAt: newMessage.createdAt
+                    },
+                    sender: {
+                        id: socket.user.id,
+                        avatar: socket.user.avatar,
+                        username: socket.user.username
+                    }
+                };
+                io.to(chatId).emit(Events.UNREAD_MESSAGE, unreadMessagePayload);
+            }
+            catch (error) {
+                console.log('Error sending message:', error);
+            }
         });
         socket.on(Events.MESSAGE_SEEN, async ({ chatId }) => {
-            const doesUnreadMessageExists = await prisma.unreadMessages.findUnique({
-                where: {
-                    userId_chatId: {
-                        userId: socket.user.id,
-                        chatId,
+            try {
+                const doesUnreadMessageExists = await prisma.unreadMessages.findUnique({
+                    where: {
+                        userId_chatId: {
+                            userId: socket.user.id,
+                            chatId,
+                        }
                     }
-                }
-            });
-            if (!doesUnreadMessageExists)
-                return;
-            const unreadMessageData = await prisma.unreadMessages.update({
-                where: {
-                    id: doesUnreadMessageExists.id
-                },
-                data: {
-                    count: 0,
-                    readAt: new Date
-                }
-            });
-            const payload = {
-                user: {
-                    id: socket.user.id,
-                    username: socket.user.username,
-                    avatar: socket.user.avatar
-                },
-                chatId,
-                readAt: unreadMessageData.readAt,
-            };
-            io.to(chatId).emit(Events.MESSAGE_SEEN, payload);
+                });
+                if (!doesUnreadMessageExists)
+                    return;
+                const unreadMessageData = await prisma.unreadMessages.update({
+                    where: {
+                        id: doesUnreadMessageExists.id
+                    },
+                    data: {
+                        count: 0,
+                        readAt: new Date
+                    }
+                });
+                const payload = {
+                    user: {
+                        id: socket.user.id,
+                        username: socket.user.username,
+                        avatar: socket.user.avatar
+                    },
+                    chatId,
+                    readAt: unreadMessageData.readAt,
+                };
+                io.to(chatId).emit(Events.MESSAGE_SEEN, payload);
+            }
+            catch (error) {
+                console.log('Error marking message as seen:', error);
+            }
         });
         socket.on(Events.MESSAGE_EDIT, async ({ chatId, messageId, updatedTextContent }) => {
-            const message = await prisma.message.update({
-                where: {
+            try {
+                const message = await prisma.message.update({
+                    where: {
+                        chatId,
+                        id: messageId
+                    },
+                    data: {
+                        textMessageContent: updatedTextContent,
+                        isEdited: true,
+                    }
+                });
+                const payload = {
+                    updatedTextMessageContent: message.textMessageContent,
                     chatId,
-                    id: messageId
-                },
-                data: {
-                    textMessageContent: updatedTextContent,
-                    isEdited: true,
-                }
-            });
-            const payload = {
-                updatedTextMessageContent: message.textMessageContent,
-                chatId,
-                messageId
-            };
-            io.to(chatId).emit(Events.MESSAGE_EDIT, payload);
+                    messageId
+                };
+                io.to(chatId).emit(Events.MESSAGE_EDIT, payload);
+            }
+            catch (error) {
+                console.log('Error editing message:', error);
+            }
         });
         socket.on(Events.MESSAGE_DELETE, async ({ chatId, messageId }) => {
             try {
@@ -369,57 +384,72 @@ const registerSocketHandlers = (io) => {
             }
         });
         socket.on(Events.NEW_REACTION, async ({ chatId, messageId, reaction }) => {
-            const result = await prisma.reactions.findFirst({
-                where: {
-                    userId: socket.user.id,
-                    messageId
-                }
-            });
-            if (result)
-                return;
-            await prisma.reactions.create({
-                data: {
-                    reaction,
-                    userId: socket.user.id,
+            try {
+                const result = await prisma.reactions.findFirst({
+                    where: {
+                        userId: socket.user.id,
+                        messageId
+                    }
+                });
+                if (result)
+                    return;
+                await prisma.reactions.create({
+                    data: {
+                        reaction,
+                        userId: socket.user.id,
+                        messageId,
+                    }
+                });
+                const payload = {
+                    chatId,
                     messageId,
-                }
-            });
-            const payload = {
-                chatId,
-                messageId,
-                user: {
-                    id: socket.user.id,
-                    username: socket.user.username,
-                    avatar: socket.user.avatar
-                },
-                reaction,
-            };
-            io.to(chatId).emit(Events.NEW_REACTION, payload);
+                    user: {
+                        id: socket.user.id,
+                        username: socket.user.username,
+                        avatar: socket.user.avatar
+                    },
+                    reaction,
+                };
+                io.to(chatId).emit(Events.NEW_REACTION, payload);
+            }
+            catch (error) {
+                console.log('Error adding reaction:', error);
+            }
         });
         socket.on(Events.DELETE_REACTION, async ({ chatId, messageId }) => {
-            await prisma.reactions.deleteMany({
-                where: {
-                    userId: socket.user.id,
-                    messageId
-                }
-            });
-            const payload = {
-                chatId,
-                messageId,
-                userId: socket.user.id
-            };
-            io.to(chatId).emit(Events.DELETE_REACTION, payload);
+            try {
+                await prisma.reactions.deleteMany({
+                    where: {
+                        userId: socket.user.id,
+                        messageId
+                    }
+                });
+                const payload = {
+                    chatId,
+                    messageId,
+                    userId: socket.user.id
+                };
+                io.to(chatId).emit(Events.DELETE_REACTION, payload);
+            }
+            catch (error) {
+                console.log('Error deleting reaction:', error);
+            }
         });
         socket.on(Events.USER_TYPING, ({ chatId }) => {
-            const payload = {
-                user: {
-                    id: socket.user.id,
-                    username: socket.user.username,
-                    avatar: socket.user.avatar
-                },
-                chatId: chatId,
-            };
-            socket.broadcast.to(chatId).emit(Events.USER_TYPING, payload);
+            try {
+                const payload = {
+                    user: {
+                        id: socket.user.id,
+                        username: socket.user.username,
+                        avatar: socket.user.avatar
+                    },
+                    chatId: chatId,
+                };
+                socket.broadcast.to(chatId).emit(Events.USER_TYPING, payload);
+            }
+            catch (error) {
+                console.log('Error user typing:', error);
+            }
         });
         socket.on(Events.VOTE_IN, async ({ chatId, messageId, optionIndex }) => {
             console.log('vote in received');

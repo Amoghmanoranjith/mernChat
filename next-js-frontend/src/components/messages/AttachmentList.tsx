@@ -13,7 +13,7 @@ export const AttachmentList = ({ attachments }: PropTypes) => {
   return (
     <div
       onClick={handleAttachmentsClick}
-      className={`${attachments.length == 1 ? "" : "grid grid-cols-2"} cursor-pointer`}>
+      className={`${attachments.length == 1 ? "" : "grid grid-cols-2"} cursor-pointer w-full h-full`}>
       {attachments.map((attachment, index) => (
         <Image
           className="size-60 object-cover"

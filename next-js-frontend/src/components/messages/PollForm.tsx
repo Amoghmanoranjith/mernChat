@@ -12,12 +12,16 @@ import { FormInput } from "../ui/FormInput";
 import { SubmitButton } from "../ui/SubmitButton";
 import { ToggleSwitch } from "../ui/ToggleSwitch";
 import { PlusIconWithoutCircle } from "../ui/icons/PlusIconWithoutCircle";
+import { setReplyingToMessageData, setReplyingToMessageId } from "@/lib/client/slices/uiSlice";
+import { useAppDispatch } from "@/lib/client/store/hooks";
 
 const PollForm = () => {
   const { sendMessage } = useSendMessage();
   const { togglePollForm } = useTogglePollForm();
 
   const [isMultipleAnswers, setIsMultipleAnswers] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -57,6 +61,8 @@ const PollForm = () => {
       options.map((option) => option.optionValue),
       isMultipleAnswers
     );
+    dispatch(setReplyingToMessageData(null));
+    dispatch(setReplyingToMessageId(null));
     togglePollForm();
   };
 

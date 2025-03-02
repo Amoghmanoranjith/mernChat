@@ -213,6 +213,8 @@ const registerSocketHandlers = (io:Server)=>{
 
         socket.on(Events.MESSAGE,async({chatId,isPollMessage,pollData,textMessageContent,url,encryptedAudio,audio,replyToMessageId}:MessageEventReceivePayload)=>{
             
+            try{
+
             let newMessage:Partial<Prisma.MessageCreateInput>
 
             if(audio){
@@ -461,10 +463,15 @@ const registerSocketHandlers = (io:Server)=>{
             }
     
             io.to(chatId).emit(Events.UNREAD_MESSAGE,unreadMessagePayload)
+
+        } catch (error) {
+            console.log('Error sending message:', error);
+        }
         })
 
         socket.on(Events.MESSAGE_SEEN,async({chatId}:MessageSeenEventReceivePayload)=>{
 
+            try{
             const doesUnreadMessageExists =  await prisma.unreadMessages.findUnique({
                 where:{
                     userId_chatId:{
@@ -495,10 +502,14 @@ const registerSocketHandlers = (io:Server)=>{
                 readAt:unreadMessageData.readAt!,
             }
             io.to(chatId).emit(Events.MESSAGE_SEEN,payload)
+
+        } catch (error) {
+            console.log('Error marking message as seen:', error)
+        }
         })
 
         socket.on(Events.MESSAGE_EDIT,async({chatId,messageId,updatedTextContent}:MessageEditEventReceivePayload)=>{
-            
+            try{
             const message =  await prisma.message.update({
                 where:{
                     chatId,
@@ -517,6 +528,9 @@ const registerSocketHandlers = (io:Server)=>{
             }
 
             io.to(chatId).emit(Events.MESSAGE_EDIT,payload)
+        } catch (error) {
+            console.log('Error editing message:', error);
+        }
         })
 
         socket.on(Events.MESSAGE_DELETE,async({chatId,messageId}:MessageDeleteEventReceivePayload)=>{
@@ -583,7 +597,7 @@ const registerSocketHandlers = (io:Server)=>{
         })
         
         socket.on(Events.NEW_REACTION,async({chatId,messageId,reaction}:NewReactionEventReceivePayload)=>{
-            
+            try{
             const result =  await prisma.reactions.findFirst({
                 where:{
                     userId:socket.user.id,
@@ -613,11 +627,14 @@ const registerSocketHandlers = (io:Server)=>{
             }
 
             io.to(chatId).emit(Events.NEW_REACTION,payload)
+        } catch (error) {
+            console.log('Error adding reaction:', error);
+        }
 
         })
 
         socket.on(Events.DELETE_REACTION,async({chatId,messageId}:DeleteReactionEventReceivePayload)=>{
-
+            try{
             await prisma.reactions.deleteMany({
                 where:{
                     userId:socket.user.id,
@@ -630,10 +647,13 @@ const registerSocketHandlers = (io:Server)=>{
                 userId:socket.user.id 
             }
             io.to(chatId).emit(Events.DELETE_REACTION,payload)
+        } catch (error) {
+            console.log('Error deleting reaction:', error);
+        }
         })
 
         socket.on(Events.USER_TYPING,({chatId}:UserTypingEventReceivePayload)=>{
-
+            try{
             const payload:UserTypingEventSendPayload = {
                 user:{
                     id:socket.user.id,
@@ -644,6 +664,9 @@ const registerSocketHandlers = (io:Server)=>{
             }
 
             socket.broadcast.to(chatId).emit(Events.USER_TYPING,payload)
+        } catch (error) {
+            console.log('Error user typing:', error);
+        }
         })
 
         socket.on(Events.VOTE_IN,async({chatId,messageId,optionIndex}:VoteInEventReceivePayload)=>{

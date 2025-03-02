@@ -43,7 +43,7 @@ export const PinMessageDisplay = () => {
   return (
     message && loggedInUserId && (
       <div
-        className={`bg-primary text-white  min-w-20 rounded-2xl px-4 py-2 flex flex-col gap-y-1 justify-center max-md:max-w-80 max-sm:max-w-64
+        className={`bg-primary text-white max-h-[40rem] min-w-full overflow-y-auto   rounded-2xl px-4 py-2 flex flex-col gap-y-1 justify-center max-md:max-w-80 max-sm:max-w-64
         ${replyMessageId === message.id ? `border-2 border-double border-spacing-4 ${myMessage?"white":"border-primary"}` : null}
         `}
       >

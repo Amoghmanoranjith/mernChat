@@ -20,7 +20,7 @@ export const DisplayDecryptedMessage = ({ cipherText, chat }: PropTypes) => {
 
   return (
     <>
-      {decryptedMessage.length > 16
+      {decryptedMessage?.length > 16
         ? decryptedMessage.substring(0, 20) + "..."
         : decryptedMessage}
     </>
