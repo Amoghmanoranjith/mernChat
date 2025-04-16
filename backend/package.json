@@ -61,6 +61,7 @@
     "typescript": "^5.7.3"
   },
   "prisma": {
+    "schema":"D:/Programming/wp/nextjs-chat-app/backend/src/prisma/schema.prisma",
     "seed": "ts-node prisma/seed.ts"
   }
 }

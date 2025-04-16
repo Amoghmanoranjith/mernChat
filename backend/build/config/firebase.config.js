@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
-import credentials from "../firebase-admin-cred.json" assert { type: "json" };
+import fs from "fs";
+const credentials = JSON.parse(fs.readFileSync("D:/Programming/wp/nextjs-chat-app/backend/build/firebase-admin-cred.json", "utf-8"));
 // Define the type for serviceAccount
 const serviceAccount = {
     projectId: credentials.project_id,
@@ -13,3 +14,4 @@ if (!admin.apps.length) {
     });
 }
 export const messaging = admin.messaging();
+
